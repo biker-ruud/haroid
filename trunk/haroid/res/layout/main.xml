@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+        android:id="@+id/mainScrollView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:orientation="vertical"
+                  android:layout_width="fill_parent"
+                  android:layout_height="fill_parent"
+            >
+        <Button
+                android:text="@string/bekijktegoed"
+                android:id="@+id/ButtonTegoed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        <TextView
+                android:id="@+id/TextDagVerbruik"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dagVerbruik"
+                android:visibility="gone"
+                />
+        <TextView
+                android:id="@+id/TextTegoed"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/periodeTegoed"
+                />
+        <ProgressBar
+                android:id="@+id/PbarTegoed"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="5dp"/>
+        <TextView
+                android:id="@+id/TextTijd"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/duurPeriode"
+                />
+        <ProgressBar
+                android:id="@+id/PbarTijd"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="5dp"/>
+        <view
+                class="nl.haroid.GraphView"
+                android:id="@+id/GraphVerbruik"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+</ScrollView>
