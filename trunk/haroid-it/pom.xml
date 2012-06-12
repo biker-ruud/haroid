@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -15,6 +15,13 @@
     <packaging>apk</packaging>
     <name>haroid-it - Integration tests</name>
 
+    <properties><!--
+        When not running a release, we are deploying the plain artifact (so no classifier)
+        This is overridden during the release.
+      -->
+        <zipaligned-classifier/>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.google.android</groupId>
@@ -28,13 +35,15 @@
             <groupId>haroid</groupId>
             <artifactId>haroid</artifactId>
             <type>apk</type>
-            <version>1.1</version>
+            <version>${project.version}</version>
+            <classifier>${zipaligned-classifier}</classifier>
+            <!--  classifier set according to the ran profile -->
         </dependency>
         <dependency>
             <groupId>haroid</groupId>
             <artifactId>haroid</artifactId>
             <type>jar</type>
-            <version>1.1</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -47,26 +56,46 @@
                 <groupId>com.jayway.maven.plugins.android.generation2</groupId>
                 <artifactId>android-maven-plugin</artifactId>
                 <configuration>
-                    <androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
-                    <assetsDirectory>${project.basedir}/assets</assetsDirectory>
-                    <resourceDirectory>${project.basedir}/res</resourceDirectory>
-                    <nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
-                    <sdk>
-                        <platform>8</platform>
-                    </sdk>
-                    <undeployBeforeDeploy>true</undeployBeforeDeploy>
                     <device>emulator</device>
                     <emulatorAvd>avd_2.2</emulatorAvd>
                 </configuration>
                 <extensions>true</extensions>
             </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>release</id>
+            <properties><!--
+          When running a release, we must deployed the final artifact (signed and zipaligned).
+                -->
+                <zipaligned-classifier>aligned</zipaligned-classifier>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-jarsigner-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-application-it-apk</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+                        <artifactId>android-maven-plugin</artifactId>
+                        <configuration>
+                            <sign>
+                                <debug>false</debug>
+                            </sign>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
