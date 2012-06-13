@@ -69,8 +69,8 @@ public final class Haring {
         Log.d(LOG_TAG, "**********************************");
         HttpGet verbruikGet = new HttpGet(relativeUrlVerbruik);
         HttpResponse response = haringClient.execute(verbruikGet, localContext);
-        logResponseStatus(response);
-        logCookieStore(localContext);
+//        logResponseStatus(response);
+//        logCookieStore(localContext);
         HttpEntity responseEntity = response.getEntity();
         if (responseEntity == null) {
             return null;
@@ -100,8 +100,8 @@ public final class Haring {
         Log.d(LOG_TAG, "**********************************");
         HttpGet getLogin = new HttpGet(relativeUrlStart);
         HttpResponse response = haringClient.execute(getLogin, localContext);
-        logResponseStatus(response);
-        logCookieStore(localContext);
+//        logResponseStatus(response);
+//        logCookieStore(localContext);
 
         HttpEntity entity = response.getEntity();
         if (entity == null) {
@@ -120,15 +120,15 @@ public final class Haring {
         }
         Log.i(LOG_TAG, "Form:");
         Log.i(LOG_TAG, "Form action: " + form.action);
-        Log.i(LOG_TAG, "Form inputs:");
-        for (InputType type : InputType.values()) {
-            Log.i(LOG_TAG, "Form " + type.toString() + " inputs:");
-            for (Input input : form.inputList) {
-                if (input.getType() == type) {
-                    Log.i(LOG_TAG, " - " + input.getName() + " = " + input.getValue());
-                }
-            }
-        }
+        Log.i(LOG_TAG, "Form inputs: " + form.inputList.size());
+//        for (InputType type : InputType.values()) {
+//            Log.i(LOG_TAG, "Form " + type.toString() + " inputs:");
+//            for (Input input : form.inputList) {
+//                if (input.getType() == type) {
+//                    Log.i(LOG_TAG, " - " + input.getName() + " = " + input.getValue());
+//                }
+//            }
+//        }
         Input loginInput = getLoginInput(form);
         Input passwordInput = getPasswordInput(form);
         if (loginInput != null && passwordInput != null) {
@@ -187,14 +187,13 @@ public final class Haring {
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, "UTF-8");
         post.setEntity(entity);
         HttpResponse response = haringClient.execute(post, localContext);
-        logResponseStatus(response);
-        logCookieStore(localContext);
-        HttpEntity responseEntity = response.getEntity();
-        if (responseEntity != null) {
-            InputStream inputStream = responseEntity.getContent();
-            String body = Utils.toString(inputStream);
-//            LOG.info(body);
-        }
+//        logResponseStatus(response);
+//        logCookieStore(localContext);
+//        HttpEntity responseEntity = response.getEntity();
+//        if (responseEntity != null) {
+//            InputStream inputStream = responseEntity.getContent();
+//            String body = Utils.toString(inputStream);
+//        }
     }
 
     private Form parseForm(String body) {
@@ -237,27 +236,27 @@ public final class Haring {
         return inputs;
     }
 
-    private void logResponseStatus(HttpResponse response) {
-        Log.i(LOG_TAG, "Status code: " + response.getStatusLine().getStatusCode());
-        Header[] headers = response.getAllHeaders();
-        if (headers != null) {
-            Log.i(LOG_TAG, "Headers:");
-            for (Header header : headers) {
-                Log.i(LOG_TAG, " - " + header.getName() + " = " + header.getValue());
-            }
-        }
-    }
-
-    private void logCookieStore(HttpContext haringContext) {
-        CookieStore cookieStore = (CookieStore) haringContext.getAttribute(ClientContext.COOKIE_STORE);
-        List<Cookie> cookieList = cookieStore.getCookies();
-        if (cookieList != null && cookieList.size() > 0) {
-            Log.i(LOG_TAG, "Cookies:");
-            for (Cookie cookie : cookieList) {
-                Log.i(LOG_TAG, " - " + cookie.getName() + " = " + cookie.getValue());
-            }
-        }
-    }
+//    private void logResponseStatus(HttpResponse response) {
+//        Log.i(LOG_TAG, "Status code: " + response.getStatusLine().getStatusCode());
+//        Header[] headers = response.getAllHeaders();
+//        if (headers != null) {
+//            Log.i(LOG_TAG, "Headers:");
+//            for (Header header : headers) {
+//                Log.i(LOG_TAG, " - " + header.getName() + " = " + header.getValue());
+//            }
+//        }
+//    }
+//
+//    private void logCookieStore(HttpContext haringContext) {
+//        CookieStore cookieStore = (CookieStore) haringContext.getAttribute(ClientContext.COOKIE_STORE);
+//        List<Cookie> cookieList = cookieStore.getCookies();
+//        if (cookieList != null && cookieList.size() > 0) {
+//            Log.i(LOG_TAG, "Cookies:");
+//            for (Cookie cookie : cookieList) {
+//                Log.i(LOG_TAG, " - " + cookie.getName() + " = " + cookie.getValue());
+//            }
+//        }
+//    }
 
     private AndroidHttpClient getHaringClient() {
         String userAgent = "Mozilla/5.0(Linux; U; Android 2.2; en-gb)";

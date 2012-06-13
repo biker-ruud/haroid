@@ -75,6 +75,29 @@ public final class GeschiedenisMonitor {
         return verbruikspuntList;
     }
 
+    public List<UsagePoint> getDailyUsageList() {
+        int amount = Integer.parseInt(this.monitorPrefs.getString("pref_max_tegoed", "0"));
+        Log.i(LOG_TAG, "max tegoed: " + amount);
+        int currentDay = 0;
+        List<UsagePoint> verbruikspuntList = new ArrayList<UsagePoint>();
+        DecimalFormat decimalFormat = new DecimalFormat("00");
+        for (int i=1; i<32; i++) {
+            String verbruikKey = VERBRUIK_DAG + decimalFormat.format(i);
+            int amountThisDay = this.monitorPrefs.getInt(verbruikKey, -1);
+            if (amountThisDay != -1 && amountThisDay < amount) {
+                int numberOfDays = i - currentDay;
+                int usageTheseDays = amount - amountThisDay;
+                int averageUsage = usageTheseDays / numberOfDays;
+                for (int j=(currentDay+1); j<=i; j++) {
+                    verbruikspuntList.add(new UsagePoint(j, averageUsage));
+                }
+                currentDay = i;
+                amount = amountThisDay;
+            }
+        }
+        return verbruikspuntList;
+    }
+
     private void resetGeschiedenis(int periodeNummer) {
         Log.i(LOG_TAG, "resetGeschiedenis() voor periode: " + periodeNummer);
         SharedPreferences.Editor prefEditor = this.monitorPrefs.edit();
