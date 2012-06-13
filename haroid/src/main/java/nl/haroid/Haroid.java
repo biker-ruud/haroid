@@ -10,7 +10,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -111,11 +110,6 @@ public final class Haroid extends Activity implements TegoedConsumer {
             }
         });
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        Log.i(LOG_TAG, "All prefs:");
-        Map<String, ?> prefMap = prefs.getAll();
-        for (Map.Entry<String, ?> prefMapEntry : prefMap.entrySet()) {
-            Log.i(LOG_TAG, " - " + prefMapEntry.getKey());
-        }
         int startTegoed = Integer.parseInt(prefs.getString("pref_start_tegoed", "0"));
         berekenDuurTegoed(startTegoed);
     }
@@ -134,11 +128,17 @@ public final class Haroid extends Activity implements TegoedConsumer {
     private void tekenVerbruik(int maxTegoed, int maxPeriod) {
         Log.i(LOG_TAG, "tekenVerbruik");
         if (maxTegoed > 0 && maxPeriod > 0) {
-            GraphView verbruikGraph = (GraphView) findViewById(R.id.GraphVerbruik);
+            MonthlyGraphView verbruikGraph = (MonthlyGraphView) findViewById(R.id.MonthlyGraphVerbruik);
             verbruikGraph.setMaxPeriod(maxPeriod);
             verbruikGraph.setMaxUnits(maxTegoed);
             verbruikGraph.setUsage(this.geschiedenisMonitor.getUsageList());
             verbruikGraph.invalidate();
+            DailyGraphView dagelijksVerbruikGraph = (DailyGraphView) findViewById(R.id.DailyGraphVerbruik);
+            dagelijksVerbruikGraph.setMaxPeriod(maxPeriod);
+            dagelijksVerbruikGraph.setMaxUnits(maxTegoed);
+            dagelijksVerbruikGraph.setDailyAverage(((float)maxTegoed) / ((float)maxPeriod));
+            dagelijksVerbruikGraph.setUsage(this.geschiedenisMonitor.getDailyUsageList());
+            dagelijksVerbruikGraph.invalidate();
         }
     }
 
@@ -215,9 +215,12 @@ public final class Haroid extends Activity implements TegoedConsumer {
             Log.i(LOG_TAG, "dagInPeriode: " + dagInPeriode);
             this.geschiedenisMonitor.setTegoed(dagInPeriode, tegoed);
             setTegoedProgress(tegoed);
-            GraphView verbruikGraph = (GraphView) findViewById(R.id.GraphVerbruik);
+            MonthlyGraphView verbruikGraph = (MonthlyGraphView) findViewById(R.id.MonthlyGraphVerbruik);
             verbruikGraph.setUsage(this.geschiedenisMonitor.getUsageList());
             verbruikGraph.invalidate();
+            DailyGraphView dagelijksVerbruikGraph = (DailyGraphView) findViewById(R.id.DailyGraphVerbruik);
+            dagelijksVerbruikGraph.setUsage(this.geschiedenisMonitor.getDailyUsageList());
+            dagelijksVerbruikGraph.invalidate();
         }
     }
 

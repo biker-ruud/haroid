@@ -48,8 +48,13 @@
                 android:layout_marginRight="5dp"
                 android:layout_marginLeft="5dp"/>
         <view
-                class="nl.haroid.GraphView"
-                android:id="@+id/GraphVerbruik"
+                class="nl.haroid.DailyGraphView"
+                android:id="@+id/DailyGraphVerbruik"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"/>
+        <view
+                class="nl.haroid.MonthlyGraphView"
+                android:id="@+id/MonthlyGraphVerbruik"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"/>
 
