@@ -9,4 +9,4 @@ Here are some Haroid screen shots
 
 Let's try to add the images here.
 
-http://haroid.googlecode.com/svn/wiki/images/haroid_screen1.png
+http://haroid.googlecode.com/svn/wiki/images/haroid_screen_1.png
