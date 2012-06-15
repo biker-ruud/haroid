@@ -1,12 +1,14 @@
 #Screen shots
 
-= Introduction =
+= Introductie =
 
-Here are some Haroid screen shots
+Hier zijn een paar Haroid schermafdrukken
 
 
-= Details =
-
-Let's try to add the images here.
+= Hoofdscherm =
 
 http://haroid.googlecode.com/svn/wiki/images/haroid_screen_samengesteld.png
+
+= Instellingen scherm =
+
+http://haroid.googlecode.com/svn/wiki/images/haroid_screen_3.png
