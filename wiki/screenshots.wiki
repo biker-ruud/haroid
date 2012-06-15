@@ -8,3 +8,5 @@ Here are some Haroid screen shots
 = Details =
 
 Let's try to add the images here.
+
+http://haroid.googlecode.com/svn/wiki/images/haroid_screen1.png
