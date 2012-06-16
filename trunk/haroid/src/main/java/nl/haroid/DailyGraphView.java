@@ -16,8 +16,8 @@ public final class DailyGraphView extends GraphView{
     private float dailyAverage;
     private int maxUnits;
     private int maxPeriod;
-    private int peakUsage;
-    private List<GeschiedenisMonitor.UsagePoint> usagePointList;
+    private int maxGraph;
+    private List<HistoryMonitor.UsagePoint> usagePointList;
 
     public DailyGraphView(Context context) {
         super(context);
@@ -30,46 +30,61 @@ public final class DailyGraphView extends GraphView{
     public DailyGraphView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
-    public void setDailyAverage(float dailyAverage) {
-        this.dailyAverage = dailyAverage;
-    }
 
     public void setMaxUnits(int maxUnits) {
         this.maxUnits = maxUnits;
+        calculateDailyAverage();
     }
 
     public void setMaxPeriod(int maxPeriod) {
         this.maxPeriod = maxPeriod;
+        calculateDailyAverage();
     }
 
-    public void setUsage(List<GeschiedenisMonitor.UsagePoint> usagePointList) {
+    public void setUsage(List<HistoryMonitor.UsagePoint> usagePointList) {
         this.usagePointList = usagePointList;
-        this.peakUsage = (int) Math.ceil(this.dailyAverage);
-        Log.i(LOG_TAG, "Usage set.");
-        for (GeschiedenisMonitor.UsagePoint usagePoint : usagePointList) {
-            if (usagePoint.getTegoed() > this.peakUsage) {
-                this.peakUsage = usagePoint.getTegoed();
-                Log.i(LOG_TAG, "Piek verbruik: " + this.peakUsage);
+        int peakUsage = (int) Math.ceil(this.dailyAverage);
+        for (HistoryMonitor.UsagePoint usagePoint : usagePointList) {
+            if (usagePoint.getUsed() > peakUsage) {
+                peakUsage = usagePoint.getUsed();
             }
         }
+        this.maxGraph = calculateMaxGraph(peakUsage);
     }
 
     @Override
     void drawInternal(Canvas canvas) {
+        drawGraphXaxis(canvas);
+        drawGraphYaxis(canvas);
+        drawAverageUsageLine(canvas);
+        drawDailyUsageBars(canvas);
+    }
+
+    private Paint getWhitePaint() {
         Paint paint = new Paint();
         paint.setColor(Color.WHITE);
-        drawGraphXaxis(canvas, paint);
-        drawGraphYaxis(canvas, paint);
-        drawAverageUsageLine(canvas);
-        drawDailyUsageBars(canvas, paint);
+        return paint;
     }
 
-    private void drawGraphXaxis(Canvas canvas, Paint paint) {
-        canvas.drawLine(MARGIN, this.measuredHeight - MARGIN, this.measuredWidth - MARGIN, this.measuredHeight - MARGIN, paint);
+    private void calculateDailyAverage() {
+        if (this.maxPeriod > 0 && this.maxUnits > 0) {
+            this.dailyAverage = ((float)maxUnits) / ((float)maxPeriod);
+        }
     }
 
-    private void drawGraphYaxis(Canvas canvas, Paint paint) {
-        canvas.drawLine(MARGIN, MARGIN, MARGIN, this.measuredHeight - MARGIN, paint);
+    private void drawGraphXaxis(Canvas canvas) {
+        canvas.drawLine(getMinX(), getMinY(), getMaxX(), getMinY(), getWhitePaint());
+    }
+
+    private void drawGraphYaxis(Canvas canvas) {
+        canvas.drawLine(getMinX(), getMinY(), getMinX(), getMaxY(), getWhitePaint());
+        int markerSize = this.maxGraph / 4;
+        drawVerticalMarker(markerSize, canvas);
+        drawVerticalMarker(markerSize*2, canvas);
+        drawVerticalMarker(markerSize*3, canvas);
+        if (markerSize*4 < maxGraph) {
+            drawVerticalMarker(markerSize*4, canvas);
+        }
     }
 
     private void drawAverageUsageLine(Canvas canvas) {
@@ -78,21 +93,21 @@ public final class DailyGraphView extends GraphView{
         averagePaint.setStyle(Paint.Style.STROKE);
         averagePaint.setPathEffect(new DashPathEffect(new float[]{10, 20}, 0));
 
-        float usage = this.dailyAverage / ((float)this.peakUsage);
+        float usage = this.dailyAverage / ((float)this.maxGraph);
         float yCoordinate = ((getMaxY() - getMinY()) * usage) + getMinY();
         canvas.drawLine(getMinX(), yCoordinate, getMaxX(), yCoordinate, averagePaint);
     }
 
-    private void drawDailyUsageBars(Canvas canvas, Paint paint) {
+    private void drawDailyUsageBars(Canvas canvas) {
         if (this.usagePointList != null) {
-            for (GeschiedenisMonitor.UsagePoint usagePoint : this.usagePointList) {
-                drawDailyUsageBar(canvas, paint, usagePoint);
+            for (HistoryMonitor.UsagePoint usagePoint : this.usagePointList) {
+                drawDailyUsageBar(canvas, usagePoint);
             }
         }
     }
 
-    private void drawDailyUsageBar(Canvas canvas, Paint paint, GeschiedenisMonitor.UsagePoint usagePoint) {
-        float usage = ((float)usagePoint.getTegoed()) / ((float)this.peakUsage);
+    private void drawDailyUsageBar(Canvas canvas, HistoryMonitor.UsagePoint usagePoint) {
+        float usage = ((float)usagePoint.getUsed()) / ((float)this.maxGraph);
         float yCoordinate = ((getMaxY() - getMinY()) * usage) + getMinY();
 
         int numberOfHorizontalPositions = this.maxPeriod + (this.maxPeriod - 1);
@@ -103,13 +118,40 @@ public final class DailyGraphView extends GraphView{
         float leftXCoordinate = ((getMaxX() - getMinX()) * leftBar) + getMinX();
         float rightXCoordinate = ((getMaxX() - getMinX()) * rightBar) + getMinX();
 
+        Paint paint = getWhitePaint();
         paint.setStrokeWidth(0f);
-        if (((float)usagePoint.getTegoed()) < this.dailyAverage) {
+        if (((float)usagePoint.getUsed()) < this.dailyAverage) {
             paint.setColor(Color.GREEN);
         } else {
             paint.setColor(Color.rgb(255, 165, 0));
         }
-        canvas.drawRect(leftXCoordinate, yCoordinate, rightXCoordinate, this.measuredHeight - MARGIN, paint);
+        canvas.drawRect(leftXCoordinate, yCoordinate, rightXCoordinate, getMinY(), paint);
+        if (usagePoint.getDagInPeriode() % 5 == 0) {
+            float markerXCoordinate = (leftXCoordinate + rightXCoordinate) / 2.0f;
+            drawHorizontalMarkerLine(usagePoint.getDagInPeriode(), markerXCoordinate, canvas);
+        }
+    }
+
+    private void drawHorizontalMarkerLine(int markerPos, float markerXCoordinate, Canvas canvas) {
+        float markerYcoordinateStart = getMinY();
+        float markerYcoordinateEnd = markerYcoordinateStart + getVerticalMarkerSize();
+        Paint paint = getWhitePaint();
+        canvas.drawLine(markerXCoordinate, markerYcoordinateStart, markerXCoordinate, markerYcoordinateEnd, paint);
+        paint.setTextSize(getTextSize());
+        paint.setTextAlign(Paint.Align.CENTER);
+        canvas.drawText(String.valueOf(markerPos), markerXCoordinate, markerYcoordinateEnd + getTextSize(), paint);
+    }
+
+    private void drawVerticalMarker(int markerPos, Canvas canvas) {
+        float usage = ((float)markerPos) / ((float)this.maxGraph);
+        float yCoordinate = ((getMaxY() - getMinY()) * usage) + getMinY();
+        float markerXcoordinateStart = getMinX();
+        float markerXcoordinateEnd = markerXcoordinateStart - getHorizontalMarkerSize();
+        Paint paint = getWhitePaint();
+        canvas.drawLine(markerXcoordinateStart, yCoordinate, markerXcoordinateEnd, yCoordinate, paint);
+        paint.setTextSize(getTextSize());
+        paint.setTextAlign(Paint.Align.RIGHT);
+        canvas.drawText(String.valueOf(markerPos), markerXcoordinateEnd, yCoordinate + (getTextSize() / 3.0f), paint);
     }
 
 }

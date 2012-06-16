@@ -7,19 +7,20 @@ import android.util.Log;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * @author Ruud de Jong
  */
-public final class GeschiedenisMonitor {
-    private static final String LOG_TAG = "GeschiedenisMonitor";
+public final class HistoryMonitor {
+    private static final String LOG_TAG = "HistoryMonitor";
 
     private static final String PERIODE_NUMMER = "pref_periode_nummer";
     private static final String VERBRUIK_DAG = "pref_verbruik_dag";
     private SharedPreferences monitorPrefs;
 
-    public GeschiedenisMonitor(Context context) {
+    public HistoryMonitor(Context context) {
         this.monitorPrefs = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
@@ -62,22 +63,22 @@ public final class GeschiedenisMonitor {
         return -1;
     }
 
-    public List<UsagePoint> getUsageList() {
-        List<UsagePoint> verbruikspuntList = new ArrayList<UsagePoint>();
-        DecimalFormat decimalFormat = new DecimalFormat("00");
-        for (int i=1; i<32; i++) {
-            String verbruikKey = VERBRUIK_DAG + decimalFormat.format(i);
-            int tegoed = this.monitorPrefs.getInt(verbruikKey, -1);
-            if (tegoed != -1) {
-                verbruikspuntList.add(new UsagePoint(i, tegoed));
-            }
-        }
-        return verbruikspuntList;
-    }
+//    public List<UsagePoint> getUsageList() {
+//        List<UsagePoint> verbruikspuntList = new ArrayList<UsagePoint>();
+//        DecimalFormat decimalFormat = new DecimalFormat("00");
+//        for (int i=1; i<32; i++) {
+//            String verbruikKey = VERBRUIK_DAG + decimalFormat.format(i);
+//            int tegoed = this.monitorPrefs.getInt(verbruikKey, -1);
+//            if (tegoed != -1) {
+//                verbruikspuntList.add(new UsagePoint(i, tegoed));
+//            }
+//        }
+//        return verbruikspuntList;
+//    }
 
-    public List<UsagePoint> getDailyUsageList() {
+    public List<UsagePoint> getUsageList() {
         int amount = Integer.parseInt(this.monitorPrefs.getString("pref_max_tegoed", "0"));
-        Log.i(LOG_TAG, "max tegoed: " + amount);
+        Log.i(LOG_TAG, "max balance: " + amount);
         int currentDay = 0;
         List<UsagePoint> verbruikspuntList = new ArrayList<UsagePoint>();
         DecimalFormat decimalFormat = new DecimalFormat("00");
@@ -89,13 +90,17 @@ public final class GeschiedenisMonitor {
                 int usageTheseDays = amount - amountThisDay;
                 int averageUsage = usageTheseDays / numberOfDays;
                 for (int j=(currentDay+1); j<=i; j++) {
-                    verbruikspuntList.add(new UsagePoint(j, averageUsage));
+                    int balance = -1;
+                    if (j == i) {
+                        balance = amountThisDay;
+                    }
+                    verbruikspuntList.add(new UsagePoint(j, balance, averageUsage));
                 }
                 currentDay = i;
                 amount = amountThisDay;
             }
         }
-        return verbruikspuntList;
+        return Collections.unmodifiableList(verbruikspuntList);
     }
 
     private void resetGeschiedenis(int periodeNummer) {
@@ -112,19 +117,25 @@ public final class GeschiedenisMonitor {
 
     class UsagePoint {
         private int dagInPeriode;
-        private int tegoed;
+        private int balance;
+        private int used;
 
-        UsagePoint(int dagInPeriode, int tegoed) {
+        UsagePoint(int dagInPeriode, int balance, int used) {
             this.dagInPeriode = dagInPeriode;
-            this.tegoed = tegoed;
+            this.balance = balance;
+            this.used = used;
         }
 
         public int getDagInPeriode() {
             return dagInPeriode;
         }
 
-        public int getTegoed() {
-            return tegoed;
+        public int getBalance() {
+            return balance;
+        }
+
+        public int getUsed() {
+            return used;
         }
     }
 }
