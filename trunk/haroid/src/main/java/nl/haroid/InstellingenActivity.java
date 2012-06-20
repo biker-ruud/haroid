@@ -37,9 +37,9 @@ public final class InstellingenActivity extends PreferenceActivity implements On
     protected void onResume() {
         super.onResume();
         //Set initial values
-        usernameText.setSummary("Gebruikersnaam is: " + getPreferenceScreen().getSharedPreferences().getString(USERNAME_PREF_KEY, "Wijzig login email adres"));
-        tegoedText.setSummary("Max tegoed is: " + getPreferenceScreen().getSharedPreferences().getString(TEGOED_PREF_KEY, "0"));
-        startdagList.setSummary("Start dag van tegoed is: " + getPreferenceScreen().getSharedPreferences().getString(STARTDAG_PREF_KEY, "0"));
+        usernameText.setSummary(getString(R.string.emailadres_setting_pretext) + " " + getPreferenceScreen().getSharedPreferences().getString(USERNAME_PREF_KEY, getString(R.string.change_emailadres_sum)));
+        tegoedText.setSummary(getString(R.string.tegoed_setting_pretext) + " " + getPreferenceScreen().getSharedPreferences().getString(TEGOED_PREF_KEY, "0"));
+        startdagList.setSummary(getString(R.string.startdag_setting_pretext) + " " + getPreferenceScreen().getSharedPreferences().getString(STARTDAG_PREF_KEY, "0"));
         //Reregister Listener due to application being resumed
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
@@ -55,11 +55,11 @@ public final class InstellingenActivity extends PreferenceActivity implements On
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         //todo (Dave) get rid of if else flow
         if (s.equals(USERNAME_PREF_KEY)){
-            usernameText.setSummary("Gebruikersnaam is: " + sharedPreferences.getString(s, ""));
+            usernameText.setSummary(getString(R.string.emailadres_setting_pretext) + " " + sharedPreferences.getString(s, ""));
         } else if (s.equals(TEGOED_PREF_KEY)){
-            tegoedText.setSummary("Max tegoed is: " + sharedPreferences.getString(s, ""));
+            tegoedText.setSummary(getString(R.string.tegoed_setting_pretext) + " " + sharedPreferences.getString(s, ""));
         } else if (s.endsWith(STARTDAG_PREF_KEY)){
-            startdagList.setSummary("Start dag van tegoed is: " + sharedPreferences.getString(s, ""));
+            startdagList.setSummary(getString(R.string.startdag_setting_pretext) + " " + sharedPreferences.getString(s, ""));
         }
     }
 }
