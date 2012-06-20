@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Haroid</string>
+    <string name="emailadres">Login email adres</string>
+    <string name="change_emailadres_sum">Wijzig login email adres</string>
+
+    <string name="wachtwoord">Wachtwoord</string>
+    <string name="change_wachtwoord_sum">Wijzig login wachtwoord</string>
+
+    <string name="dagVerbruik">Verbruikt vandaag:</string>
+    <string name="tegoed_per_maand">Tegoed</string>
+    <string name="tegoed_per_maand_sum">Wijzig tegoed per maand</string>
+
+    <string name="startdag_tegoed">Startdag</string>
+    <string name="startdag_tegoed_sum">Startdag van tegoed in maand</string>
+
+    <string name="bekijktegoed">Bekijk tegoed</string>
+    <string name="periodeTegoed">Tegoed periode:</string>
+    <string name="duurPeriode">Duur periode:</string>
+
+    <string name="instellingen">Instellingen</string>
+    <string name="accountPrefCategory">Account instellingen</string>
+    <string name="abonnementPrefCategory">Abonnement instellingen</string>
+</resources>
