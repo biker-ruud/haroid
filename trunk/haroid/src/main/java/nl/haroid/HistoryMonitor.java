@@ -85,7 +85,7 @@ public final class HistoryMonitor {
         for (int i=1; i<32; i++) {
             String verbruikKey = VERBRUIK_DAG + decimalFormat.format(i);
             int amountThisDay = this.monitorPrefs.getInt(verbruikKey, -1);
-            if (amountThisDay != -1 && amountThisDay < amount) {
+            if (amountThisDay != -1 && amountThisDay <= amount) {
                 int numberOfDays = i - currentDay;
                 int usageTheseDays = amount - amountThisDay;
                 int averageUsage = usageTheseDays / numberOfDays;
