@@ -1,11 +1,11 @@
 package nl.haroid;
 
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 
 /**
  * @author Ruud de Jong
@@ -37,7 +37,7 @@ public final class InstellingenActivity extends PreferenceActivity implements On
     protected void onResume() {
         super.onResume();
         //Set initial values
-        usernameText.setSummary(getString(R.string.emailadres_setting_pretext) + " " + getPreferenceScreen().getSharedPreferences().getString(USERNAME_PREF_KEY, getString(R.string.change_emailadres_sum)));
+        usernameText.setSummary(getPreferenceScreen().getSharedPreferences().getString(USERNAME_PREF_KEY, getString(R.string.change_emailadres_sum)));
         tegoedText.setSummary(getString(R.string.tegoed_setting_pretext) + " " + getPreferenceScreen().getSharedPreferences().getString(TEGOED_PREF_KEY, "0"));
         startdagList.setSummary(getString(R.string.startdag_setting_pretext) + " " + getPreferenceScreen().getSharedPreferences().getString(STARTDAG_PREF_KEY, "0"));
         //Reregister Listener due to application being resumed
