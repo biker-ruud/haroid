@@ -11,7 +11,7 @@ import android.preference.PreferenceActivity;
  * @author Ruud de Jong
  * @author Xilv3r
  */
-public final class InstellingenActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
+public final class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
     public static final String USERNAME_PREF_KEY = "pref_username";
     public static final String TEGOED_PREF_KEY = "pref_max_tegoed";

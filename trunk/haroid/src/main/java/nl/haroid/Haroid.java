@@ -76,7 +76,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.i(LOG_TAG, "onCreateOptionsMenu");
-        menu.add(Menu.NONE, R.id.menuInstellingen, 0, "Instellingen");
+        menu.add(Menu.NONE, R.id.menuSettings, 0, "Instellingen");
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -84,8 +84,8 @@ public final class Haroid extends Activity implements TegoedConsumer {
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.i(LOG_TAG, "onOptionsItemSelected");
         switch (item.getItemId()) {
-            case R.id.menuInstellingen:
-                startActivity(new Intent(this, InstellingenActivity.class));
+            case R.id.menuSettings:
+                startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             default:
                 Log.i(LOG_TAG, "Verkeerde optie");
@@ -115,14 +115,16 @@ public final class Haroid extends Activity implements TegoedConsumer {
     }
 
     private void startHaring() {
-        this.tegoedView.setText(this.initialTegoedViewText + " wordt opgehaald.");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String emailAdres = prefs.getString("pref_username", "");
         String wachtwoord = prefs.getString("pref_password", "");
 
-        HaringTask haringTask = new HaringTask();
-        haringTask.setTegoedConsumer(this);
-        haringTask.execute(emailAdres, wachtwoord);
+        if (emailAdres != null && emailAdres.length() > 0 && wachtwoord != null && wachtwoord.length() > 0) {
+            this.tegoedView.setText(this.initialTegoedViewText + " wordt opgehaald.");
+            HaringTask haringTask = new HaringTask();
+            haringTask.setTegoedConsumer(this);
+            haringTask.execute(emailAdres, wachtwoord);
+        }
     }
 
     private void tekenVerbruik(int maxTegoed, int maxPeriod) {

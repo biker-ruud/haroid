@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>haroid</groupId>
     <artifactId>haroid-parent</artifactId>
-    <version>1.4</version>
+    <version>1.5-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>haroid - Parent</name>
 
@@ -15,7 +15,8 @@
 
     <properties>
         <platform.version>2.2.1</platform.version>
-        <android.sdk.path>/home/ruud/android-sdk-linux</android.sdk.path>
+        <!--<android.sdk.path>/home/ruud/android-sdk-linux</android.sdk.path>-->
+        <android.sdk.path>${android_home}</android.sdk.path>
         <android.device>avd_2.2</android.device>
         <sign.keystore>src/main/jks/haroid.jks</sign.keystore>
         <sign.alias>haroid</sign.alias>
