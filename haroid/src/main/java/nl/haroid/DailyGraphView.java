@@ -56,8 +56,10 @@ public final class DailyGraphView extends GraphView{
     void drawInternal(Canvas canvas) {
         drawGraphXaxis(canvas);
         drawGraphYaxis(canvas);
-        drawAverageUsageLine(canvas);
-        drawDailyUsageBars(canvas);
+        if (this.maxGraph > 0) {
+            drawAverageUsageLine(canvas);
+            drawDailyUsageBars(canvas);
+        }
     }
 
     private Paint getWhitePaint() {
@@ -78,12 +80,14 @@ public final class DailyGraphView extends GraphView{
 
     private void drawGraphYaxis(Canvas canvas) {
         canvas.drawLine(getMinX(), getMinY(), getMinX(), getMaxY(), getWhitePaint());
-        int markerSize = this.maxGraph / 4;
-        drawVerticalMarker(markerSize, canvas);
-        drawVerticalMarker(markerSize*2, canvas);
-        drawVerticalMarker(markerSize*3, canvas);
-        if (markerSize*4 < maxGraph) {
-            drawVerticalMarker(markerSize*4, canvas);
+        if (this.maxGraph > 0) {
+            int markerSize = this.maxGraph / 4;
+            drawVerticalMarker(markerSize, canvas);
+            drawVerticalMarker(markerSize*2, canvas);
+            drawVerticalMarker(markerSize*3, canvas);
+            if (markerSize*4 < maxGraph) {
+                drawVerticalMarker(markerSize*4, canvas);
+            }
         }
     }
 
