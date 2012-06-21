@@ -14,6 +14,7 @@ public final class MonthlyGraphView extends GraphView {
     private static final String LOG_TAG = "MonthlyGraphView";
 
     private int maxUnits;
+    private int peakUnits;
     private int maxGraph;
     private int maxPeriod;
     private List<HistoryMonitor.UsagePoint> usagePointList;
@@ -32,7 +33,10 @@ public final class MonthlyGraphView extends GraphView {
 
     public void setMaxUnits(int maxUnits) {
         this.maxUnits = maxUnits;
-        this.maxGraph = calculateMaxGraph(maxUnits);
+        if (maxUnits > this.peakUnits) {
+            this.peakUnits = maxUnits;
+        }
+        this.maxGraph = calculateMaxGraph(peakUnits);
     }
 
     public void setMaxPeriod(int maxPeriod) {
@@ -41,6 +45,12 @@ public final class MonthlyGraphView extends GraphView {
 
     public void setUsage(List<HistoryMonitor.UsagePoint> usagePointList) {
         this.usagePointList = usagePointList;
+        for (HistoryMonitor.UsagePoint usagePoint : usagePointList) {
+            if (usagePoint.getBalance() > this.peakUnits) {
+                this.peakUnits = usagePoint.getBalance();
+            }
+        }
+        this.maxGraph = calculateMaxGraph(peakUnits);
     }
 
     @Override
