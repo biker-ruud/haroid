@@ -63,19 +63,6 @@ public final class HistoryMonitor {
         return -1;
     }
 
-//    public List<UsagePoint> getUsageList() {
-//        List<UsagePoint> verbruikspuntList = new ArrayList<UsagePoint>();
-//        DecimalFormat decimalFormat = new DecimalFormat("00");
-//        for (int i=1; i<32; i++) {
-//            String verbruikKey = VERBRUIK_DAG + decimalFormat.format(i);
-//            int tegoed = this.monitorPrefs.getInt(verbruikKey, -1);
-//            if (tegoed != -1) {
-//                verbruikspuntList.add(new UsagePoint(i, tegoed));
-//            }
-//        }
-//        return verbruikspuntList;
-//    }
-
     public List<UsagePoint> getUsageList() {
         int amount = Integer.parseInt(this.monitorPrefs.getString("pref_max_tegoed", "0"));
         Log.i(LOG_TAG, "max balance: " + amount);
@@ -85,19 +72,33 @@ public final class HistoryMonitor {
         for (int i=1; i<32; i++) {
             String verbruikKey = VERBRUIK_DAG + decimalFormat.format(i);
             int amountThisDay = this.monitorPrefs.getInt(verbruikKey, -1);
-            if (amountThisDay != -1 && amountThisDay <= amount) {
-                int numberOfDays = i - currentDay;
-                int usageTheseDays = amount - amountThisDay;
-                int averageUsage = usageTheseDays / numberOfDays;
-                for (int j=(currentDay+1); j<=i; j++) {
-                    int balance = -1;
-                    if (j == i) {
-                        balance = amountThisDay;
+            if (amountThisDay != -1) {
+                if (amountThisDay <= amount) {
+                    // Normal day in period
+                    int numberOfDays = i - currentDay;
+                    int usageTheseDays = amount - amountThisDay;
+                    int averageUsage = usageTheseDays / numberOfDays;
+                    for (int j=(currentDay+1); j<=i; j++) {
+                        int balance = -1;
+                        if (j == i) {
+                            balance = amountThisDay;
+                        }
+                        verbruikspuntList.add(new UsagePoint(j, balance, averageUsage));
                     }
-                    verbruikspuntList.add(new UsagePoint(j, balance, averageUsage));
+                    currentDay = i;
+                    amount = amountThisDay;
+                } else if (amountThisDay > amount) {
+                    // First day of new period with amount of previous period.
+                    for (int j=(currentDay+1); j<=i; j++) {
+                        int balance = -1;
+                        if (j == i) {
+                            balance = amountThisDay;
+                        }
+                        verbruikspuntList.add(new UsagePoint(j, balance, 0));
+                    }
+                    currentDay = i;
+                    amount = amountThisDay;
                 }
-                currentDay = i;
-                amount = amountThisDay;
             }
         }
         return Collections.unmodifiableList(verbruikspuntList);

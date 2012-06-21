@@ -122,9 +122,14 @@ public final class DailyGraphView extends GraphView{
         float leftXCoordinate = ((getMaxX() - getMinX()) * leftBar) + getMinX();
         float rightXCoordinate = ((getMaxX() - getMinX()) * rightBar) + getMinX();
 
+        int averagedBalance = this.maxUnits - ((usagePoint.getDagInPeriode() * this.maxUnits) / this.maxPeriod);
+        boolean currentBalanceLowerThanAverage = usagePoint.getBalance() < averagedBalance;
+
         Paint paint = getWhitePaint();
         paint.setStrokeWidth(0f);
-        if (((float)usagePoint.getUsed()) < this.dailyAverage) {
+        if (currentBalanceLowerThanAverage) {
+            paint.setColor(Color.RED);
+        } else if (((float)usagePoint.getUsed()) < this.dailyAverage) {
             paint.setColor(Color.GREEN);
         } else {
             paint.setColor(Color.rgb(255, 165, 0));

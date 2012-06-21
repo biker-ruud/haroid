@@ -21,12 +21,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
     private static final String CURRENT_TEGOED = "current tegoed";
 
     private HistoryMonitor historyMonitor;
-    private TextView tegoedView;
-    private TextView tijdView;
 
-    private String initialTegoedViewText;
-    private String initialDagVerbruikViewText;
-    private String tijdViewText;
     private int currentTegoed = -1;
 
     /**
@@ -76,7 +71,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.i(LOG_TAG, "onCreateOptionsMenu");
-        menu.add(Menu.NONE, R.id.menuSettings, 0, "Instellingen");
+        menu.add(Menu.NONE, R.id.menuSettings, 0, getString(R.string.settings));
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -95,13 +90,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
 
     private void initControls() {
         this.historyMonitor = new HistoryMonitor(this);
-        this.tegoedView = (TextView) findViewById(R.id.TextTegoed);
-        this.initialTegoedViewText = this.tegoedView.getText().toString();
-        TextView dagVerbruikView = (TextView) findViewById(R.id.TextDagVerbruik);
-        this.initialDagVerbruikViewText = dagVerbruikView.getText().toString();
         Button tegoedButton = (Button) findViewById(R.id.ButtonTegoed);
-        this.tijdView = (TextView) findViewById(R.id.TextTijd);
-        this.tijdViewText = this.tijdView.getText().toString();
 
         tegoedButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,7 +109,8 @@ public final class Haroid extends Activity implements TegoedConsumer {
         String wachtwoord = prefs.getString("pref_password", "");
 
         if (emailAdres != null && emailAdres.length() > 0 && wachtwoord != null && wachtwoord.length() > 0) {
-            this.tegoedView.setText(this.initialTegoedViewText + " wordt opgehaald.");
+            TextView tegoedView = (TextView) findViewById(R.id.TextTegoed);
+            tegoedView.setText(getString(R.string.periodeTegoed) + " wordt opgehaald.");
             HaringTask haringTask = new HaringTask();
             haringTask.setTegoedConsumer(this);
             haringTask.execute(emailAdres, wachtwoord);
@@ -172,12 +162,13 @@ public final class Haroid extends Activity implements TegoedConsumer {
         Log.i(LOG_TAG, "maxPeriod: " + maxPeriod);
         duurTegoedProgress.setMax(maxPeriod);
         duurTegoedProgress.setProgress(nogTeGaan);
+        TextView tijdView = (TextView) findViewById(R.id.TextTijd);
         if (nogTeGaan == 1) {
-            this.tijdView.setText(this.tijdViewText + " nog " + nogTeGaan + " dag te gaan.");
+            tijdView.setText(getString(R.string.duurPeriode) + " nog " + nogTeGaan + " dag te gaan.");
         } else if (nogTeGaan < 1) {
-            this.tijdView.setText(this.tijdViewText + " laatste dag.");
+            tijdView.setText(getString(R.string.duurPeriode) + " laatste dag.");
         } else {
-            this.tijdView.setText(this.tijdViewText + " nog " + nogTeGaan + " dagen te gaan.");
+            tijdView.setText(getString(R.string.duurPeriode) + " nog " + nogTeGaan + " dagen te gaan.");
         }
         return maxPeriod;
     }
@@ -212,7 +203,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int maxTegoed = Integer.parseInt(prefs.getString("pref_max_tegoed", "0"));
         int startTegoed = Integer.parseInt(prefs.getString("pref_start_tegoed", "0"));
-        if (tegoed >= 0 && tegoed < maxTegoed && maxTegoed > 0) {
+        if (tegoed >= 0 && maxTegoed > 0) {
             int dagInPeriode = Utils.bepaaldDagInPeriode(startTegoed);
             Log.i(LOG_TAG, "dagInPeriode: " + dagInPeriode);
             this.historyMonitor.setTegoed(dagInPeriode, tegoed);
@@ -233,9 +224,10 @@ public final class Haroid extends Activity implements TegoedConsumer {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int startTegoed = Integer.parseInt(prefs.getString("pref_start_tegoed", "0"));
         int maxTegoed = Integer.parseInt(prefs.getString("pref_max_tegoed", "0"));
-        if (tegoed >= 0 && tegoed < maxTegoed && maxTegoed > 0) {
-            this.tegoedView.setText(this.initialTegoedViewText + " " + tegoed + " eenheden.");
-            tegoedProgress.setMax(maxTegoed);
+        if (tegoed >= 0 && maxTegoed > 0) {
+            TextView tegoedView = (TextView) findViewById(R.id.TextTegoed);
+            tegoedView.setText(getString(R.string.periodeTegoed) + " " + tegoed + " eenheden.");
+            tegoedProgress.setMax(Math.max(tegoed, maxTegoed));
             tegoedProgress.setProgress(tegoed);
         }
         int tegoedGisteren = this.historyMonitor.getTegoedGisteren(maxTegoed);
@@ -244,7 +236,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
             int maxPeriod = berekenMaxPeriod(startTegoed);
             int procentueelVerbruik = (100 * verbruikVandaag * maxPeriod) / maxTegoed;
             TextView dagVerbruikView = (TextView) findViewById(R.id.TextDagVerbruik);
-            dagVerbruikView.setText(this.initialDagVerbruikViewText + " " + verbruikVandaag + " eenheden. (" + procentueelVerbruik + "% van de dag)");
+            dagVerbruikView.setText(getString(R.string.dagVerbruik) + " " + verbruikVandaag + " eenheden. (" + procentueelVerbruik + "% van de dag)");
             dagVerbruikView.setVisibility(View.VISIBLE);
         }
     }
