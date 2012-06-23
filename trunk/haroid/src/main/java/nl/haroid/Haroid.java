@@ -1,6 +1,8 @@
 package nl.haroid;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 public final class Haroid extends Activity implements TegoedConsumer {
@@ -91,11 +94,19 @@ public final class Haroid extends Activity implements TegoedConsumer {
     private void initControls() {
         this.historyMonitor = new HistoryMonitor(this);
         Button tegoedButton = (Button) findViewById(R.id.ButtonTegoed);
+        Button removeHistoryButton = (Button) findViewById(R.id.ButtonRemoveHistory);
 
         tegoedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startHaring();
+            }
+        });
+
+        removeHistoryButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                confirmRemoveHistory();
             }
         });
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -220,13 +231,13 @@ public final class Haroid extends Activity implements TegoedConsumer {
 
     private void setTegoedProgress(int tegoed) {
         Log.i(LOG_TAG, "setTegoedProgress: " + tegoed);
-        ProgressBar tegoedProgress = (ProgressBar) findViewById(R.id.PbarTegoed);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int startTegoed = Integer.parseInt(prefs.getString("pref_start_tegoed", "0"));
         int maxTegoed = Integer.parseInt(prefs.getString("pref_max_tegoed", "0"));
         if (tegoed >= 0 && maxTegoed > 0) {
             TextView tegoedView = (TextView) findViewById(R.id.TextTegoed);
             tegoedView.setText(getString(R.string.periodeTegoed) + " " + tegoed + " eenheden.");
+            ProgressBar tegoedProgress = (ProgressBar) findViewById(R.id.PbarTegoed);
             tegoedProgress.setMax(Math.max(tegoed, maxTegoed));
             tegoedProgress.setProgress(tegoed);
         }
@@ -239,6 +250,42 @@ public final class Haroid extends Activity implements TegoedConsumer {
             dagVerbruikView.setText(getString(R.string.dagVerbruik) + " " + verbruikVandaag + " eenheden. (" + procentueelVerbruik + "% van de dag)");
             dagVerbruikView.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void confirmRemoveHistory() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getString(R.string.areYouSure))
+                .setCancelable(true)
+                .setPositiveButton(getString(R.string.yesButtonText), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        removeHistory();
+                    }
+                })
+                .setNegativeButton(getString(R.string.noButtonText), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void removeHistory() {
+        this.historyMonitor.resetHistory();
+        this.currentTegoed = 0;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        int maxTegoed = Integer.parseInt(prefs.getString("pref_max_tegoed", "0"));
+        TextView tegoedView = (TextView) findViewById(R.id.TextTegoed);
+        tegoedView.setText(getString(R.string.periodeTegoed));
+        ProgressBar tegoedProgress = (ProgressBar) findViewById(R.id.PbarTegoed);
+        tegoedProgress.setMax(maxTegoed);
+        tegoedProgress.setProgress(0);
+        MonthlyGraphView verbruikGraph = (MonthlyGraphView) findViewById(R.id.MonthlyGraphVerbruik);
+        verbruikGraph.setUsage(Collections.<HistoryMonitor.UsagePoint>emptyList());
+        verbruikGraph.invalidate();
+        DailyGraphView dagelijksVerbruikGraph = (DailyGraphView) findViewById(R.id.DailyGraphVerbruik);
+        dagelijksVerbruikGraph.setUsage(Collections.<HistoryMonitor.UsagePoint>emptyList());
+        dagelijksVerbruikGraph.invalidate();
     }
 }
 

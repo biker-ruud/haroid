@@ -104,16 +104,23 @@ public final class HistoryMonitor {
         return Collections.unmodifiableList(verbruikspuntList);
     }
 
-    private void resetGeschiedenis(int periodeNummer) {
-        Log.i(LOG_TAG, "resetGeschiedenis() voor periode: " + periodeNummer);
+    public void resetHistory() {
+        Log.i(LOG_TAG, "resetHistory().");
         SharedPreferences.Editor prefEditor = this.monitorPrefs.edit();
-        prefEditor.putInt(PERIODE_NUMMER, periodeNummer);
         DecimalFormat decimalFormat = new DecimalFormat("00");
         for (int i=1; i<32; i++) {
             String verbruikKey = VERBRUIK_DAG + decimalFormat.format(i);
             prefEditor.putInt(verbruikKey, -1);
         }
         prefEditor.commit();
+    }
+
+    private void resetGeschiedenis(int periodeNummer) {
+        Log.i(LOG_TAG, "resetGeschiedenis() voor periode: " + periodeNummer);
+        SharedPreferences.Editor prefEditor = this.monitorPrefs.edit();
+        prefEditor.putInt(PERIODE_NUMMER, periodeNummer);
+        prefEditor.commit();
+        resetHistory();
     }
 
     class UsagePoint {
