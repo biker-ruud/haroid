@@ -25,8 +25,16 @@
     <string name="startdag_tegoed_sum">Startdag van tegoed in maand</string>
 
     <!-- Main screen -->
-    <string name="dagVerbruik">Verbruikt vandaag:</string>
+    <!-- Main screen buttons -->
     <string name="bekijktegoed">Bekijk tegoed</string>
+    <string name="removeHistory">Wis geschiedenis</string>
+    <!-- Main screen textviews -->
+    <string name="dagVerbruik">Verbruikt vandaag:</string>
     <string name="periodeTegoed">Tegoed periode:</string>
     <string name="duurPeriode">Duur periode:</string>
+
+    <!-- Remove history confirmation dialog-->
+    <string name="areYouSure">Weet u zeker dat u alle geschiedenis wilt verwijderen?</string>
+    <string name="yesButtonText">Ja</string>
+    <string name="noButtonText">Nee</string>
 </resources>
