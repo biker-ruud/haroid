@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/settings">
+    <PreferenceCategory
+            android:title="@string/accountPrefCategory">
+        <EditTextPreference
+                android:summary="@string/change_emailadres_sum"
+                android:title="@string/emailadres"
+                android:key="pref_username"/>
+        <EditTextPreference
+                android:summary="@string/change_wachtwoord_sum"
+                android:title="@string/wachtwoord"
+                android:key="pref_password"
+                android:password="true"/>
+    </PreferenceCategory>
+    <PreferenceCategory
+            android:title="@string/abonnementPrefCategory">
+        <EditTextPreference
+                android:summary="@string/tegoed_per_maand_sum"
+                android:title="@string/tegoed_per_maand"
+                android:key="pref_max_tegoed"
+                android:numeric="integer"/>
+        <ListPreference
+                android:summary="@string/startdag_tegoed_sum"
+                android:title="@string/startdag_tegoed"
+                android:key="pref_start_tegoed"
+                android:numeric="integer"
+                android:entries="@array/pref_day_of_month_entries"
+                android:entryValues="@array/pref_day_of_month_values"/>
+    </PreferenceCategory>
+</PreferenceScreen>
