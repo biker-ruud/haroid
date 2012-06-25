@@ -26,6 +26,7 @@ public final class HaringTask extends AsyncTask<String, Void, String> {
             this.tegoedConsumer.setTegoed(tegoed);
         } catch (NumberFormatException e) {
             // Geen getal
+            this.tegoedConsumer.setProblem(tegoedString);
         }
     }
 }

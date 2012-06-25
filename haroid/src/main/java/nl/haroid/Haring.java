@@ -13,12 +13,15 @@ import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -51,6 +54,9 @@ public final class Haring {
                 Log.i(LOG_TAG, "Gevonden tegoed: " + tegoed);
                 return tegoed;
             }
+        } catch (SocketTimeoutException e) {
+            Log.w(LOG_TAG, "Website reageerde niet op tijd.");
+            return "Website reageerde niet op tijd.";
         } catch (IOException e) {
             Log.e(LOG_TAG, "Kaput", e);
         } catch (URISyntaxException e) {
@@ -69,15 +75,12 @@ public final class Haring {
         Log.d(LOG_TAG, "**********************************");
         HttpGet verbruikGet = new HttpGet(relativeUrlVerbruik);
         HttpResponse response = haringClient.execute(verbruikGet, localContext);
-//        logResponseStatus(response);
-//        logCookieStore(localContext);
         HttpEntity responseEntity = response.getEntity();
         if (responseEntity == null) {
             return null;
         }
         InputStream inputStream = responseEntity.getContent();
         String body = Utils.toString(inputStream);
-        //LOG.info(body);
         String tegoedBedrag = Utils.substringBetween(body, "<span class=\"usage\"><span class=\"amount\">", "</span>");
         String[] strongList = Utils.substringsBetween(body, "<strong>", "</strong>");
         String tegoed = null;
@@ -100,8 +103,6 @@ public final class Haring {
         Log.d(LOG_TAG, "**********************************");
         HttpGet getLogin = new HttpGet(relativeUrlStart);
         HttpResponse response = haringClient.execute(getLogin, localContext);
-//        logResponseStatus(response);
-//        logCookieStore(localContext);
 
         HttpEntity entity = response.getEntity();
         if (entity == null) {
@@ -121,14 +122,6 @@ public final class Haring {
         Log.i(LOG_TAG, "Form:");
         Log.i(LOG_TAG, "Form action: " + form.action);
         Log.i(LOG_TAG, "Form inputs: " + form.inputList.size());
-//        for (InputType type : InputType.values()) {
-//            Log.i(LOG_TAG, "Form " + type.toString() + " inputs:");
-//            for (Input input : form.inputList) {
-//                if (input.getType() == type) {
-//                    Log.i(LOG_TAG, " - " + input.getName() + " = " + input.getValue());
-//                }
-//            }
-//        }
         Input loginInput = getLoginInput(form);
         Input passwordInput = getPasswordInput(form);
         if (loginInput != null && passwordInput != null) {
@@ -186,14 +179,7 @@ public final class Haring {
         }
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, "UTF-8");
         post.setEntity(entity);
-        HttpResponse response = haringClient.execute(post, localContext);
-//        logResponseStatus(response);
-//        logCookieStore(localContext);
-//        HttpEntity responseEntity = response.getEntity();
-//        if (responseEntity != null) {
-//            InputStream inputStream = responseEntity.getContent();
-//            String body = Utils.toString(inputStream);
-//        }
+        haringClient.execute(post, localContext);
     }
 
     private Form parseForm(String body) {
@@ -236,28 +222,6 @@ public final class Haring {
         return inputs;
     }
 
-//    private void logResponseStatus(HttpResponse response) {
-//        Log.i(LOG_TAG, "Status code: " + response.getStatusLine().getStatusCode());
-//        Header[] headers = response.getAllHeaders();
-//        if (headers != null) {
-//            Log.i(LOG_TAG, "Headers:");
-//            for (Header header : headers) {
-//                Log.i(LOG_TAG, " - " + header.getName() + " = " + header.getValue());
-//            }
-//        }
-//    }
-//
-//    private void logCookieStore(HttpContext haringContext) {
-//        CookieStore cookieStore = (CookieStore) haringContext.getAttribute(ClientContext.COOKIE_STORE);
-//        List<Cookie> cookieList = cookieStore.getCookies();
-//        if (cookieList != null && cookieList.size() > 0) {
-//            Log.i(LOG_TAG, "Cookies:");
-//            for (Cookie cookie : cookieList) {
-//                Log.i(LOG_TAG, " - " + cookie.getName() + " = " + cookie.getValue());
-//            }
-//        }
-//    }
-
     private AndroidHttpClient getHaringClient() {
         String userAgent = "Mozilla/5.0(Linux; U; Android 2.2; en-gb)";
         AndroidHttpClient haringClient = AndroidHttpClient.newInstance(userAgent);
@@ -266,6 +230,8 @@ public final class Haring {
         // Setup redirects
         haringClient.getParams().setParameter(ClientPNames.DEFAULT_HOST, new HttpHost(host, port, schemeName));
         haringClient.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, Boolean.TRUE);
+//        haringClient.getParams().setIntParameter("http.socket.timeout", 5);
+//        haringClient.getParams().setIntParameter("http.connection.timeout=20000", 5);
 
         return haringClient;
     }
