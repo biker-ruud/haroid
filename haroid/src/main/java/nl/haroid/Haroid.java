@@ -19,6 +19,9 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * @author Ruud de Jong
+ */
 public final class Haroid extends Activity implements TegoedConsumer {
     private static final String LOG_TAG = "Haroid";
     private static final String CURRENT_TEGOED = "current tegoed";
@@ -39,6 +42,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
         super.onCreate(savedInstanceState);
 
         Log.i(LOG_TAG, "onCreate");
+        HaroidApp.setPreferences(PreferenceManager.getDefaultSharedPreferences(this));
 
         setContentView(R.layout.main);
         initControls();
@@ -63,9 +67,8 @@ public final class Haroid extends Activity implements TegoedConsumer {
     public void onResume() {
         super.onResume();
         Log.i(LOG_TAG, "onResume");
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int maxTegoed = Integer.parseInt(prefs.getString("pref_max_tegoed", "0"));
-        int startTegoed = Integer.parseInt(prefs.getString("pref_start_tegoed", "0"));
+        int maxTegoed = HaroidApp.getMaxTegoed();
+        int startTegoed = HaroidApp.getStartTegoed();
         bepaalGeschiedenis(startTegoed);
         int maxPeriod = berekenDuurTegoed(startTegoed);
         tekenVerbruik(maxTegoed, maxPeriod);
@@ -109,15 +112,13 @@ public final class Haroid extends Activity implements TegoedConsumer {
                 confirmRemoveHistory();
             }
         });
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int startTegoed = Integer.parseInt(prefs.getString("pref_start_tegoed", "0"));
+        int startTegoed = HaroidApp.getStartTegoed();
         berekenDuurTegoed(startTegoed);
     }
 
     private void startHaring() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String emailAdres = prefs.getString("pref_username", "");
-        String wachtwoord = prefs.getString("pref_password", "");
+        String emailAdres = HaroidApp.getEmailAdres();
+        String wachtwoord = HaroidApp.getPassword();
 
         if (emailAdres != null && emailAdres.length() > 0 && wachtwoord != null && wachtwoord.length() > 0) {
             TextView tegoedView = (TextView) findViewById(R.id.TextTegoed);
@@ -211,9 +212,8 @@ public final class Haroid extends Activity implements TegoedConsumer {
     @Override
     public void setTegoed(int tegoed) {
         this.currentTegoed = tegoed;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int maxTegoed = Integer.parseInt(prefs.getString("pref_max_tegoed", "0"));
-        int startTegoed = Integer.parseInt(prefs.getString("pref_start_tegoed", "0"));
+        int maxTegoed = HaroidApp.getMaxTegoed();
+        int startTegoed = HaroidApp.getStartTegoed();
         if (tegoed >= 0 && maxTegoed > 0) {
             int dagInPeriode = Utils.bepaaldDagInPeriode(startTegoed);
             Log.i(LOG_TAG, "dagInPeriode: " + dagInPeriode);
@@ -237,9 +237,8 @@ public final class Haroid extends Activity implements TegoedConsumer {
 
     private void setTegoedProgress(int tegoed) {
         Log.i(LOG_TAG, "setTegoedProgress: " + tegoed);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int startTegoed = Integer.parseInt(prefs.getString("pref_start_tegoed", "0"));
-        int maxTegoed = Integer.parseInt(prefs.getString("pref_max_tegoed", "0"));
+        int startTegoed = HaroidApp.getStartTegoed();
+        int maxTegoed = HaroidApp.getMaxTegoed();
         if (tegoed >= 0 && maxTegoed > 0) {
             TextView tegoedView = (TextView) findViewById(R.id.TextTegoed);
             tegoedView.setText(getString(R.string.periodeTegoed) + " " + tegoed + " eenheden.");
@@ -279,8 +278,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
     private void removeHistory() {
         this.historyMonitor.resetHistory();
         this.currentTegoed = 0;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int maxTegoed = Integer.parseInt(prefs.getString("pref_max_tegoed", "0"));
+        int maxTegoed = HaroidApp.getMaxTegoed();
         TextView tegoedView = (TextView) findViewById(R.id.TextTegoed);
         tegoedView.setText(getString(R.string.periodeTegoed));
         ProgressBar tegoedProgress = (ProgressBar) findViewById(R.id.PbarTegoed);

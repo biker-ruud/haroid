@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="5" android:versionName="1.5" package="nl.haroid">
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="10"/>
     <uses-permission android:name="android.permission.INTERNET"/>
-    <application android:icon="@drawable/icon" android:label="@string/app_name">
+    <application android:icon="@drawable/icon" android:label="@string/app_name" android:name="nl.haroid.HaroidApp">
         <activity android:label="@string/app_name" android:name=".Haroid">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

@@ -15,10 +15,6 @@ import java.util.Map;
  */
 public final class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
-    public static final String USERNAME_PREF_KEY = "pref_username";
-    public static final String TEGOED_PREF_KEY = "pref_max_tegoed";
-    public static final String STARTDAG_PREF_KEY = "pref_start_tegoed";
-
     private Map<String, String> pretextMap = new HashMap<String, String>();
 
     @Override
@@ -31,9 +27,9 @@ public final class SettingsActivity extends PreferenceActivity implements OnShar
     protected void onResume() {
         super.onResume();
         //Load map
-        pretextMap.put(USERNAME_PREF_KEY, getString(R.string.emailadres_setting_pretext));
-        pretextMap.put(TEGOED_PREF_KEY, getString(R.string.tegoed_setting_pretext));
-        pretextMap.put(STARTDAG_PREF_KEY, getString(R.string.startdag_setting_pretext));
+        pretextMap.put(HaroidApp.PREF_KEY_USERNAME, getString(R.string.emailadres_setting_pretext));
+        pretextMap.put(HaroidApp.PREF_KEY_MAX_TEGOED, getString(R.string.tegoed_setting_pretext));
+        pretextMap.put(HaroidApp.PREF_KEY_START_TEGOED, getString(R.string.startdag_setting_pretext));
 
         //Iterate over all preferance objects and set initial values
         for (Map.Entry<String, String> entry : pretextMap.entrySet()){
@@ -58,7 +54,10 @@ public final class SettingsActivity extends PreferenceActivity implements OnShar
 
     private void changePreferanceSummary(String s, SharedPreferences sharedPreferences) {
         Preference preference = getPreferenceScreen().findPreference(s);
-        preference.setSummary(pretextMap.get(s) + " " + sharedPreferences.getString(s, ""));
+        String preText = pretextMap.get(s);
+        if (preText != null) {
+            preference.setSummary(pretextMap.get(s) + " " + sharedPreferences.getString(s, ""));
+        }
     }
 
 }
