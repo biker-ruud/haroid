@@ -229,6 +229,12 @@ public final class Haroid extends Activity implements TegoedConsumer {
         }
     }
 
+    @Override
+    public void setProblem(String problem) {
+        TextView tegoedView = (TextView) findViewById(R.id.TextTegoed);
+        tegoedView.setText(problem);
+    }
+
     private void setTegoedProgress(int tegoed) {
         Log.i(LOG_TAG, "setTegoedProgress: " + tegoed);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
