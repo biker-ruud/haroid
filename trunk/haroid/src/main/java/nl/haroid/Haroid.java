@@ -64,7 +64,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
     public void onResume() {
         super.onResume();
         Log.i(LOG_TAG, "onResume");
-        HaroidApp.Stats stats = this.app.recalculateWithHistory();
+        HaroidApp.Stats stats = this.app.recalculate();
         setProgressBars(stats);
         tekenVerbruik(stats.maxBalance, stats.maxPeriod, this.app.getUsageList());
     }
@@ -100,14 +100,12 @@ public final class Haroid extends Activity implements TegoedConsumer {
             }
         });
 
-        removeHistoryButton.setOnClickListener(new View.OnClickListener(){
+        removeHistoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 confirmRemoveHistory();
             }
         });
-        HaroidApp.Stats stats = this.app.recalculate();
-        setProgressBars(stats);
     }
 
     private void startHaring() {

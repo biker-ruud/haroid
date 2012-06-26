@@ -66,14 +66,6 @@ public final class HaroidApp extends Application {
         Stats stats = new Stats();
         stats.maxBalance = Integer.parseInt(sharedPreferences.getString(PREF_KEY_MAX_TEGOED, "0"));
         stats.startBalance = Integer.parseInt(sharedPreferences.getString(PREF_KEY_START_TEGOED, "0"));
-        berekenDuurTegoed(stats);
-        return stats;
-    }
-
-    public Stats recalculateWithHistory() {
-        Stats stats = new Stats();
-        stats.maxBalance = Integer.parseInt(sharedPreferences.getString(PREF_KEY_MAX_TEGOED, "0"));
-        stats.startBalance = Integer.parseInt(sharedPreferences.getString(PREF_KEY_START_TEGOED, "0"));
         bepaalGeschiedenis(stats.startBalance);
         berekenDuurTegoed(stats);
         return stats;
