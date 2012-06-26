@@ -4,7 +4,6 @@
     <PreferenceCategory
             android:title="@string/accountPrefCategory">
         <EditTextPreference
-                android:summary="@string/change_emailadres_sum"
                 android:title="@string/emailadres"
                 android:key="pref_username"/>
         <EditTextPreference
@@ -16,16 +15,41 @@
     <PreferenceCategory
             android:title="@string/abonnementPrefCategory">
         <EditTextPreference
-                android:summary="@string/tegoed_per_maand_sum"
                 android:title="@string/tegoed_per_maand"
                 android:key="pref_max_tegoed"
                 android:numeric="integer"/>
         <ListPreference
-                android:summary="@string/startdag_tegoed_sum"
                 android:title="@string/startdag_tegoed"
                 android:key="pref_start_tegoed"
                 android:numeric="integer"
                 android:entries="@array/pref_day_of_month_entries"
                 android:entryValues="@array/pref_day_of_month_values"/>
+    </PreferenceCategory>
+    <PreferenceCategory
+            android:title="@string/backgroundPrefCategory">
+        <CheckBoxPreference
+                android:title="@string/auto_update"
+                android:key="pref_enable_auto_update"/>
+        <ListPreference
+                android:title="@string/update_channel"
+                android:key="pref_update_channel"
+                android:entries="@array/pref_update_channel_entries"
+                android:entryValues="@array/pref_update_channel_values"
+                android:defaultValue="wifi"
+                android:enabled="false"/>
+        <ListPreference
+                android:title="@string/wifi_update_interval"
+                android:key="pref_wifi_update_interval"
+                android:entries="@array/pref_update_interval_entries"
+                android:entryValues="@array/pref_update_interval_values"
+                android:defaultValue="3"
+                android:enabled="false"/>
+        <ListPreference
+                android:title="@string/mobile_update_interval"
+                android:key="pref_mobile_update_interval"
+                android:entries="@array/pref_update_interval_entries"
+                android:entryValues="@array/pref_update_interval_values"
+                android:defaultValue="24"
+                android:enabled="false"/>
     </PreferenceCategory>
 </PreferenceScreen>
