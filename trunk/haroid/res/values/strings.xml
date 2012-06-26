@@ -5,24 +5,33 @@
 
     <!-- Settings screen -->
     <string name="settings">Instellingen</string>
+    <!-- Account Settings -->
     <string name="accountPrefCategory">Account instellingen</string>
-    <string name="abonnementPrefCategory">Abonnement instellingen</string>
-
-    <string name="emailadres_setting_pretext">Emailadres is: </string>
-    <string name="tegoed_setting_pretext">Max tegoed is: </string>
-    <string name="startdag_setting_pretext">Start dag van tegoed is: </string>
 
     <string name="emailadres">Login email adres</string>
-    <string name="change_emailadres_sum">Wijzig login email adres</string>
+    <string name="emailadres_setting_pretext">Emailadres is: </string>
 
     <string name="wachtwoord">Wachtwoord</string>
     <string name="change_wachtwoord_sum">Wijzig login wachtwoord</string>
+    <!-- Contract Settings -->
+    <string name="abonnementPrefCategory">Abonnement instellingen</string>
+
+    <string name="tegoed_setting_pretext">Max tegoed is: </string>
+    <string name="startdag_setting_pretext">Start dag van tegoed is: </string>
 
     <string name="tegoed_per_maand">Tegoed</string>
-    <string name="tegoed_per_maand_sum">Wijzig tegoed per maand</string>
-
     <string name="startdag_tegoed">Startdag</string>
-    <string name="startdag_tegoed_sum">Startdag van tegoed in maand</string>
+
+    <!-- Background settings -->
+    <string name="backgroundPrefCategory">Achtergrond instellingen</string>
+
+    <string name="auto_update">Tegoed automatisch bijwerken</string>
+    <string name="update_channel">Bijwerken via</string>
+    <string name="update_channel_pretext">Bijwerken via: </string>
+    <string name="wifi_update_interval">Wifi update interval</string>
+    <string name="mobile_update_interval">Mobiel update interval</string>
+    <string name="update_interval_pretext">Interval: </string>
+    <string name="update_interval_posttext"> uur</string>
 
     <!-- Main screen -->
     <!-- Main screen buttons -->

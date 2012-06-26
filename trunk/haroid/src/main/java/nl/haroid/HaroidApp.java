@@ -16,6 +16,10 @@ public final class HaroidApp extends Application {
     public static final String PREF_KEY_START_TEGOED = "pref_start_tegoed";
     public static final String PREF_KEY_USERNAME = "pref_username";
     public static final String PREF_KEY_PASSWORD = "pref_password";
+    public static final String PREF_KEY_ENABLE_AUTO_UPDATE = "pref_enable_auto_update";
+    public static final String PREF_KEY_UPDATE_CHANNEL = "pref_update_channel";
+    public static final String PREF_KEY_WIFI_UPDATE_INTERVAL = "pref_wifi_update_interval";
+    public static final String PREF_KEY_MOBILE_UPDATE_INTERVAL = "pref_mobile_update_interval";
 
     private static final String LOG_TAG = "HaroidApp";
     private static final String SHARED_PREFERENCE_NAME = "nl.haroid_preferences";
