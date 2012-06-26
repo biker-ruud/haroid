@@ -20,8 +20,8 @@ public final class HistoryMonitor {
     private static final String VERBRUIK_DAG = "pref_verbruik_dag";
     private SharedPreferences monitorPrefs;
 
-    public HistoryMonitor(Context context) {
-        this.monitorPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public HistoryMonitor(SharedPreferences monitorPrefs) {
+        this.monitorPrefs = monitorPrefs;
     }
 
     public void setPeriodeNummer(int periodeNummer) {

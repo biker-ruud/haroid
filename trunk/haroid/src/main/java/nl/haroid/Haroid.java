@@ -4,9 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,9 +24,8 @@ public final class Haroid extends Activity implements TegoedConsumer {
     private static final String LOG_TAG = "Haroid";
     private static final String CURRENT_TEGOED = "current tegoed";
 
-    private HistoryMonitor historyMonitor;
-
     private int currentTegoed = -1;
+    private HaroidApp app;
 
     /**
      * Called when the activity is first created.
@@ -42,7 +39,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
         super.onCreate(savedInstanceState);
 
         Log.i(LOG_TAG, "onCreate");
-        HaroidApp.setPreferences(PreferenceManager.getDefaultSharedPreferences(this));
+        this.app = HaroidApp.getInstance();
 
         setContentView(R.layout.main);
         initControls();
@@ -67,11 +64,9 @@ public final class Haroid extends Activity implements TegoedConsumer {
     public void onResume() {
         super.onResume();
         Log.i(LOG_TAG, "onResume");
-        int maxTegoed = HaroidApp.getMaxTegoed();
-        int startTegoed = HaroidApp.getStartTegoed();
-        bepaalGeschiedenis(startTegoed);
-        int maxPeriod = berekenDuurTegoed(startTegoed);
-        tekenVerbruik(maxTegoed, maxPeriod);
+        HaroidApp.Stats stats = this.app.recalculateWithHistory();
+        setProgressBars(stats);
+        tekenVerbruik(stats.maxBalance, stats.maxPeriod, this.app.getUsageList());
     }
 
     @Override
@@ -95,7 +90,6 @@ public final class Haroid extends Activity implements TegoedConsumer {
     }
 
     private void initControls() {
-        this.historyMonitor = new HistoryMonitor(this);
         Button tegoedButton = (Button) findViewById(R.id.ButtonTegoed);
         Button removeHistoryButton = (Button) findViewById(R.id.ButtonRemoveHistory);
 
@@ -112,8 +106,8 @@ public final class Haroid extends Activity implements TegoedConsumer {
                 confirmRemoveHistory();
             }
         });
-        int startTegoed = HaroidApp.getStartTegoed();
-        berekenDuurTegoed(startTegoed);
+        HaroidApp.Stats stats = this.app.recalculate();
+        setProgressBars(stats);
     }
 
     private void startHaring() {
@@ -129,10 +123,9 @@ public final class Haroid extends Activity implements TegoedConsumer {
         }
     }
 
-    private void tekenVerbruik(int maxTegoed, int maxPeriod) {
+    private void tekenVerbruik(int maxTegoed, int maxPeriod, List<HistoryMonitor.UsagePoint> usageList) {
         Log.i(LOG_TAG, "tekenVerbruik");
         if (maxTegoed > 0 && maxPeriod > 0) {
-            List<HistoryMonitor.UsagePoint> usageList = this.historyMonitor.getUsageList();
             MonthlyGraphView verbruikGraph = (MonthlyGraphView) findViewById(R.id.MonthlyGraphVerbruik);
             verbruikGraph.setMaxPeriod(maxPeriod);
             verbruikGraph.setMaxUnits(maxTegoed);
@@ -146,43 +139,24 @@ public final class Haroid extends Activity implements TegoedConsumer {
         }
     }
 
-    private int berekenDuurTegoed(int startTegoed) {
+    private void setProgressBars(HaroidApp.Stats stats) {
         Log.i(LOG_TAG, "berekenDuurTegoed");
         ProgressBar duurTegoedProgress = (ProgressBar) findViewById(R.id.PbarTijd);
-        if (startTegoed == 0) {
+        if (stats.startBalance == 0) {
             // Niet ingesteld.
             duurTegoedProgress.setProgress(0);
-            return 0;
+            return;
         }
-        int maxPeriod = berekenMaxPeriod(startTegoed);
-        Calendar cal = Calendar.getInstance();
-        int huidigeDagVdMaand = cal.get(Calendar.DAY_OF_MONTH);
-        int verbruik = 0;
-        if (huidigeDagVdMaand < startTegoed) {
-            // Tegoed begonnen in vorige maand
-            Log.i(LOG_TAG, "Tegoed begonnen in vorige maand");
-            verbruik = (maxPeriod - startTegoed) + 1;
-            verbruik += huidigeDagVdMaand;
-        } else {
-            // Tegoed begonnen in deze maand.
-            Log.i(LOG_TAG, "Tegoed begonnen in deze maand");
-            verbruik = (huidigeDagVdMaand - startTegoed) + 1;
-        }
-        int nogTeGaan = maxPeriod - verbruik;
-        int currentPeriod = verbruik;
-        Log.i(LOG_TAG, "currentPeriod: " + currentPeriod);
-        Log.i(LOG_TAG, "maxPeriod: " + maxPeriod);
-        duurTegoedProgress.setMax(maxPeriod);
-        duurTegoedProgress.setProgress(nogTeGaan);
+        duurTegoedProgress.setMax(stats.maxPeriod);
+        duurTegoedProgress.setProgress(stats.daysToGoInPeriod);
         TextView tijdView = (TextView) findViewById(R.id.TextTijd);
-        if (nogTeGaan == 1) {
-            tijdView.setText(getString(R.string.duurPeriode) + " nog " + nogTeGaan + " dag te gaan.");
-        } else if (nogTeGaan < 1) {
+        if (stats.daysToGoInPeriod == 1) {
+            tijdView.setText(getString(R.string.duurPeriode) + " nog " + stats.daysToGoInPeriod + " dag te gaan.");
+        } else if (stats.daysToGoInPeriod < 1) {
             tijdView.setText(getString(R.string.duurPeriode) + " laatste dag.");
         } else {
-            tijdView.setText(getString(R.string.duurPeriode) + " nog " + nogTeGaan + " dagen te gaan.");
+            tijdView.setText(getString(R.string.duurPeriode) + " nog " + stats.daysToGoInPeriod + " dagen te gaan.");
         }
-        return maxPeriod;
     }
 
     private int berekenMaxPeriod(int startTegoed) {
@@ -199,27 +173,14 @@ public final class Haroid extends Activity implements TegoedConsumer {
         }
     }
 
-    private void bepaalGeschiedenis(int startTegoed) {
-        if (startTegoed == 0) {
-            // Niet ingesteld
-            return;
-        }
-        int periodeNummer = Utils.bepaalPeriodeNummer(startTegoed);
-        Log.i(LOG_TAG, "periodeNummer: " + periodeNummer);
-        this.historyMonitor.setPeriodeNummer(periodeNummer);
-    }
-
     @Override
     public void setTegoed(int tegoed) {
+        this.app.setCurrentBalance(tegoed);
         this.currentTegoed = tegoed;
         int maxTegoed = HaroidApp.getMaxTegoed();
-        int startTegoed = HaroidApp.getStartTegoed();
         if (tegoed >= 0 && maxTegoed > 0) {
-            int dagInPeriode = Utils.bepaaldDagInPeriode(startTegoed);
-            Log.i(LOG_TAG, "dagInPeriode: " + dagInPeriode);
-            this.historyMonitor.setTegoed(dagInPeriode, tegoed);
             setTegoedProgress(tegoed);
-            List<HistoryMonitor.UsagePoint> usageList = this.historyMonitor.getUsageList();
+            List<HistoryMonitor.UsagePoint> usageList = this.app.getUsageList();
             MonthlyGraphView verbruikGraph = (MonthlyGraphView) findViewById(R.id.MonthlyGraphVerbruik);
             verbruikGraph.setUsage(usageList);
             verbruikGraph.invalidate();
@@ -246,7 +207,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
             tegoedProgress.setMax(Math.max(tegoed, maxTegoed));
             tegoedProgress.setProgress(tegoed);
         }
-        int tegoedGisteren = this.historyMonitor.getTegoedGisteren(maxTegoed);
+        int tegoedGisteren = this.app.getBalanceYesterday();
         int verbruikVandaag = tegoedGisteren - tegoed;
         if (tegoedGisteren > -1 && verbruikVandaag >= 0) {
             int maxPeriod = berekenMaxPeriod(startTegoed);
@@ -276,7 +237,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
     }
 
     private void removeHistory() {
-        this.historyMonitor.resetHistory();
+        this.app.resetHistory();
         this.currentTegoed = 0;
         int maxTegoed = HaroidApp.getMaxTegoed();
         TextView tegoedView = (TextView) findViewById(R.id.TextTegoed);
