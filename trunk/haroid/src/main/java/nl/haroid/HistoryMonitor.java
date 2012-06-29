@@ -42,6 +42,23 @@ public final class HistoryMonitor {
         }
     }
 
+    public static String getVerbruikKey(int dagInPeriode) {
+        if (dagInPeriode > 0 && dagInPeriode <= 31) {
+            DecimalFormat decimalFormat = new DecimalFormat("00");
+            return VERBRUIK_DAG + decimalFormat.format(dagInPeriode);
+        }
+        return null;
+    }
+
+    public int getBalance(int dagInPeriode) {
+        if (dagInPeriode > 0 && dagInPeriode <= 31) {
+            DecimalFormat decimalFormat = new DecimalFormat("00");
+            String verbruikKey = VERBRUIK_DAG + decimalFormat.format(dagInPeriode);
+            return this.monitorPrefs.getInt(verbruikKey, -1);
+        }
+        return -1;
+    }
+
     public int getTegoedGisteren(int maxTegoed) {
         boolean vandaagGevonden = false;
         for (int i=31; i>0; i--) {

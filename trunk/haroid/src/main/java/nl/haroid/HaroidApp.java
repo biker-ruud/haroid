@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,6 +21,9 @@ public final class HaroidApp extends Application {
     public static final String PREF_KEY_UPDATE_CHANNEL = "pref_update_channel";
     public static final String PREF_KEY_WIFI_UPDATE_INTERVAL = "pref_wifi_update_interval";
     public static final String PREF_KEY_MOBILE_UPDATE_INTERVAL = "pref_mobile_update_interval";
+    public static final String PREF_KEY_LASTEST_UPDATE = "pref_latest_update";
+
+    public static final String ALARM_MANAGER_SET = "alarm manager set";
 
     private static final String LOG_TAG = "HaroidApp";
     private static final String SHARED_PREFERENCE_NAME = "nl.haroid_preferences";
@@ -54,6 +58,26 @@ public final class HaroidApp extends Application {
         return sharedPreferences.getString(PREF_KEY_PASSWORD, "");
     }
 
+    public static long getLatestUpdate() {
+        return sharedPreferences.getLong(PREF_KEY_LASTEST_UPDATE, 0l);
+    }
+
+    public static boolean isAutoUpdateEnabled() {
+        return sharedPreferences.getBoolean(PREF_KEY_ENABLE_AUTO_UPDATE, false);
+    }
+
+    public static String getUpdateChannel() {
+        return sharedPreferences.getString(PREF_KEY_UPDATE_CHANNEL, "");
+    }
+
+    public static int getWifiUpdateInterval() {
+        return Integer.parseInt(sharedPreferences.getString(PREF_KEY_WIFI_UPDATE_INTERVAL, "24"));
+    }
+
+    public static int getMobileUpdateInterval() {
+        return Integer.parseInt(sharedPreferences.getString(PREF_KEY_MOBILE_UPDATE_INTERVAL, "24"));
+    }
+
     public static int getMaxTegoed() {
         return Integer.parseInt(sharedPreferences.getString(PREF_KEY_MAX_TEGOED, "0"));
     }
@@ -82,6 +106,20 @@ public final class HaroidApp extends Application {
             int dagInPeriode = Utils.bepaaldDagInPeriode(startBalance);
             Log.i(LOG_TAG, "dagInPeriode: " + dagInPeriode);
             this.historyMonitor.setTegoed(dagInPeriode, balance);
+            Date updateDate = new Date();
+            SharedPreferences.Editor prefEditor = sharedPreferences.edit();
+            prefEditor.putLong(PREF_KEY_LASTEST_UPDATE, updateDate.getTime());
+            prefEditor.commit();
+        }
+    }
+
+    public int getCurrentBalance() {
+        int startBalance = Integer.parseInt(sharedPreferences.getString(PREF_KEY_START_TEGOED, "0"));
+        if (startBalance > 0) {
+            int dagInPeriode = Utils.bepaaldDagInPeriode(startBalance);
+            return this.historyMonitor.getBalance(dagInPeriode);
+        } else {
+            return -1;
         }
     }
 

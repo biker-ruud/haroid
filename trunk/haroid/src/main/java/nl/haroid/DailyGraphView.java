@@ -127,7 +127,7 @@ public final class DailyGraphView extends GraphView{
 
         Paint paint = getWhitePaint();
         paint.setStrokeWidth(0f);
-        if (currentBalanceLowerThanAverage) {
+        if (currentBalanceLowerThanAverage && usagePoint.getBalance() != -1) {
             paint.setColor(Color.RED);
         } else if (((float)usagePoint.getUsed()) < this.dailyAverage) {
             paint.setColor(Color.GREEN);

@@ -13,8 +13,10 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -64,6 +66,11 @@ public final class Haroid extends Activity implements TegoedConsumer {
     public void onResume() {
         super.onResume();
         Log.i(LOG_TAG, "onResume");
+        int currentBalance = this.app.getCurrentBalance();
+        if (currentBalance != -1) {
+            setTegoedProgress(currentBalance);
+        }
+        updateLatestUpdate();
         HaroidApp.Stats stats = this.app.recalculate();
         setProgressBars(stats);
         tekenVerbruik(stats.maxBalance, stats.maxPeriod, this.app.getUsageList());
@@ -86,6 +93,20 @@ public final class Haroid extends Activity implements TegoedConsumer {
             default:
                 Log.i(LOG_TAG, "Verkeerde optie");
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void updateLatestUpdate() {
+        long latestUpdate = HaroidApp.getLatestUpdate();
+        TextView latestUpdateText = (TextView) findViewById(R.id.TextLatestUpdate);
+        String latestUpdatePretext = getString(R.string.latestUpdate);
+        if (latestUpdate == 0) {
+            latestUpdateText.setText(latestUpdatePretext + " nooit.");
+        } else {
+            Date latestUpdateDate = new Date();
+            latestUpdateDate.setTime(latestUpdate);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            latestUpdateText.setText(latestUpdatePretext + " " + sdf.format(latestUpdateDate));
         }
     }
 
@@ -177,6 +198,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
         this.currentTegoed = tegoed;
         int maxTegoed = HaroidApp.getMaxTegoed();
         if (tegoed >= 0 && maxTegoed > 0) {
+            updateLatestUpdate();
             setTegoedProgress(tegoed);
             List<HistoryMonitor.UsagePoint> usageList = this.app.getUsageList();
             MonthlyGraphView verbruikGraph = (MonthlyGraphView) findViewById(R.id.MonthlyGraphVerbruik);
