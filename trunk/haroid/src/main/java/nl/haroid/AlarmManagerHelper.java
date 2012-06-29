@@ -32,8 +32,8 @@ final class AlarmManagerHelper {
             Log.i(LOG_TAG, "Setting alarm manager.");
             Date now = new Date();
             long oneMinuteFromNow = now.getTime() + ONE_MINUTE_IN_MILLIS;
-//        alarmManager.setInexactRepeating(AlarmManager.RTC, oneMinuteFromNow, AlarmManager.INTERVAL_HOUR, PendingIntent);
-            alarmManager.setInexactRepeating(AlarmManager.RTC, oneMinuteFromNow, ONE_MINUTE_IN_MILLIS, sender);
+            alarmManager.setInexactRepeating(AlarmManager.RTC, oneMinuteFromNow, AlarmManager.INTERVAL_HOUR, sender);
+//            alarmManager.setInexactRepeating(AlarmManager.RTC, oneMinuteFromNow, ONE_MINUTE_IN_MILLIS, sender);
         } else {
             Log.i(LOG_TAG, "Resetting alarm manager.");
             alarmManager.cancel(sender);
