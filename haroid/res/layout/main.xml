@@ -9,6 +9,12 @@
                   android:layout_width="fill_parent"
                   android:layout_height="fill_parent"
             >
+        <TextView
+                android:id="@+id/TextLatestUpdate"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/latestUpdate"
+                />
         <Button
                 android:text="@string/bekijktegoed"
                 android:id="@+id/ButtonTegoed"
