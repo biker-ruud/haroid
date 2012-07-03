@@ -7,8 +7,8 @@ Hier zijn een paar Haroid schermafdrukken
 
 = Hoofdscherm =
 
-http://haroid.googlecode.com/svn/wiki/images/haroid_screen_samengesteld.png
+http://haroid.googlecode.com/svn/wiki/images/haroid_main_screen.png
 
 = Instellingen scherm =
 
-http://haroid.googlecode.com/svn/wiki/images/haroid_screen_3.png
+http://haroid.googlecode.com/svn/wiki/images/haroid_settings_screen.png
