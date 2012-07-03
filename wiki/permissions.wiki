@@ -1,0 +1,7 @@
+#Permissions
+
+Haroid maakt gebruik van de volgende Android permissie:
+ - netwerk communicatie: volledig internet toegang (nodig voor de basis werking van de app)
+ - netwerk communicatie: netwerkstatus bekijken (nodig om te zien of je WiFi of mobiele verbinding hebt)
+ - systeemhulpprogramma's: automatisch starten bij opstarten (start de alarmmanager voor auto-updates)
+
