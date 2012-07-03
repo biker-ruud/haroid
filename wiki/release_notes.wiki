@@ -1,0 +1,21 @@
+Release Notes:
+
+= 1.1 =
+Initiele release
+
+= 1.2 = 
+Maandelijks verbruik grafiek.
+
+= 1.3 =
+Dagelijks verbruik grafiek.
+
+= 1.4 =
+X-as en Y-as labels in de grafieken
+
+= 1.5 =  
+"Wis geschiedenis"-knop
+
+= 1.6 =    
+
+Auto update functionaliteit
+
