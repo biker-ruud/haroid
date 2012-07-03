@@ -17,12 +17,12 @@ public class UtilsTest {
     @Test
     public void testNumberOfDaysThisMonth() {
         int numberOfDays = Utils.numberOfDaysThisMonth();
-        Assert.assertTrue(numberOfDays == 30);
+        Assert.assertTrue(numberOfDays == 31);
     }
 
     @Test
     public void testNumberOfDaysPreviousMonth() {
         int numberOfDays = Utils.numberOfDaysPreviousMonth();
-        Assert.assertTrue(numberOfDays == 31);
+        Assert.assertTrue(numberOfDays == 30);
     }
 }
