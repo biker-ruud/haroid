@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -26,7 +27,8 @@ public final class Haroid extends Activity implements TegoedConsumer {
     private static final String LOG_TAG = "Haroid";
     private static final String CURRENT_TEGOED = "current tegoed";
 
-    private int currentTegoed = -1;
+//    private int currentTegoed = -1;
+    private boolean firstTime = true;
     private HaroidApp app;
 
     /**
@@ -45,55 +47,116 @@ public final class Haroid extends Activity implements TegoedConsumer {
 
         setContentView(R.layout.main);
         initControls();
-        if (savedInstanceState != null) {
-            Log.i(LOG_TAG, "onCreate has savedInstanceState");
-            this.currentTegoed = savedInstanceState.getInt(CURRENT_TEGOED, -1);
-            Log.i(LOG_TAG, "onCreate tegoed: " + this.currentTegoed);
-            if (this.currentTegoed != -1) {
-                setTegoedProgress(this.currentTegoed);
-            }
-        }
+//        if (savedInstanceState != null) {
+//            Log.i(LOG_TAG, "onCreate has savedInstanceState");
+//            this.currentTegoed = savedInstanceState.getInt(CURRENT_TEGOED, -1);
+//            Log.i(LOG_TAG, "onCreate tegoed: " + this.currentTegoed);
+//            if (this.currentTegoed != -1) {
+//                setTegoedProgress(this.currentTegoed);
+//            }
+//        }
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        if (this.currentTegoed != -1) {
-            outState.putInt(CURRENT_TEGOED, currentTegoed);
-        }
-    }
+//    @Override
+//    public void onSaveInstanceState(Bundle outState) {
+//        if (this.currentTegoed != -1) {
+//            outState.putInt(CURRENT_TEGOED, currentTegoed);
+//        }
+//    }
 
     @Override
     public void onResume() {
         super.onResume();
         Log.i(LOG_TAG, "onResume");
-        int currentBalance = this.app.getCurrentBalance();
-        if (currentBalance != -1) {
-            setTegoedProgress(currentBalance);
+        if (properSettings()) {
+            int currentBalance = this.app.getCurrentBalance();
+            if (currentBalance != -1) {
+                setTegoedProgress(currentBalance);
+            }
+            updateLatestUpdate();
+            HaroidApp.Stats stats = this.app.recalculate();
+            setProgressBars(stats);
+            tekenVerbruik(stats.maxBalance, stats.maxPeriod, this.app.getUsageList());
+        } else if (this.firstTime) {
+            gotoSettings();
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setIcon(R.drawable.icon);
+            builder.setTitle(getString(R.string.noSettings));
+            builder.setMessage(getString(R.string.haroidHasNoSettings))
+                    .setCancelable(true)
+                    .setPositiveButton(getString(R.string.gotoSettings), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            gotoSettings();
+                        }
+                    })
+                    .setNegativeButton(getString(R.string.exitApp), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            closeApplication();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
         }
-        updateLatestUpdate();
-        HaroidApp.Stats stats = this.app.recalculate();
-        setProgressBars(stats);
-        tekenVerbruik(stats.maxBalance, stats.maxPeriod, this.app.getUsageList());
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        this.firstTime = false;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.i(LOG_TAG, "onCreateOptionsMenu");
         menu.add(Menu.NONE, R.id.menuSettings, 0, getString(R.string.settings));
+        menu.add(Menu.NONE, R.id.menuAbout, 0, getString(R.string.about));
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.i(LOG_TAG, "onOptionsItemSelected");
+        String versionName = null;
+        try {
+            versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            versionName = "";
+        }
         switch (item.getItemId()) {
             case R.id.menuSettings:
                 startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+            case R.id.menuAbout:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setIcon(R.drawable.icon);
+                builder.setTitle(getString(R.string.aboutHaroid));
+                builder.setMessage("Haroid " + versionName)
+                        .setCancelable(true)
+                        .setPositiveButton(getString(R.string.okButtonText), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
                 return true;
             default:
                 Log.i(LOG_TAG, "Verkeerde optie");
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void gotoSettings() {
+        startActivity(new Intent(this, SettingsActivity.class));
+    }
+
+    private void closeApplication() {
+        this.finish();
+    }
+
+    private boolean properSettings() {
+        return (HaroidApp.getEmailAdres().length() > 0 && HaroidApp.getPassword().length() > 0);
     }
 
     private void updateLatestUpdate() {
@@ -195,7 +258,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
     @Override
     public void setTegoed(int tegoed) {
         this.app.setCurrentBalance(tegoed);
-        this.currentTegoed = tegoed;
+//        this.currentTegoed = tegoed;
         int maxTegoed = HaroidApp.getMaxTegoed();
         if (tegoed >= 0 && maxTegoed > 0) {
             updateLatestUpdate();
@@ -240,6 +303,8 @@ public final class Haroid extends Activity implements TegoedConsumer {
 
     private void confirmRemoveHistory() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setIcon(android.R.drawable.ic_menu_delete);
+        builder.setTitle(getString(R.string.removeHistory));
         builder.setMessage(getString(R.string.areYouSure))
                 .setCancelable(true)
                 .setPositiveButton(getString(R.string.yesButtonText), new DialogInterface.OnClickListener() {
@@ -258,7 +323,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
 
     private void removeHistory() {
         this.app.resetHistory();
-        this.currentTegoed = 0;
+//        this.currentTegoed = 0;
         int maxTegoed = HaroidApp.getMaxTegoed();
         TextView tegoedView = (TextView) findViewById(R.id.TextTegoed);
         tegoedView.setText(getString(R.string.periodeTegoed));
