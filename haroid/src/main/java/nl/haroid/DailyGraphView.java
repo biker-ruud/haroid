@@ -76,6 +76,7 @@ public final class DailyGraphView extends GraphView{
 
     private void drawGraphXaxis(Canvas canvas) {
         canvas.drawLine(getMinX(), getMinY(), getMaxX(), getMinY(), getWhitePaint());
+        drawHorizontalMarkers(canvas);
     }
 
     private void drawGraphYaxis(Canvas canvas) {
@@ -135,9 +136,26 @@ public final class DailyGraphView extends GraphView{
             paint.setColor(Color.rgb(255, 165, 0));
         }
         canvas.drawRect(leftXCoordinate, yCoordinate, rightXCoordinate, getMinY(), paint);
-        if (usagePoint.getDagInPeriode() % 5 == 0) {
-            float markerXCoordinate = (leftXCoordinate + rightXCoordinate) / 2.0f;
-            drawHorizontalMarkerLine(usagePoint.getDagInPeriode(), markerXCoordinate, canvas);
+//        if (usagePoint.getDagInPeriode() % 5 == 0) {
+//            float markerXCoordinate = (leftXCoordinate + rightXCoordinate) / 2.0f;
+//            drawHorizontalMarkerLine(usagePoint.getDagInPeriode(), markerXCoordinate, canvas);
+//        }
+    }
+
+    private void drawHorizontalMarkers(Canvas canvas) {
+        for (int i=1; i<=maxPeriod; i++) {
+            if (i % 5 == 0) {
+                int numberOfHorizontalPositions = this.maxPeriod + (this.maxPeriod - 1);
+                int dayStartIndex = (i-1) * 2;
+
+                float leftBar = ((float)dayStartIndex) / ((float)numberOfHorizontalPositions);
+                float rightBar = ((float)dayStartIndex+1) / ((float)numberOfHorizontalPositions);
+                float leftXCoordinate = ((getMaxX() - getMinX()) * leftBar) + getMinX();
+                float rightXCoordinate = ((getMaxX() - getMinX()) * rightBar) + getMinX();
+
+                float markerXCoordinate = (leftXCoordinate + rightXCoordinate) / 2.0f;
+                drawHorizontalMarkerLine(i, markerXCoordinate, canvas);
+            }
         }
     }
 

@@ -3,8 +3,9 @@
     <!-- Application -->
     <string name="app_name">Haroid</string>
 
-    <!-- Settings screen -->
+    <!-- Menu screen -->
     <string name="settings">Instellingen</string>
+    <string name="about">Over</string>
     <!-- Account Settings -->
     <string name="accountPrefCategory">Account instellingen</string>
 
@@ -46,4 +47,15 @@
     <string name="areYouSure">Weet u zeker dat u alle geschiedenis wilt verwijderen?</string>
     <string name="yesButtonText">Ja</string>
     <string name="noButtonText">Nee</string>
+
+    <!-- No settings alert dialog -->
+    <string name="noSettings">Geen instellingen</string>
+    <string name="haroidHasNoSettings">Haroid heeft instellingen nodig om te werken.</string>
+    <string name="gotoSettings">Ga naar instellingen</string>
+    <string name="exitApp">Stop applicatie</string>
+
+    <!-- About alert dialog -->
+    <string name="okButtonText">OK</string>
+    <string name="aboutHaroid">Over Haroid</string>
+
 </resources>
