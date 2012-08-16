@@ -173,6 +173,20 @@ public final class Utils {
         return str == null || str.length() == 0;
     }
 
+    public static String substringBefore(String str, String separator) {
+        if (isEmpty(str) || separator == null) {
+            return str;
+        }
+        if (separator.length() == 0) {
+            return EMPTY;
+        }
+        int pos = str.indexOf(separator);
+        if (pos == INDEX_NOT_FOUND) {
+            return str;
+        }
+        return str.substring(0, pos);
+    }
+
     public static String[] substringsBetween(String str, String open, String close) {
         if (str == null || isEmpty(open) || isEmpty(close)) {
             return null;
