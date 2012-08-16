@@ -69,7 +69,7 @@ public final class Haring {
     }
 
     private String haalVerbruikGegevensOp(HttpClient haringClient, HttpContext localContext) throws IOException {
-        String tegoedIndicator = "minuten, smsjes of MB";
+        String tegoedIndicator = "minuten";
         Log.d(LOG_TAG, "**********************************");
         Log.d(LOG_TAG, "**        USAGE                 **");
         Log.d(LOG_TAG, "**********************************");
@@ -87,8 +87,9 @@ public final class Haring {
         if (strongList != null) {
             for (String strongItem : strongList) {
                 if (Utils.contains(strongItem, tegoedIndicator)) {
+                    Log.d(LOG_TAG, "Gevonden strongItem: " + strongItem);
                     String filterItem = Utils.deleteWhitespace(strongItem);
-                    tegoed = Utils.remove(filterItem, Utils.deleteWhitespace(tegoedIndicator));
+                    tegoed = Utils.substringBefore(filterItem, tegoedIndicator);
                 }
             }
         }
