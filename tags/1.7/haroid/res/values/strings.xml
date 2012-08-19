@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Application -->
+    <string name="app_name">Haroid</string>
+
+    <!-- Menu screen -->
+    <string name="settings">Instellingen</string>
+    <string name="about">Over</string>
+    <!-- Account Settings -->
+    <string name="accountPrefCategory">Account instellingen</string>
+
+    <string name="emailadres">Login email adres</string>
+    <string name="emailadres_setting_pretext">Emailadres is: </string>
+
+    <string name="wachtwoord">Wachtwoord</string>
+    <string name="change_wachtwoord_sum">Wijzig login wachtwoord</string>
+    <!-- Contract Settings -->
+    <string name="abonnementPrefCategory">Abonnement instellingen</string>
+
+    <string name="tegoed_setting_pretext">Max tegoed is: </string>
+    <string name="startdag_setting_pretext">Start dag van tegoed is: </string>
+
+    <string name="tegoed_per_maand">Tegoed</string>
+    <string name="startdag_tegoed">Startdag</string>
+
+    <!-- Background settings -->
+    <string name="backgroundPrefCategory">Achtergrond instellingen</string>
+
+    <string name="auto_update">Tegoed automatisch bijwerken</string>
+    <string name="update_channel">Bijwerken via</string>
+    <string name="update_channel_pretext">Bijwerken via: </string>
+    <string name="wifi_update_interval">Wifi update interval</string>
+    <string name="mobile_update_interval">Mobiel update interval</string>
+    <string name="update_interval_pretext">Interval: </string>
+
+    <!-- Main screen -->
+    <!-- Main screen buttons -->
+    <string name="bekijktegoed">Bekijk tegoed</string>
+    <string name="removeHistory">Wis geschiedenis</string>
+    <!-- Main screen textviews -->
+    <string name="latestUpdate">Bijgewerkt op:</string>
+    <string name="dagVerbruik">Verbruikt vandaag:</string>
+    <string name="periodeTegoed">Tegoed periode:</string>
+    <string name="duurPeriode">Duur periode:</string>
+
+    <!-- Remove history confirmation dialog-->
+    <string name="areYouSure">Weet u zeker dat u alle geschiedenis wilt verwijderen?</string>
+    <string name="yesButtonText">Ja</string>
+    <string name="noButtonText">Nee</string>
+
+    <!-- No settings alert dialog -->
+    <string name="noSettings">Geen instellingen</string>
+    <string name="haroidHasNoSettings">Haroid heeft instellingen nodig om te werken.</string>
+    <string name="gotoSettings">Ga naar instellingen</string>
+    <string name="exitApp">Stop applicatie</string>
+
+    <!-- About alert dialog -->
+    <string name="okButtonText">OK</string>
+    <string name="aboutHaroid">Over Haroid</string>
+
+</resources>
