@@ -42,7 +42,7 @@ public final class HaroidApp extends Application {
         if (sharedPreferences == null) {
             sharedPreferences = this.getSharedPreferences(SHARED_PREFERENCE_NAME, SHARED_PREFERENCE_MODE);
         }
-        this.historyMonitor = new HistoryMonitor(sharedPreferences);
+        this.historyMonitor = new HistoryMonitor(sharedPreferences, this);
         INSTANCE = this;
     }
 
@@ -105,7 +105,7 @@ public final class HaroidApp extends Application {
         if (balance >= 0 && maxBalance > 0) {
             int dagInPeriode = Utils.bepaaldDagInPeriode(startBalance);
             Log.i(LOG_TAG, "dagInPeriode: " + dagInPeriode);
-            this.historyMonitor.setTegoed(dagInPeriode, balance);
+            this.historyMonitor.setTegoed(dagInPeriode, balance, Utils.bepaalDatumCode());
             Date updateDate = new Date();
             SharedPreferences.Editor prefEditor = sharedPreferences.edit();
             prefEditor.putLong(PREF_KEY_LASTEST_UPDATE, updateDate.getTime());

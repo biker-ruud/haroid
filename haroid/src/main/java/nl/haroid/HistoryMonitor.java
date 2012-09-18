@@ -18,10 +18,14 @@ public final class HistoryMonitor {
 
     private static final String PERIODE_NUMMER = "pref_periode_nummer";
     private static final String VERBRUIK_DAG = "pref_verbruik_dag";
-    private SharedPreferences monitorPrefs;
+    private final SharedPreferences monitorPrefs;
+    private final Context context;
+    private final DBAdapter dbAdapter;
 
-    public HistoryMonitor(SharedPreferences monitorPrefs) {
+    public HistoryMonitor(SharedPreferences monitorPrefs, Context context) {
         this.monitorPrefs = monitorPrefs;
+        this.context = context;
+        this.dbAdapter = new DBAdapter(context);
     }
 
     public void setPeriodeNummer(int periodeNummer) {
@@ -31,7 +35,7 @@ public final class HistoryMonitor {
         }
     }
 
-    public void setTegoed(int dagInPeriode, int tegoed) {
+    public void setTegoed(int dagInPeriode, int tegoed, int datumCode) {
         if (dagInPeriode > 0 && dagInPeriode <= 31 && tegoed >= 0) {
             Log.i(LOG_TAG, "setTegoed " + tegoed + " voor dag " + dagInPeriode);
             DecimalFormat decimalFormat = new DecimalFormat("00");
@@ -39,16 +43,17 @@ public final class HistoryMonitor {
             SharedPreferences.Editor prefEditor = this.monitorPrefs.edit();
             prefEditor.putInt(verbruikKey, tegoed);
             prefEditor.commit();
+            dbAdapter.saveOrUpdate(datumCode, tegoed, BundleType.MAIN);
         }
     }
 
-    public static String getVerbruikKey(int dagInPeriode) {
-        if (dagInPeriode > 0 && dagInPeriode <= 31) {
-            DecimalFormat decimalFormat = new DecimalFormat("00");
-            return VERBRUIK_DAG + decimalFormat.format(dagInPeriode);
-        }
-        return null;
-    }
+//    public static String getVerbruikKey(int dagInPeriode) {
+//        if (dagInPeriode > 0 && dagInPeriode <= 31) {
+//            DecimalFormat decimalFormat = new DecimalFormat("00");
+//            return VERBRUIK_DAG + decimalFormat.format(dagInPeriode);
+//        }
+//        return null;
+//    }
 
     public int getBalance(int dagInPeriode) {
         if (dagInPeriode > 0 && dagInPeriode <= 31) {
