@@ -7,6 +7,7 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,6 +19,8 @@ public final class Utils {
     private static final int INDEX_NOT_FOUND = -1;
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
     private static final String EMPTY = "";
+    private static final String YEAR_MONTH_FORMAT = "yyyyMM";
+    private static final String YEAR_MONTH_DAY_FORMAT = "yyyyMMdd";
 
     private Utils() {
         // Utility class
@@ -40,7 +43,7 @@ public final class Utils {
         if (huidigeDagVdMaand < startDagPeriode) {
             cal.roll(Calendar.MONTH, -1);
         }
-        String periodeString = new SimpleDateFormat("yyyyMM").format(cal.getTime());
+        String periodeString = new SimpleDateFormat(YEAR_MONTH_FORMAT).format(cal.getTime());
         return Integer.parseInt(periodeString);
     }
 
@@ -54,6 +57,11 @@ public final class Utils {
         } else {
             return (huidigeDagVdMaand - startDagPeriode) + 1;
         }
+    }
+
+    public static int bepaalDatumCode() {
+        String dateCode = new SimpleDateFormat(YEAR_MONTH_DAY_FORMAT).format(new Date());
+        return Integer.parseInt(dateCode);
     }
 
     private static int numberOfDaysInMonth(Calendar cal) {

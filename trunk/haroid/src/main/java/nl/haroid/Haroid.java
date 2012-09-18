@@ -25,9 +25,7 @@ import java.util.List;
  */
 public final class Haroid extends Activity implements TegoedConsumer {
     private static final String LOG_TAG = "Haroid";
-    private static final String CURRENT_TEGOED = "current tegoed";
 
-//    private int currentTegoed = -1;
     private boolean firstTime = true;
     private HaroidApp app;
 
@@ -35,8 +33,8 @@ public final class Haroid extends Activity implements TegoedConsumer {
      * Called when the activity is first created.
      *
      * @param savedInstanceState If the activity is being re-initialized after
-     *                           previously being shut down then this Bundle contains the data it most
-     *                           recently supplied in onSaveInstanceState(Bundle). <b>Note: Otherwise it is null.</b>
+     *                           previously being shut down then this BundleType contains the data it most
+     *                           recently supplied in onSaveInstanceState(BundleType). <b>Note: Otherwise it is null.</b>
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,22 +45,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
 
         setContentView(R.layout.main);
         initControls();
-//        if (savedInstanceState != null) {
-//            Log.i(LOG_TAG, "onCreate has savedInstanceState");
-//            this.currentTegoed = savedInstanceState.getInt(CURRENT_TEGOED, -1);
-//            Log.i(LOG_TAG, "onCreate tegoed: " + this.currentTegoed);
-//            if (this.currentTegoed != -1) {
-//                setTegoedProgress(this.currentTegoed);
-//            }
-//        }
     }
-
-//    @Override
-//    public void onSaveInstanceState(Bundle outState) {
-//        if (this.currentTegoed != -1) {
-//            outState.putInt(CURRENT_TEGOED, currentTegoed);
-//        }
-//    }
 
     @Override
     public void onResume() {
