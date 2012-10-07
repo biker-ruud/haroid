@@ -87,7 +87,8 @@ public final class HaroidApp extends Application {
     }
 
     public List<HistoryMonitor.UsagePoint> getUsageList() {
-        return this.historyMonitor.getUsageList();
+        int startBalance = Integer.parseInt(sharedPreferences.getString(PREF_KEY_START_TEGOED, "0"));
+        return this.historyMonitor.getUsageList(startBalance);
     }
 
     public Stats recalculate() {
@@ -105,7 +106,7 @@ public final class HaroidApp extends Application {
         if (balance >= 0 && maxBalance > 0) {
             int dagInPeriode = Utils.bepaaldDagInPeriode(startBalance);
             Log.i(LOG_TAG, "dagInPeriode: " + dagInPeriode);
-            this.historyMonitor.setTegoed(dagInPeriode, balance, Utils.bepaalDatumCode());
+            this.historyMonitor.setTegoed(dagInPeriode, balance, new Date());
             Date updateDate = new Date();
             SharedPreferences.Editor prefEditor = sharedPreferences.edit();
             prefEditor.putLong(PREF_KEY_LASTEST_UPDATE, updateDate.getTime());
@@ -117,14 +118,16 @@ public final class HaroidApp extends Application {
         int startBalance = Integer.parseInt(sharedPreferences.getString(PREF_KEY_START_TEGOED, "0"));
         if (startBalance > 0) {
             int dagInPeriode = Utils.bepaaldDagInPeriode(startBalance);
-            return this.historyMonitor.getBalance(dagInPeriode);
+            return this.historyMonitor.getBalance(dagInPeriode, new Date());
         } else {
             return -1;
         }
     }
 
     public int getBalanceYesterday() {
-        return this.historyMonitor.getTegoedGisteren(Integer.parseInt(sharedPreferences.getString(PREF_KEY_MAX_TEGOED, "0")));
+        int maxTegoed = Integer.parseInt(sharedPreferences.getString(PREF_KEY_MAX_TEGOED, "0"));
+        int startBalance = Integer.parseInt(sharedPreferences.getString(PREF_KEY_START_TEGOED, "0"));
+        return this.historyMonitor.getTegoedGisteren(maxTegoed, startBalance);
     }
 
     public void resetHistory() {
