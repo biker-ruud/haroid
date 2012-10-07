@@ -33,11 +33,9 @@ public final class DBAdapter {
             "CONSTRAINT UNIQUE (" + KEY_DATE_CODE + ", " + KEY_BUNDLE + ")) " +
             "create index BUNDLE_DATE_IDX on balance (" + KEY_DATE_CODE + ", " + KEY_BUNDLE + ");";
 
-    private final Context context;
     private DBHelper dbHelper;
 
     public DBAdapter(Context context) {
-        this.context = context;
         this.dbHelper = new DBHelper(context);
     }
 
@@ -129,6 +127,17 @@ public final class DBAdapter {
         return resultMap;
     }
 
+    public void reset() {
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        try {
+            dbHelper.reset(database);
+        } catch (RuntimeException e) {
+            Log.w(LOG_TAG, "reset(): Runtime exception while resetting database.");
+        } finally {
+            database.close();
+        }
+    }
+
     private static class DBHelper extends SQLiteOpenHelper {
         DBHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -143,6 +152,12 @@ public final class DBAdapter {
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.d(LOG_TAG, "onUpgrade() "  + oldVersion + " -> " + newVersion);
+            db.execSQL("DROP TABLE IF EXISTS balance");
+            onCreate(db);
+        }
+
+        public void reset(SQLiteDatabase db) {
+            Log.d(LOG_TAG, "reset()");
             db.execSQL("DROP TABLE IF EXISTS balance");
             onCreate(db);
         }
