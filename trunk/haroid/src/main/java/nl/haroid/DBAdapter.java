@@ -2,9 +2,14 @@ package nl.haroid;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Adapter to load and save data to a database.
@@ -36,7 +41,8 @@ public final class DBAdapter {
         this.dbHelper = new DBHelper(context);
     }
 
-    public void saveOrUpdate(int datumCode, int tegoed, BundleType bundleType) {
+    public void saveOrUpdate(Date datum, int tegoed, BundleType bundleType) {
+        int datumCode = Utils.bepaalDatumCode(datum);
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         try {
             ContentValues insertValues = new ContentValues();
@@ -56,8 +62,71 @@ public final class DBAdapter {
             }
         } catch (RuntimeException e) {
             Log.w(LOG_TAG, "saveOrUpdate(): Runtime exception while updating database.");
+        } finally {
             database.close();
         }
+    }
+
+    public int getBalance(Date datum, BundleType bundleType) {
+        int balance = -1;
+        int datumCode = Utils.bepaalDatumCode(datum);
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        try {
+            Cursor result = database.query(TABLE_NAME, new String[]{KEY_AMOUNT}, "KEY_DATE_CODE=? AND KEY_BUNDLE=?", new String[]{String.valueOf(datumCode), bundleType.name()}, null, null, KEY_DATE_CODE + " DESC");
+            if (result.getCount() >= 1) {
+                result.moveToFirst();
+                balance = result.getInt(0);
+            }
+            result.close();
+        } catch (RuntimeException e) {
+            Log.w(LOG_TAG, "getBalance(): Runtime exception while selecting database.");
+        } finally {
+            database.close();
+        }
+        return balance;
+    }
+
+    public int getMostRecentBalance(Date afterDate, Date beforeDate, BundleType bundleType) {
+        int balance = -1;
+        int afterDatumCode = Utils.bepaalDatumCode(afterDate);
+        int beforeDatumCode = Utils.bepaalDatumCode(beforeDate);
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        try {
+            Cursor result = database.query(TABLE_NAME, new String[]{KEY_AMOUNT}, "KEY_DATE_CODE>? AND KEY_DATE_CODE<? AND KEY_BUNDLE=?", new String[]{String.valueOf(afterDatumCode), String.valueOf(beforeDatumCode), bundleType.name()}, null, null, null);
+            if (result.getCount() == 1) {
+                result.moveToFirst();
+                balance = result.getInt(0);
+            }
+            result.close();
+        } catch (RuntimeException e) {
+            Log.w(LOG_TAG, "getBalance(): Runtime exception while selecting database.");
+        } finally {
+            database.close();
+        }
+        return balance;
+    }
+
+    public Map<Date, Integer> getBalanceList(Date afterDate, BundleType bundleType) {
+        int afterDatumCode = Utils.bepaalDatumCode(afterDate);
+        Map<Date, Integer> resultMap = new HashMap<Date, Integer>();
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        try {
+            Cursor result = database.query(TABLE_NAME, new String[]{KEY_DATE_CODE, KEY_AMOUNT}, "KEY_DATE_CODE>? AND KEY_BUNDLE=?", new String[]{String.valueOf(afterDatumCode), bundleType.name()}, null, null, null);
+            while (result.moveToNext()) {
+                int dateCode = result.getInt(0);
+                int amount = result.getInt(1);
+                Date datum = Utils.converteerDatumCode(dateCode);
+                if (datum != null) {
+                    resultMap.put(datum, amount);
+                }
+            }
+            result.close();
+        } catch (RuntimeException e) {
+            Log.w(LOG_TAG, "getBalanceList(): Runtime exception while selecting database.");
+        } finally {
+            database.close();
+        }
+        return resultMap;
     }
 
     private static class DBHelper extends SQLiteOpenHelper {

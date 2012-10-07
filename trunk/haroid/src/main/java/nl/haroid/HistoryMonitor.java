@@ -6,9 +6,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Ruud de Jong
@@ -35,7 +33,7 @@ public final class HistoryMonitor {
         }
     }
 
-    public void setTegoed(int dagInPeriode, int tegoed, int datumCode) {
+    public void setTegoed(int dagInPeriode, int tegoed, Date datum) {
         if (dagInPeriode > 0 && dagInPeriode <= 31 && tegoed >= 0) {
             Log.i(LOG_TAG, "setTegoed " + tegoed + " voor dag " + dagInPeriode);
             DecimalFormat decimalFormat = new DecimalFormat("00");
@@ -43,28 +41,23 @@ public final class HistoryMonitor {
             SharedPreferences.Editor prefEditor = this.monitorPrefs.edit();
             prefEditor.putInt(verbruikKey, tegoed);
             prefEditor.commit();
-            dbAdapter.saveOrUpdate(datumCode, tegoed, BundleType.MAIN);
+            dbAdapter.saveOrUpdate(datum, tegoed, BundleType.MAIN);
         }
     }
 
-//    public static String getVerbruikKey(int dagInPeriode) {
-//        if (dagInPeriode > 0 && dagInPeriode <= 31) {
-//            DecimalFormat decimalFormat = new DecimalFormat("00");
-//            return VERBRUIK_DAG + decimalFormat.format(dagInPeriode);
-//        }
-//        return null;
-//    }
-
-    public int getBalance(int dagInPeriode) {
+    public int getBalance(int dagInPeriode, Date datum) {
         if (dagInPeriode > 0 && dagInPeriode <= 31) {
             DecimalFormat decimalFormat = new DecimalFormat("00");
             String verbruikKey = VERBRUIK_DAG + decimalFormat.format(dagInPeriode);
+            dbAdapter.getBalance(datum, BundleType.MAIN);
             return this.monitorPrefs.getInt(verbruikKey, -1);
         }
         return -1;
     }
 
-    public int getTegoedGisteren(int maxTegoed) {
+    public int getTegoedGisteren(int maxTegoed, int startBalance) {
+        Date lastDayOfPreviousPeriod = Utils.getLastDayOfPreviousPeriod(startBalance);
+        dbAdapter.getMostRecentBalance(lastDayOfPreviousPeriod, new Date(), BundleType.MAIN);
         boolean vandaagGevonden = false;
         for (int i=31; i>0; i--) {
             // First day of period.
@@ -85,7 +78,9 @@ public final class HistoryMonitor {
         return -1;
     }
 
-    public List<UsagePoint> getUsageList() {
+    public List<UsagePoint> getUsageList(int startBalance) {
+        Date lastDayOfPreviousPeriod = Utils.getLastDayOfPreviousPeriod(startBalance);
+        Map<Date, Integer> balanceList = dbAdapter.getBalanceList(lastDayOfPreviousPeriod, BundleType.MAIN);
         int amount = Integer.parseInt(this.monitorPrefs.getString("pref_max_tegoed", "0"));
         Log.i(LOG_TAG, "max balance: " + amount);
         int currentDay = 0;

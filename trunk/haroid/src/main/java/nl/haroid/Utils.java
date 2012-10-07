@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -59,9 +60,17 @@ public final class Utils {
         }
     }
 
-    public static int bepaalDatumCode() {
-        String dateCode = new SimpleDateFormat(YEAR_MONTH_DAY_FORMAT).format(new Date());
+    public static int bepaalDatumCode(Date datum) {
+        String dateCode = new SimpleDateFormat(YEAR_MONTH_DAY_FORMAT).format(datum);
         return Integer.parseInt(dateCode);
+    }
+
+    public static Date converteerDatumCode(int datumCode) {
+        try {
+            return new SimpleDateFormat(YEAR_MONTH_DAY_FORMAT).parse(String.valueOf(datumCode));
+        } catch (ParseException e) {
+            return null;
+        }
     }
 
     private static int numberOfDaysInMonth(Calendar cal) {
@@ -75,8 +84,26 @@ public final class Utils {
         return cal.get(Calendar.DAY_OF_MONTH);
     }
 
+    public static Date getLastDayOfPreviousPeriod(int startDayOfPeriod) {
+        Calendar cal = Calendar.getInstance();
+        return getLastDayOfPreviousPeriod(startDayOfPeriod, cal);
+    }
 
-        public static String remove(String str, String remove) {
+    public static Date getLastDayOfPreviousPeriod(int startDayOfPeriod, Calendar cal) {
+        int huidigeDagVdMaand = cal.get(Calendar.DAY_OF_MONTH);
+        if (huidigeDagVdMaand >= startDayOfPeriod) {
+            int diff = huidigeDagVdMaand - startDayOfPeriod;
+            cal.add(Calendar.DAY_OF_MONTH, -(diff + 1));
+        } else {
+            cal.add(Calendar.DAY_OF_MONTH, -huidigeDagVdMaand);
+            while (cal.get(Calendar.DAY_OF_MONTH) >= startDayOfPeriod) {
+                cal.add(Calendar.DAY_OF_MONTH, -1);
+            }
+        }
+        return cal.getTime();
+    }
+
+    public static String remove(String str, String remove) {
         if (isEmpty(str) || isEmpty(remove)) {
             return str;
         }
