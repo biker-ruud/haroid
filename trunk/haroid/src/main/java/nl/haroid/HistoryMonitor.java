@@ -123,6 +123,7 @@ public final class HistoryMonitor {
 
     public void resetHistory() {
         Log.i(LOG_TAG, "resetHistory().");
+        dbAdapter.reset();
         SharedPreferences.Editor prefEditor = this.monitorPrefs.edit();
         DecimalFormat decimalFormat = new DecimalFormat("00");
         for (int i=1; i<32; i++) {
