@@ -100,6 +100,10 @@ public final class Utils {
                 cal.add(Calendar.DAY_OF_MONTH, -1);
             }
         }
+        cal.clear(Calendar.MILLISECOND);
+        cal.clear(Calendar.SECOND);
+        cal.clear(Calendar.MINUTE);
+        cal.clear(Calendar.HOUR);
         return cal.getTime();
     }
 

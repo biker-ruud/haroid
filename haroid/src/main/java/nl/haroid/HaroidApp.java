@@ -43,6 +43,10 @@ public final class HaroidApp extends Application {
             sharedPreferences = this.getSharedPreferences(SHARED_PREFERENCE_NAME, SHARED_PREFERENCE_MODE);
         }
         this.historyMonitor = new HistoryMonitor(sharedPreferences, this);
+        int startBalance = Integer.parseInt(sharedPreferences.getString(PREF_KEY_START_TEGOED, "0"));
+        if (startBalance > 0) {
+            this.historyMonitor.convertToDatabase(startBalance);
+        }
         INSTANCE = this;
     }
 

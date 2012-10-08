@@ -24,13 +24,14 @@ public final class DBAdapter {
     private static final String KEY_AMOUNT = "AMOUNT";
     private static final String KEY_BUNDLE = "BUNDLE";
     private static final String TABLE_NAME = "balance";
+    private static final String CONSTRAINT_NAME = "DATE_BUNDLE";
     private static final String DATABASE_NAME = "Balance";
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_CREATE = "create table " + TABLE_NAME + " (" + KEY_ID + " integer primary key autoincrement, " +
             KEY_DATE_CODE + " integer not null, " +
             KEY_AMOUNT + " integer not null, " +
             KEY_BUNDLE + " text not null," +
-            "CONSTRAINT UNIQUE (" + KEY_DATE_CODE + ", " + KEY_BUNDLE + ")) " +
+            "CONSTRAINT " + CONSTRAINT_NAME + " UNIQUE (" + KEY_DATE_CODE + ", " + KEY_BUNDLE + ")); " +
             "create index BUNDLE_DATE_IDX on balance (" + KEY_DATE_CODE + ", " + KEY_BUNDLE + ");";
 
     private DBHelper dbHelper;
@@ -43,19 +44,19 @@ public final class DBAdapter {
         int datumCode = Utils.bepaalDatumCode(datum);
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         try {
-            ContentValues insertValues = new ContentValues();
-            insertValues.put(KEY_DATE_CODE, String.valueOf(datumCode));
-            insertValues.put(KEY_AMOUNT, String.valueOf(tegoed));
-            insertValues.put(KEY_BUNDLE, bundleType.name());
-            long result = database.insert(TABLE_NAME, null, insertValues);
-            if (result == -1) {
-                Log.d(LOG_TAG, "saveOrUpdate(): Insert failed, trying to update...");
-                ContentValues updateValues = new ContentValues();
-                updateValues.put(KEY_AMOUNT, String.valueOf(tegoed));
-                String whereClause = KEY_DATE_CODE + "=? AND " + KEY_BUNDLE + "=?";
-                long updatedRecords = database.update(TABLE_NAME, updateValues, whereClause, new String[]{String.valueOf(datumCode), bundleType.name()});
-                if (updatedRecords != 1) {
-                    Log.d(LOG_TAG, "saveOrUpdate(): Expected to update 1 record, but updated " + updatedRecords);
+            ContentValues updateValues = new ContentValues();
+            updateValues.put(KEY_AMOUNT, String.valueOf(tegoed));
+            String whereClause = KEY_DATE_CODE + "=? AND " + KEY_BUNDLE + "=?";
+            long updatedRecords = database.update(TABLE_NAME, updateValues, whereClause, new String[]{String.valueOf(datumCode), bundleType.name()});
+            if (updatedRecords != 1) {
+                Log.d(LOG_TAG, "saveOrUpdate(): Update failed, trying to insert...");
+                ContentValues insertValues = new ContentValues();
+                insertValues.put(KEY_DATE_CODE, String.valueOf(datumCode));
+                insertValues.put(KEY_AMOUNT, String.valueOf(tegoed));
+                insertValues.put(KEY_BUNDLE, bundleType.name());
+                long result = database.insert(TABLE_NAME, null, insertValues);
+                if (result == -1) {
+                    Log.d(LOG_TAG, "saveOrUpdate(): Insert failed.");
                 }
             }
         } catch (RuntimeException e) {
@@ -70,7 +71,7 @@ public final class DBAdapter {
         int datumCode = Utils.bepaalDatumCode(datum);
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         try {
-            Cursor result = database.query(TABLE_NAME, new String[]{KEY_AMOUNT}, "KEY_DATE_CODE=? AND KEY_BUNDLE=?", new String[]{String.valueOf(datumCode), bundleType.name()}, null, null, KEY_DATE_CODE + " DESC");
+            Cursor result = database.query(TABLE_NAME, new String[]{KEY_AMOUNT}, KEY_DATE_CODE + "=? AND " + KEY_BUNDLE + "=?", new String[]{String.valueOf(datumCode), bundleType.name()}, null, null, KEY_DATE_CODE + " DESC");
             if (result.getCount() >= 1) {
                 result.moveToFirst();
                 balance = result.getInt(0);
@@ -90,7 +91,7 @@ public final class DBAdapter {
         int beforeDatumCode = Utils.bepaalDatumCode(beforeDate);
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         try {
-            Cursor result = database.query(TABLE_NAME, new String[]{KEY_AMOUNT}, "KEY_DATE_CODE>? AND KEY_DATE_CODE<? AND KEY_BUNDLE=?", new String[]{String.valueOf(afterDatumCode), String.valueOf(beforeDatumCode), bundleType.name()}, null, null, null);
+            Cursor result = database.query(TABLE_NAME, new String[]{KEY_AMOUNT}, KEY_DATE_CODE + ">? AND " + KEY_DATE_CODE + "<? AND " + KEY_BUNDLE + "=?", new String[]{String.valueOf(afterDatumCode), String.valueOf(beforeDatumCode), bundleType.name()}, null, null, null);
             if (result.getCount() == 1) {
                 result.moveToFirst();
                 balance = result.getInt(0);
@@ -104,19 +105,16 @@ public final class DBAdapter {
         return balance;
     }
 
-    public Map<Date, Integer> getBalanceList(Date afterDate, BundleType bundleType) {
+    public Map<Integer, Integer> getBalanceList(Date afterDate, BundleType bundleType) {
         int afterDatumCode = Utils.bepaalDatumCode(afterDate);
-        Map<Date, Integer> resultMap = new HashMap<Date, Integer>();
+        Map<Integer, Integer> resultMap = new HashMap<Integer, Integer>();
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         try {
-            Cursor result = database.query(TABLE_NAME, new String[]{KEY_DATE_CODE, KEY_AMOUNT}, "KEY_DATE_CODE>? AND KEY_BUNDLE=?", new String[]{String.valueOf(afterDatumCode), bundleType.name()}, null, null, null);
+            Cursor result = database.query(TABLE_NAME, new String[]{KEY_DATE_CODE, KEY_AMOUNT}, KEY_DATE_CODE+ ">? AND " + KEY_BUNDLE + "=?", new String[]{String.valueOf(afterDatumCode), bundleType.name()}, null, null, null);
             while (result.moveToNext()) {
                 int dateCode = result.getInt(0);
                 int amount = result.getInt(1);
-                Date datum = Utils.converteerDatumCode(dateCode);
-                if (datum != null) {
-                    resultMap.put(datum, amount);
-                }
+                resultMap.put(dateCode, amount);
             }
             result.close();
         } catch (RuntimeException e) {
@@ -152,13 +150,13 @@ public final class DBAdapter {
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.d(LOG_TAG, "onUpgrade() "  + oldVersion + " -> " + newVersion);
-            db.execSQL("DROP TABLE IF EXISTS balance");
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
             onCreate(db);
         }
 
         public void reset(SQLiteDatabase db) {
             Log.d(LOG_TAG, "reset()");
-            db.execSQL("DROP TABLE IF EXISTS balance");
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
             onCreate(db);
         }
     }
