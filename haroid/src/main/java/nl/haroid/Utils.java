@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,8 +18,6 @@ public final class Utils {
     private static final int INDEX_NOT_FOUND = -1;
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
     private static final String EMPTY = "";
-    private static final String YEAR_MONTH_FORMAT = "yyyyMM";
-    private static final String YEAR_MONTH_DAY_FORMAT = "yyyyMMdd";
 
     private Utils() {
         // Utility class
@@ -44,7 +40,7 @@ public final class Utils {
         if (huidigeDagVdMaand < startDagPeriode) {
             cal.roll(Calendar.MONTH, -1);
         }
-        String periodeString = new SimpleDateFormat(YEAR_MONTH_FORMAT).format(cal.getTime());
+        String periodeString = new SimpleDateFormat("yyyyMM").format(cal.getTime());
         return Integer.parseInt(periodeString);
     }
 
@@ -60,19 +56,6 @@ public final class Utils {
         }
     }
 
-    public static int bepaalDatumCode(Date datum) {
-        String dateCode = new SimpleDateFormat(YEAR_MONTH_DAY_FORMAT).format(datum);
-        return Integer.parseInt(dateCode);
-    }
-
-    public static Date converteerDatumCode(int datumCode) {
-        try {
-            return new SimpleDateFormat(YEAR_MONTH_DAY_FORMAT).parse(String.valueOf(datumCode));
-        } catch (ParseException e) {
-            return null;
-        }
-    }
-
     private static int numberOfDaysInMonth(Calendar cal) {
         cal.set(Calendar.DAY_OF_MONTH, 1);
         cal.set(Calendar.HOUR, 0);
@@ -84,26 +67,8 @@ public final class Utils {
         return cal.get(Calendar.DAY_OF_MONTH);
     }
 
-    public static Date getLastDayOfPreviousPeriod(int startDayOfPeriod) {
-        Calendar cal = Calendar.getInstance();
-        return getLastDayOfPreviousPeriod(startDayOfPeriod, cal);
-    }
 
-    public static Date getLastDayOfPreviousPeriod(int startDayOfPeriod, Calendar cal) {
-        int huidigeDagVdMaand = cal.get(Calendar.DAY_OF_MONTH);
-        if (huidigeDagVdMaand >= startDayOfPeriod) {
-            int diff = huidigeDagVdMaand - startDayOfPeriod;
-            cal.add(Calendar.DAY_OF_MONTH, -(diff + 1));
-        } else {
-            cal.add(Calendar.DAY_OF_MONTH, -huidigeDagVdMaand);
-            while (cal.get(Calendar.DAY_OF_MONTH) >= startDayOfPeriod) {
-                cal.add(Calendar.DAY_OF_MONTH, -1);
-            }
-        }
-        return cal.getTime();
-    }
-
-    public static String remove(String str, String remove) {
+        public static String remove(String str, String remove) {
         if (isEmpty(str) || isEmpty(remove)) {
             return str;
         }
@@ -206,20 +171,6 @@ public final class Utils {
 
     public static boolean isEmpty(String str) {
         return str == null || str.length() == 0;
-    }
-
-    public static String substringBefore(String str, String separator) {
-        if (isEmpty(str) || separator == null) {
-            return str;
-        }
-        if (separator.length() == 0) {
-            return EMPTY;
-        }
-        int pos = str.indexOf(separator);
-        if (pos == INDEX_NOT_FOUND) {
-            return str;
-        }
-        return str.substring(0, pos);
     }
 
     public static String[] substringsBetween(String str, String open, String close) {

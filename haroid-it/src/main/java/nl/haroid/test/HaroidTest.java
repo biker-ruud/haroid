@@ -1,7 +1,7 @@
 package nl.haroid.test;
 
 import android.test.ActivityInstrumentationTestCase2;
-import nl.haroid.*;
+import nl.haroid.app.Haroid;
 
 public class HaroidTest extends ActivityInstrumentationTestCase2<Haroid> {
 

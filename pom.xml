@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>haroid</groupId>
     <artifactId>haroid-parent</artifactId>
-    <version>1.8-SNAPSHOT</version>
+    <version>1.4</version>
     <packaging>pom</packaging>
     <name>haroid - Parent</name>
 
@@ -15,11 +15,11 @@
 
     <properties>
         <platform.version>2.2.1</platform.version>
-        <!--<android.sdk.path>/home/ruud/android-sdk-linux</android.sdk.path>-->
-        <android.sdk.path>${android_home}</android.sdk.path>
+        <android.sdk.path>/home/xilv3r/SDK/Android/android-sdk-linux_x86</android.sdk.path>
         <android.device>avd_2.2</android.device>
         <sign.keystore>src/main/jks/haroid.jks</sign.keystore>
         <sign.alias>haroid</sign.alias>
+        <jsoup.version>1.6.3</jsoup.version>
         <encoding>UTF-8</encoding>
     </properties>
 
@@ -36,6 +36,12 @@
                 <artifactId>android-test</artifactId>
                 <version>${platform.version}</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
+                <scope>compile</scope>
             </dependency>
 
             <!-- Androlog is a logging and reporting library for Android -->

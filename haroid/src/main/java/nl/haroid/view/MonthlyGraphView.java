@@ -1,9 +1,8 @@
-package nl.haroid;
+package nl.haroid.view;
 
 import android.content.Context;
 import android.graphics.*;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import java.util.List;
 
@@ -11,10 +10,8 @@ import java.util.List;
  * @author Ruud de Jong
  */
 public final class MonthlyGraphView extends GraphView {
-    private static final String LOG_TAG = "MonthlyGraphView";
 
     private int maxUnits;
-    private int peakUnits;
     private int maxGraph;
     private int maxPeriod;
     private List<HistoryMonitor.UsagePoint> usagePointList;
@@ -33,10 +30,7 @@ public final class MonthlyGraphView extends GraphView {
 
     public void setMaxUnits(int maxUnits) {
         this.maxUnits = maxUnits;
-        if (maxUnits > this.peakUnits) {
-            this.peakUnits = maxUnits;
-        }
-        this.maxGraph = calculateMaxGraph(peakUnits);
+        this.maxGraph = calculateMaxGraph(maxUnits);
     }
 
     public void setMaxPeriod(int maxPeriod) {
@@ -45,12 +39,6 @@ public final class MonthlyGraphView extends GraphView {
 
     public void setUsage(List<HistoryMonitor.UsagePoint> usagePointList) {
         this.usagePointList = usagePointList;
-        for (HistoryMonitor.UsagePoint usagePoint : usagePointList) {
-            if (usagePoint.getBalance() > this.peakUnits) {
-                this.peakUnits = usagePoint.getBalance();
-            }
-        }
-        this.maxGraph = calculateMaxGraph(peakUnits);
     }
 
     @Override
@@ -65,28 +53,24 @@ public final class MonthlyGraphView extends GraphView {
 
     private void drawGraphXaxis(Canvas canvas, Paint paint) {
         canvas.drawLine(getMinX(), getMinY(), getMaxX(), getMinY(), paint);
-        if (this.maxPeriod > 0) {
-            drawHorizontalMarker(5, canvas, paint);
-            drawHorizontalMarker(10, canvas, paint);
-            drawHorizontalMarker(15, canvas, paint);
-            drawHorizontalMarker(20, canvas, paint);
-            drawHorizontalMarker(25, canvas, paint);
-            if (this.maxPeriod >= 30) {
-                drawHorizontalMarker(30, canvas, paint);
-            }
+        drawHorizontalMarker(5, canvas, paint);
+        drawHorizontalMarker(10, canvas, paint);
+        drawHorizontalMarker(15, canvas, paint);
+        drawHorizontalMarker(20, canvas, paint);
+        drawHorizontalMarker(25, canvas, paint);
+        if (this.maxPeriod >= 30) {
+            drawHorizontalMarker(30, canvas, paint);
         }
     }
 
     private void drawGraphYaxis(Canvas canvas, Paint paint) {
         canvas.drawLine(getMinX(), getMinY(), getMinX(), getMaxY(), paint);
-        if (this.maxGraph > 0) {
-            int markerSize = this.maxGraph / 4;
-            drawVerticalMarker(markerSize, canvas);
-            drawVerticalMarker(markerSize*2, canvas);
-            drawVerticalMarker(markerSize*3, canvas);
-            if (markerSize*4 < maxGraph) {
-                drawVerticalMarker(markerSize*4, canvas);
-            }
+        int markerSize = this.maxGraph / 4;
+        drawVerticalMarker(markerSize, canvas);
+        drawVerticalMarker(markerSize*2, canvas);
+        drawVerticalMarker(markerSize*3, canvas);
+        if (markerSize*4 < maxGraph) {
+            drawVerticalMarker(markerSize*4, canvas);
         }
     }
 
@@ -115,15 +99,13 @@ public final class MonthlyGraphView extends GraphView {
     }
 
     private void drawAverageUsageLine(Canvas canvas) {
-        if (this.maxPeriod > 0 && this.maxGraph > 0) {
-            Paint averagePaint = new Paint();
-            averagePaint.setColor(Color.GRAY);
-            averagePaint.setStyle(Paint.Style.STROKE);
-            averagePaint.setPathEffect(new DashPathEffect(new float[]{10, 20}, 0));
-            float startAverage = ((float)this.maxUnits) / ((float)this.maxGraph);
-            float maxYCoordinate = ((getMaxY() - getMinY()) * startAverage) + getMinY();
-            canvas.drawLine(getMinX(), maxYCoordinate, getMaxX(), getMinY(), averagePaint);
-        }
+        Paint averagePaint = new Paint();
+        averagePaint.setColor(Color.GRAY);
+        averagePaint.setStyle(Paint.Style.STROKE);
+        averagePaint.setPathEffect(new DashPathEffect(new float[]{10, 20}, 0));
+        float startAverage = ((float)this.maxUnits) / ((float)this.maxGraph);
+        float maxYCoordinate = ((getMaxY() - getMinY()) * startAverage) + getMinY();
+        canvas.drawLine(getMinX(), maxYCoordinate, getMaxX(), getMinY(), averagePaint);
     }
 
     private void drawCurrentUsageLines(Canvas canvas, Paint paint) {

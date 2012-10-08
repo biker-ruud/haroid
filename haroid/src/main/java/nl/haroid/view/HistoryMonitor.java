@@ -1,4 +1,4 @@
-package nl.haroid;
+package nl.haroid.view;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,7 +6,9 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Ruud de Jong
@@ -16,14 +18,10 @@ public final class HistoryMonitor {
 
     private static final String PERIODE_NUMMER = "pref_periode_nummer";
     private static final String VERBRUIK_DAG = "pref_verbruik_dag";
-    private final SharedPreferences monitorPrefs;
-    private final Context context;
-    private final DBAdapter dbAdapter;
+    private SharedPreferences monitorPrefs;
 
-    public HistoryMonitor(SharedPreferences monitorPrefs, Context context) {
-        this.monitorPrefs = monitorPrefs;
-        this.context = context;
-        this.dbAdapter = new DBAdapter(context);
+    public HistoryMonitor(Context context) {
+        this.monitorPrefs = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     public void setPeriodeNummer(int periodeNummer) {
@@ -33,7 +31,7 @@ public final class HistoryMonitor {
         }
     }
 
-    public void setTegoed(int dagInPeriode, int tegoed, Date datum) {
+    public void setTegoed(int dagInPeriode, int tegoed) {
         if (dagInPeriode > 0 && dagInPeriode <= 31 && tegoed >= 0) {
             Log.i(LOG_TAG, "setTegoed " + tegoed + " voor dag " + dagInPeriode);
             DecimalFormat decimalFormat = new DecimalFormat("00");
@@ -41,23 +39,10 @@ public final class HistoryMonitor {
             SharedPreferences.Editor prefEditor = this.monitorPrefs.edit();
             prefEditor.putInt(verbruikKey, tegoed);
             prefEditor.commit();
-            dbAdapter.saveOrUpdate(datum, tegoed, BundleType.MAIN);
         }
     }
 
-    public int getBalance(int dagInPeriode, Date datum) {
-        if (dagInPeriode > 0 && dagInPeriode <= 31) {
-            DecimalFormat decimalFormat = new DecimalFormat("00");
-            String verbruikKey = VERBRUIK_DAG + decimalFormat.format(dagInPeriode);
-            dbAdapter.getBalance(datum, BundleType.MAIN);
-            return this.monitorPrefs.getInt(verbruikKey, -1);
-        }
-        return -1;
-    }
-
-    public int getTegoedGisteren(int maxTegoed, int startBalance) {
-        Date lastDayOfPreviousPeriod = Utils.getLastDayOfPreviousPeriod(startBalance);
-        dbAdapter.getMostRecentBalance(lastDayOfPreviousPeriod, new Date(), BundleType.MAIN);
+    public int getTegoedGisteren(int maxTegoed) {
         boolean vandaagGevonden = false;
         for (int i=31; i>0; i--) {
             // First day of period.
@@ -78,9 +63,20 @@ public final class HistoryMonitor {
         return -1;
     }
 
-    public List<UsagePoint> getUsageList(int startBalance) {
-        Date lastDayOfPreviousPeriod = Utils.getLastDayOfPreviousPeriod(startBalance);
-        Map<Date, Integer> balanceList = dbAdapter.getBalanceList(lastDayOfPreviousPeriod, BundleType.MAIN);
+//    public List<UsagePoint> getUsageList() {
+//        List<UsagePoint> verbruikspuntList = new ArrayList<UsagePoint>();
+//        DecimalFormat decimalFormat = new DecimalFormat("00");
+//        for (int i=1; i<32; i++) {
+//            String verbruikKey = VERBRUIK_DAG + decimalFormat.format(i);
+//            int tegoed = this.monitorPrefs.getInt(verbruikKey, -1);
+//            if (tegoed != -1) {
+//                verbruikspuntList.add(new UsagePoint(i, tegoed));
+//            }
+//        }
+//        return verbruikspuntList;
+//    }
+
+    public List<UsagePoint> getUsageList() {
         int amount = Integer.parseInt(this.monitorPrefs.getString("pref_max_tegoed", "0"));
         Log.i(LOG_TAG, "max balance: " + amount);
         int currentDay = 0;
@@ -89,42 +85,28 @@ public final class HistoryMonitor {
         for (int i=1; i<32; i++) {
             String verbruikKey = VERBRUIK_DAG + decimalFormat.format(i);
             int amountThisDay = this.monitorPrefs.getInt(verbruikKey, -1);
-            if (amountThisDay != -1) {
-                if (amountThisDay <= amount) {
-                    // Normal day in period
-                    int numberOfDays = i - currentDay;
-                    int usageTheseDays = amount - amountThisDay;
-                    int averageUsage = usageTheseDays / numberOfDays;
-                    for (int j=(currentDay+1); j<=i; j++) {
-                        int balance = -1;
-                        if (j == i) {
-                            balance = amountThisDay;
-                        }
-                        verbruikspuntList.add(new UsagePoint(j, balance, averageUsage));
+            if (amountThisDay != -1 && amountThisDay <= amount) {
+                int numberOfDays = i - currentDay;
+                int usageTheseDays = amount - amountThisDay;
+                int averageUsage = usageTheseDays / numberOfDays;
+                for (int j=(currentDay+1); j<=i; j++) {
+                    int balance = -1;
+                    if (j == i) {
+                        balance = amountThisDay;
                     }
-                    currentDay = i;
-                    amount = amountThisDay;
-                } else if (amountThisDay > amount) {
-                    // First day of new period with amount of previous period.
-                    for (int j=(currentDay+1); j<=i; j++) {
-                        int balance = -1;
-                        if (j == i) {
-                            balance = amountThisDay;
-                        }
-                        verbruikspuntList.add(new UsagePoint(j, balance, 0));
-                    }
-                    currentDay = i;
-                    amount = amountThisDay;
+                    verbruikspuntList.add(new UsagePoint(j, balance, averageUsage));
                 }
+                currentDay = i;
+                amount = amountThisDay;
             }
         }
         return Collections.unmodifiableList(verbruikspuntList);
     }
 
-    public void resetHistory() {
-        Log.i(LOG_TAG, "resetHistory().");
-        dbAdapter.reset();
+    private void resetGeschiedenis(int periodeNummer) {
+        Log.i(LOG_TAG, "resetGeschiedenis() voor periode: " + periodeNummer);
         SharedPreferences.Editor prefEditor = this.monitorPrefs.edit();
+        prefEditor.putInt(PERIODE_NUMMER, periodeNummer);
         DecimalFormat decimalFormat = new DecimalFormat("00");
         for (int i=1; i<32; i++) {
             String verbruikKey = VERBRUIK_DAG + decimalFormat.format(i);
@@ -133,15 +115,7 @@ public final class HistoryMonitor {
         prefEditor.commit();
     }
 
-    private void resetGeschiedenis(int periodeNummer) {
-        Log.i(LOG_TAG, "resetGeschiedenis() voor periode: " + periodeNummer);
-        SharedPreferences.Editor prefEditor = this.monitorPrefs.edit();
-        prefEditor.putInt(PERIODE_NUMMER, periodeNummer);
-        prefEditor.commit();
-        resetHistory();
-    }
-
-    class UsagePoint {
+    public class UsagePoint {
         private int dagInPeriode;
         private int balance;
         private int used;

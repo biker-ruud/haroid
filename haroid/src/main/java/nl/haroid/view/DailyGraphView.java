@@ -1,9 +1,11 @@
-package nl.haroid;
+package nl.haroid.view;
 
 import android.content.Context;
-import android.graphics.*;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.DashPathEffect;
+import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import java.util.List;
 
@@ -56,10 +58,8 @@ public final class DailyGraphView extends GraphView{
     void drawInternal(Canvas canvas) {
         drawGraphXaxis(canvas);
         drawGraphYaxis(canvas);
-        if (this.maxGraph > 0) {
-            drawAverageUsageLine(canvas);
-            drawDailyUsageBars(canvas);
-        }
+        drawAverageUsageLine(canvas);
+        drawDailyUsageBars(canvas);
     }
 
     private Paint getWhitePaint() {
@@ -76,19 +76,16 @@ public final class DailyGraphView extends GraphView{
 
     private void drawGraphXaxis(Canvas canvas) {
         canvas.drawLine(getMinX(), getMinY(), getMaxX(), getMinY(), getWhitePaint());
-        drawHorizontalMarkers(canvas);
     }
 
     private void drawGraphYaxis(Canvas canvas) {
         canvas.drawLine(getMinX(), getMinY(), getMinX(), getMaxY(), getWhitePaint());
-        if (this.maxGraph > 0) {
-            int markerSize = this.maxGraph / 4;
-            drawVerticalMarker(markerSize, canvas);
-            drawVerticalMarker(markerSize*2, canvas);
-            drawVerticalMarker(markerSize*3, canvas);
-            if (markerSize*4 < maxGraph) {
-                drawVerticalMarker(markerSize*4, canvas);
-            }
+        int markerSize = this.maxGraph / 4;
+        drawVerticalMarker(markerSize, canvas);
+        drawVerticalMarker(markerSize*2, canvas);
+        drawVerticalMarker(markerSize*3, canvas);
+        if (markerSize*4 < maxGraph) {
+            drawVerticalMarker(markerSize*4, canvas);
         }
     }
 
@@ -123,39 +120,17 @@ public final class DailyGraphView extends GraphView{
         float leftXCoordinate = ((getMaxX() - getMinX()) * leftBar) + getMinX();
         float rightXCoordinate = ((getMaxX() - getMinX()) * rightBar) + getMinX();
 
-        int averagedBalance = this.maxUnits - ((usagePoint.getDagInPeriode() * this.maxUnits) / this.maxPeriod);
-        boolean currentBalanceLowerThanAverage = usagePoint.getBalance() < averagedBalance;
-
         Paint paint = getWhitePaint();
         paint.setStrokeWidth(0f);
-        if (currentBalanceLowerThanAverage && usagePoint.getBalance() != -1) {
-            paint.setColor(Color.RED);
-        } else if (((float)usagePoint.getUsed()) < this.dailyAverage) {
+        if (((float)usagePoint.getUsed()) < this.dailyAverage) {
             paint.setColor(Color.GREEN);
         } else {
             paint.setColor(Color.rgb(255, 165, 0));
         }
         canvas.drawRect(leftXCoordinate, yCoordinate, rightXCoordinate, getMinY(), paint);
-//        if (usagePoint.getDagInPeriode() % 5 == 0) {
-//            float markerXCoordinate = (leftXCoordinate + rightXCoordinate) / 2.0f;
-//            drawHorizontalMarkerLine(usagePoint.getDagInPeriode(), markerXCoordinate, canvas);
-//        }
-    }
-
-    private void drawHorizontalMarkers(Canvas canvas) {
-        for (int i=1; i<=maxPeriod; i++) {
-            if (i % 5 == 0) {
-                int numberOfHorizontalPositions = this.maxPeriod + (this.maxPeriod - 1);
-                int dayStartIndex = (i-1) * 2;
-
-                float leftBar = ((float)dayStartIndex) / ((float)numberOfHorizontalPositions);
-                float rightBar = ((float)dayStartIndex+1) / ((float)numberOfHorizontalPositions);
-                float leftXCoordinate = ((getMaxX() - getMinX()) * leftBar) + getMinX();
-                float rightXCoordinate = ((getMaxX() - getMinX()) * rightBar) + getMinX();
-
-                float markerXCoordinate = (leftXCoordinate + rightXCoordinate) / 2.0f;
-                drawHorizontalMarkerLine(i, markerXCoordinate, canvas);
-            }
+        if (usagePoint.getDagInPeriode() % 5 == 0) {
+            float markerXCoordinate = (leftXCoordinate + rightXCoordinate) / 2.0f;
+            drawHorizontalMarkerLine(usagePoint.getDagInPeriode(), markerXCoordinate, canvas);
         }
     }
 

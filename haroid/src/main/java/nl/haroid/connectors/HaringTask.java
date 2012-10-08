@@ -1,6 +1,7 @@
-package nl.haroid;
+package nl.haroid.connectors;
 
 import android.os.AsyncTask;
+import nl.haroid.app.TegoedConsumer;
 
 /**
  * @author Ruud de Jong
@@ -15,8 +16,10 @@ public final class HaringTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... strings) {
-        Haring haring = new Haring();
-        return haring.start(strings[0], strings[1]);
+//        Haring haring = new Haring();
+//        return haring.start(strings[0], strings[1]);
+        TMoblie tMoblie = new TMoblie();
+        return tMoblie.start(strings[0], strings[1]);
     }
 
     @Override
@@ -26,7 +29,6 @@ public final class HaringTask extends AsyncTask<String, Void, String> {
             this.tegoedConsumer.setTegoed(tegoed);
         } catch (NumberFormatException e) {
             // Geen getal
-            this.tegoedConsumer.setProblem(tegoedString);
         }
     }
 }

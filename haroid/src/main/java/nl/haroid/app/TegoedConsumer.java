@@ -1,4 +1,4 @@
-package nl.haroid;
+package nl.haroid.app;
 
 /**
  * @author Ruud de Jong
@@ -10,10 +10,4 @@ public interface TegoedConsumer {
      * @param tegoed
      */
     void setTegoed(int tegoed);
-
-    /**
-     * To set a problem while fetching data.
-     * @param problem
-     */
-    void setProblem(String problem);
 }
