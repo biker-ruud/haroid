@@ -88,4 +88,13 @@ public class UtilsTest {
         Assert.assertEquals(Calendar.FEBRUARY, result.get(Calendar.MONTH));
         Assert.assertEquals(29, result.get(Calendar.DAY_OF_MONTH));
     }
+
+    @Test
+    public void testJoin() {
+        String[] array = new String[]{"a", "bb", "ccc"};
+        String separator = "--";
+        String result = Utils.join(array, separator);
+        Assert.assertNotNull(result);
+        Assert.assertEquals("a--bb--ccc", result);
+    }
 }
