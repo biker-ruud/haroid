@@ -1,4 +1,4 @@
-package nl.haroid;
+package nl.haroid.common;
 
 import java.io.IOException;
 import java.io.InputStream;

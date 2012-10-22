@@ -1,4 +1,4 @@
-package nl.haroid;
+package nl.haroid.webclient;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import nl.haroid.common.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

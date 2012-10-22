@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import nl.haroid.common.Utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

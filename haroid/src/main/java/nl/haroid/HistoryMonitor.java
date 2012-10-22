@@ -2,8 +2,8 @@ package nl.haroid;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
+import nl.haroid.common.Utils;
 
 import java.text.DecimalFormat;
 import java.util.*;
