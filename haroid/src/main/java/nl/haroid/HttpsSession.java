@@ -1,7 +1,11 @@
 package nl.haroid;
 
 import javax.net.ssl.HttpsURLConnection;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -11,11 +15,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Ruud de Jong
  */
 public final class HttpsSession {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpsSession.class);
     private static final String PROTOCOL = "https://";
     private static final int TIMEOUT = 20000;
     private static final String COOKIE_SET_HEADER = "Set-Cookie";
@@ -67,7 +75,7 @@ public final class HttpsSession {
 
     public InputStream post(URL url, Map<String, String> postParamMap) throws IOException {
         if (state != SessionState.CONNECTED) {
-            System.out.println("NOT CONNECTED!");
+            LOGGER.info("NOT CONNECTED!");
             return null;
         }
         HttpsURLConnection connection = getConnection(url.getPath(), postParamMap);
@@ -83,7 +91,7 @@ public final class HttpsSession {
 
     public InputStream get(URL url) throws IOException {
         if (state != SessionState.CONNECTED) {
-            System.out.println("NOT CONNECTED!");
+            LOGGER.info("NOT CONNECTED!");
             return null;
         }
         HttpsURLConnection connection = getConnection(stripUrlToPathAndQuery(url));
@@ -115,7 +123,7 @@ public final class HttpsSession {
             this.cookieMap.clear();
             this.requestUrl = null;
             this.host = null;
-            System.out.println("DISCONNECTED!");
+            LOGGER.info("DISCONNECTED!");
         }
     }
 
