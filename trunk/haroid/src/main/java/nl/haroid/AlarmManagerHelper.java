@@ -4,7 +4,9 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -13,7 +15,7 @@ import java.util.Date;
  */
 final class AlarmManagerHelper {
 
-    private static final String LOG_TAG = "AlarmManagerHelper";
+    private static final Logger LOGGER = LoggerFactory.getLogger(AlarmManagerHelper.class);
     private static final int requestCode = 57205;
     private static final long ONE_MINUTE_IN_MILLIS = 60000l;
 
@@ -29,12 +31,12 @@ final class AlarmManagerHelper {
         intent.putExtra(HaroidApp.ALARM_MANAGER_SET, true);
         PendingIntent sender = PendingIntent.getBroadcast(this.context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         if (autoUpdateEnabled) {
-            Log.i(LOG_TAG, "Setting alarm manager.");
+            LOGGER.info("Setting alarm manager.");
             Date now = new Date();
             long oneMinuteFromNow = now.getTime() + ONE_MINUTE_IN_MILLIS;
             alarmManager.setInexactRepeating(AlarmManager.RTC, oneMinuteFromNow, AlarmManager.INTERVAL_HOUR, sender);
         } else {
-            Log.i(LOG_TAG, "Resetting alarm manager.");
+            LOGGER.info("Resetting alarm manager.");
             alarmManager.cancel(sender);
         }
     }

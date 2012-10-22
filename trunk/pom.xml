@@ -9,6 +9,7 @@
     <name>haroid - Parent</name>
 
     <modules>
+        <module>core</module>
         <module>haroid</module>
         <module>haroid-it</module>
     </modules>
@@ -36,6 +37,23 @@
                 <artifactId>android-test</artifactId>
                 <version>${platform.version}</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.6.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>1.6.1</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-android</artifactId>
+                <version>1.6.1-RC1</version>
+                <scope>runtime</scope>
             </dependency>
 
             <!-- Androlog is a logging and reporting library for Android -->
