@@ -3,6 +3,7 @@ package nl.haroid;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.util.Log;
+import nl.haroid.common.Utils;
 
 import java.util.Calendar;
 import java.util.Date;

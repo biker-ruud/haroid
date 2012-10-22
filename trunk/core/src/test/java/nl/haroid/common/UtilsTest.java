@@ -1,4 +1,4 @@
-package nl.haroid;
+package nl.haroid.common;
 
 import junit.framework.Assert;
 import org.junit.Test;
@@ -26,7 +26,7 @@ public class UtilsTest {
     @Test
     public void testNumberOfDaysPreviousMonth() {
         int numberOfDays = Utils.numberOfDaysPreviousMonth();
-        Assert.assertTrue(numberOfDays == 31);
+        Assert.assertTrue(numberOfDays == 30);
     }
 
     @Test

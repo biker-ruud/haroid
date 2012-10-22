@@ -1,21 +1,16 @@
-package nl.haroid;
+package nl.haroid.webclient;
 
-import android.util.Log;
-import org.apache.http.HttpRequest;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.ExecutionContext;
-import org.apache.http.protocol.HttpContext;
+import nl.haroid.common.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLPeerUnverifiedException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.*;
-import java.security.cert.Certificate;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +20,7 @@ import java.util.Map;
  * @author Ruud de Jong
  */
 public final class HaringHnImpl {
-//    private static final String LOG_TAG = "HaringHnImpl";
+    private static final Logger LOGGER = LoggerFactory.getLogger(HaringHnImpl.class);
     private static final String SCHEME = "https://";
     private static final String HOST = "www.hollandsnieuwe.nl";
     private static final String RELATIVE_URL_START = "/mijn_hollandsnieuwe";
@@ -46,23 +41,18 @@ public final class HaringHnImpl {
             if (inputStream != null) {
                 login(session, inputStream);
                 String tegoed = haalVerbruikGegevensOp(session);
-                System.out.println("Tegoed: " + tegoed);
+                LOGGER.debug("Tegoed: " + tegoed);
             }
         } catch (MalformedURLException e) {
-//            Log.e(LOG_TAG, "Kaput", e);
-            e.printStackTrace();
+            LOGGER.error("URL invalid: ", e);
         } catch (ClassCastException e) {
-//            Log.e(LOG_TAG, "Kaput", e);
-            e.printStackTrace();
+            LOGGER.error("Class cast: ", e);
         } catch (SocketTimeoutException e) {
-//            Log.e(LOG_TAG, "Kaput", e);
-            e.printStackTrace();
+            LOGGER.warn("Timeout: ", e);
         } catch (IOException e) {
-//            Log.e(LOG_TAG, "Kaput", e);
-            e.printStackTrace();
+            LOGGER.error("IO error: ", e);
         } catch (URISyntaxException e) {
-//            Log.e(LOG_TAG, "Kaput", e);
-            e.printStackTrace();
+            LOGGER.error("URL invalid: ", e);
         } finally {
             if (session != null) {
                 session.disconnect();
@@ -75,8 +65,7 @@ public final class HaringHnImpl {
         String tegoedIndicator = "minuten";
         InputStream inputStream = session.get(new URL(SCHEME + HOST + RELATIVE_URL_VERBRUIK));
         String body = Utils.toString(inputStream);
-//        System.out.println("Response to fetch tegoed: ");
-//        System.out.println(body);
+        LOGGER.info("Response body size: " + body.length() + " bytes.");
         inputStream.close();
 
         String tegoedBedrag = Utils.substringBetween(body, "<span class=\"usage\"><span class=\"amount\">", "</span>");
@@ -85,16 +74,14 @@ public final class HaringHnImpl {
         if (strongList != null) {
             for (String strongItem : strongList) {
                 if (Utils.contains(strongItem, tegoedIndicator)) {
-//                    Log.d(LOG_TAG, "Gevonden strongItem: " + strongItem);
+                    LOGGER.debug("Gevonden strongItem: " + strongItem);
                     String filterItem = Utils.deleteWhitespace(strongItem);
                     tegoed = Utils.substringBefore(filterItem, tegoedIndicator);
                 }
             }
         }
-//        Log.d(LOG_TAG, "Gevonden tegoed bedrag: " + tegoedBedrag);
-//        Log.d(LOG_TAG, "Gevonden tegoed: " + tegoed);
-        System.out.println("Gevonden tegoed bedrag: " + tegoedBedrag);
-        System.out.println("Gevonden tegoed: " + tegoed);
+        LOGGER.info("Gevonden tegoed bedrag: " + tegoedBedrag);
+        LOGGER.info("Gevonden tegoed: " + tegoed);
         return tegoed;
 
     }
@@ -105,13 +92,13 @@ public final class HaringHnImpl {
         Form form = parseForm(body);
 
         if (form == null) {
-//            Log.i(LOG_TAG, "Kan het inlogscherm niet vinden");
-//            Log.i(LOG_TAG, body);
+            LOGGER.info("Kan het inlogscherm niet vinden");
+            LOGGER.info(body);
             return false;
         }
-//        Log.i(LOG_TAG, "Form:");
-//        Log.i(LOG_TAG, "Form action: " + form.action);
-//        Log.i(LOG_TAG, "Form inputs: " + form.inputList.size());
+        LOGGER.info("Form:");
+        LOGGER.info("Form action: " + form.action);
+        LOGGER.info("Form inputs: " + form.inputList.size());
         Input loginInput = getLoginInput(form);
         Input passwordInput = getPasswordInput(form);
         if (loginInput != null && passwordInput != null) {
@@ -120,36 +107,25 @@ public final class HaringHnImpl {
             postForm(session, form);
             return true;
         } else {
-//            Log.i(LOG_TAG, "Kan kan login en password velden vinden op het login scherm.");
+            LOGGER.info("Kan login en password velden NIET vinden op het login scherm.");
             return false;
         }
 
     }
 
     private void postForm(HttpsSession session, Form form) throws IOException, URISyntaxException {
-//        Log.i(LOG_TAG, "Raw form action: " + form.action);
-        System.out.println("Raw form action: " + form.action);
-//        HttpRequest requestSent = (HttpRequest) localContext.getAttribute(ExecutionContext.HTTP_REQUEST);
+        LOGGER.info("Raw form action: " + form.action);
         URI previousRequestUri = session.getRequestUrl().toURI();
         URI resolvedFormAction = previousRequestUri.resolve(form.action);
-//        Log.i(LOG_TAG, "Posting form to: " + resolvedFormAction.toString());
+        LOGGER.info("Posting form to: " + resolvedFormAction.toString());
 
-//        HttpPost post = new HttpPost(resolvedFormAction);
-//        List<NameValuePair> formparams = new ArrayList<NameValuePair>();
         Map<String, String> postParamMap = new HashMap<String, String>();
         for (Input input : form.inputList) {
-//            formparams.add(new BasicNameValuePair(input.getName(), input.getValue()));
-            System.out.println("form param: " + input.getName() + ": " + input.getValue());
+            LOGGER.debug("form param: " + input.getName() + ": " + input.getValue());
             postParamMap.put(input.getName(), input.getValue());
         }
-        System.out.println("POSTing form to: " + resolvedFormAction.toString());
         InputStream inputStream = session.post(resolvedFormAction.toURL(), postParamMap);
-//        System.out.println("Response to login: ");
-//        System.out.println(Utils.toString(inputStream));
         inputStream.close();
-//        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, "UTF-8");
-//        post.setEntity(entity);
-//        haringClient.execute(post, localContext);
     }
 
     private Input getLoginInput(Form form) {
@@ -159,7 +135,7 @@ public final class HaringHnImpl {
         for (Input input : form.inputList) {
             if (input.getType() == InputType.TEXT) {
                 if (Utils.containsIgnoreCase(input.getName(), "login")) {
-//                    Log.i(LOG_TAG, "Possible login input: " + input.getName());
+                    LOGGER.debug("Possible login input: " + input.getName());
                     return input;
                 }
             }
@@ -174,7 +150,7 @@ public final class HaringHnImpl {
         for (Input input : form.inputList) {
             if (input.getType() == InputType.PASSWORD) {
                 if (Utils.containsIgnoreCase(input.getName(), "password")) {
-//                    Log.i(LOG_TAG, "Possible password input: " + input.getName());
+                    LOGGER.debug("Possible password input: " + input.getName());
                     return input;
                 }
             }
