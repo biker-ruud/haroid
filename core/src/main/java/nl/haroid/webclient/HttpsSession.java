@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
  */
 public final class HttpsSession {
 
+    public static final String PROTOCOL = "https://";
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpsSession.class);
-    private static final String PROTOCOL = "https://";
     private static final int TIMEOUT = 20000;
     private static final String COOKIE_SET_HEADER = "Set-Cookie";
     private static final String COOKIE_REQUEST_HEADER = "Cookie";
