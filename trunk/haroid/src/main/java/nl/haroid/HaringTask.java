@@ -1,6 +1,7 @@
 package nl.haroid;
 
 import android.os.AsyncTask;
+import nl.haroid.webclient.HaringHnImpl;
 
 /**
  * @author Ruud de Jong
@@ -15,7 +16,7 @@ public final class HaringTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... strings) {
-        Haring haring = new Haring();
+        HaringHnImpl haring = new HaringHnImpl();
         return haring.start(strings[0], strings[1]);
     }
 

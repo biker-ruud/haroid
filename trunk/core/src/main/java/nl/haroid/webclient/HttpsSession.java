@@ -11,9 +11,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import nl.haroid.common.Utils;
 import org.slf4j.Logger;
@@ -135,7 +137,7 @@ public final class HttpsSession {
     private HttpsURLConnection getConnection(String path, Map<String, String> postParamMap) throws IOException {
         URL url = new URL(PROTOCOL + host + path);
         this.requestUrl = url;
-        System.out.println("Connecting to: " + url);
+        LOGGER.info("Connecting to: " + url);
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         connection.setConnectTimeout(TIMEOUT);
         connection.setReadTimeout(TIMEOUT);
@@ -143,38 +145,39 @@ public final class HttpsSession {
         if (this.cookieMap.size() > 0) {
             List<String> cookieList = cookieMap2List(this.cookieMap);
             String cookieRequestValue = Utils.join(cookieList.toArray(new String[cookieList.size()]), COOKIE_VALUE_SEPARATOR);
-            System.out.println("Setting cookies: " + cookieRequestValue);
+            LOGGER.debug("Setting cookies: " + cookieRequestValue);
             connection.setRequestProperty(COOKIE_REQUEST_HEADER, cookieRequestValue);
         }
         connection.setRequestProperty(ACCEPT_CHARSET, UTF_8);
         if (postParamMap != null && postParamMap.size()>0) {
-            System.out.println("This is a POST.");
+            LOGGER.debug("This is a POST.");
             // This is a POST
             connection.setRequestMethod(HTTP_METHOD_POST);
             connection.setRequestProperty(CONTENT_TYPE, POST_CONTENT_TYPE);
             List<String> postParamList = postParamMap2List(postParamMap);
             String postParamRequestValue = Utils.join(postParamList.toArray(new String[postParamList.size()]), POST_PARAM_VALUE_SEPARATOR);
-            System.out.println("Post Param Request Value: " + postParamRequestValue);
+            LOGGER.debug("Post Param Request Value: " + postParamRequestValue);
             connection.setDoOutput(true);
             Writer writer = new OutputStreamWriter(connection.getOutputStream());
             writer.write(postParamRequestValue);
             writer.close();
         }
         connection.connect();
-        debugConnection(connection);
+        //debugConnection(connection);
         this.cookieMap.putAll(getCookies(connection.getHeaderFields()));
+        LOGGER.info("Aantal cookies: " + this.cookieMap.size());
         if (connection.getResponseCode() >= HttpURLConnection.HTTP_MULT_CHOICE && connection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
             // This is a 3xx redirect
             String relocatedTo = connection.getHeaderField(REDIRECT_LOCATION_HEADER);
             if (relocatedTo != null && relocatedTo.startsWith(PROTOCOL + host)) {
                 URL relocateUrl = new URL(relocatedTo);
                 this.requestUrl = relocateUrl;
-                System.out.println("Relocated!");
+                LOGGER.info("Relocated!");
                 HttpsURLConnection relocatedConnection = getConnection(stripUrlToPathAndQuery(relocateUrl));
-                debugConnection(relocatedConnection);
+                //debugConnection(relocatedConnection);
                 return relocatedConnection;
             }
-            System.out.println("RELOCATION UNCLEAR");
+            LOGGER.warn("RELOCATION UNCLEAR");
             return null;
         } else {
             return connection;
@@ -200,14 +203,21 @@ public final class HttpsSession {
     }
 
     private Map<String, String> getCookies(Map<String, List<String>> headerMap) {
-        Map<String, String> cookies = new HashMap<String, String>();
-        List<String> cookieList = headerMap.get(COOKIE_SET_HEADER);
-        if (cookieList != null) {
-            for (String cookie : cookieList) {
-                String cookieName = Utils.substringBefore(cookie, COOKIE_NAME_SEPARATOR);
-                String cookieValue = Utils.substringBetween(cookie, COOKIE_NAME_SEPARATOR, COOKIE_VALUE_SEPARATOR);
-                cookies.put(cookieName, cookieValue);
+        Set<String> headerKeySet = headerMap.keySet();
+        if (headerKeySet == null) {
+            return Collections.emptyMap();
+        }
+        List<String> cookieList = new ArrayList<String>();
+        for (String headerKey : headerKeySet) {
+            if (COOKIE_SET_HEADER.equalsIgnoreCase(headerKey)) {
+                cookieList.addAll(headerMap.get(headerKey));
             }
+        }
+        Map<String, String> cookies = new HashMap<String, String>();
+        for (String cookie : cookieList) {
+            String cookieName = Utils.substringBefore(cookie, COOKIE_NAME_SEPARATOR);
+            String cookieValue = Utils.substringBetween(cookie, COOKIE_NAME_SEPARATOR, COOKIE_VALUE_SEPARATOR);
+            cookies.put(cookieName, cookieValue);
         }
         return cookies;
     }
