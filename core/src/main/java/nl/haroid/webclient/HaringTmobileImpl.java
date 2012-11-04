@@ -36,6 +36,7 @@ public final class HaringTmobileImpl {
                 login(session, inputStream);
                 String tegoed = haalVerbruikGegevensOp(session);
                 LOGGER.debug("Tegoed: " + tegoed);
+                return tegoed;
             }
         } catch (MalformedURLException e) {
             LOGGER.error("URL invalid: ", e);
