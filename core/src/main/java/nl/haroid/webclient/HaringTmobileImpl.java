@@ -34,8 +34,8 @@ public final class HaringTmobileImpl {
             InputStream inputStream = session.connect(new URL(HttpsSession.PROTOCOL + HOST + RELATIVE_URL_START));
             if (inputStream != null) {
                 login(session, inputStream);
-//                String tegoed = haalVerbruikGegevensOp(session);
-//                LOGGER.debug("Tegoed: " + tegoed);
+                String tegoed = haalVerbruikGegevensOp(session);
+                LOGGER.debug("Tegoed: " + tegoed);
             }
         } catch (MalformedURLException e) {
             LOGGER.error("URL invalid: ", e);
@@ -53,6 +53,32 @@ public final class HaringTmobileImpl {
             }
         }
         return "niet gevonden";
+    }
+
+    private String haalVerbruikGegevensOp(HttpsSession session) throws IOException {
+        String tegoedIndicator = "minuten";
+        InputStream inputStream = session.get(new URL(HttpsSession.PROTOCOL + HOST + RELATIVE_URL_VERBRUIK));
+        String body = Utils.toString(inputStream);
+        LOGGER.info("Response body size: " + body.length() + " bytes.");
+        LOGGER.info("Response body: " + body);
+        inputStream.close();
+
+        String tegoedBedrag = Utils.substringBetween(body, "<span class=\"usage\"><span class=\"amount\">", "</span>");
+        String[] strongList = Utils.substringsBetween(body, "<strong>", "</strong>");
+        String tegoed = null;
+        if (strongList != null) {
+            for (String strongItem : strongList) {
+                if (Utils.contains(strongItem, tegoedIndicator)) {
+                    LOGGER.debug("Gevonden strongItem: " + strongItem);
+                    String filterItem = Utils.deleteWhitespace(strongItem);
+                    tegoed = Utils.substringBefore(filterItem, tegoedIndicator);
+                }
+            }
+        }
+        LOGGER.info("Gevonden tegoed bedrag: " + tegoedBedrag);
+        LOGGER.info("Gevonden tegoed: " + tegoed);
+        return tegoed;
+
     }
 
     private boolean login(HttpsSession session, InputStream inputStream) throws IOException, URISyntaxException {
