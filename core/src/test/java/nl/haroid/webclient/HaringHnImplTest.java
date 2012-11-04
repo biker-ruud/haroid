@@ -5,6 +5,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.impl.SimpleLogger;
 
+import java.io.IOException;
+import java.util.Properties;
+
 /**
  * @author Ruud de Jong
  */
@@ -16,9 +19,14 @@ public class HaringHnImplTest {
     }
 
     @Test
-    public void connectTest() {
+    public void connectTest() throws IOException {
+        Properties authenticationProps = new Properties();
+        authenticationProps.load(this.getClass().getResourceAsStream("/HaringHnImplTest.properties"));
+        String username = authenticationProps.getProperty("username");
+        String password = authenticationProps.getProperty("password");
+
         HaringHnImpl haring = new HaringHnImpl();
-        String response = haring.start("", "");
+        String response = haring.start(username, password);
         Assert.assertNotNull(response);
 
     }
