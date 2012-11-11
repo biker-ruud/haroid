@@ -8,6 +8,8 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -145,7 +147,7 @@ public final class HttpsSession {
         if (this.cookieMap.size() > 0) {
             List<String> cookieList = cookieMap2List(this.cookieMap);
             String cookieRequestValue = Utils.join(cookieList.toArray(new String[cookieList.size()]), COOKIE_VALUE_SEPARATOR);
-            LOGGER.debug("Setting cookies: " + cookieRequestValue);
+            LOGGER.info("Setting cookies: " + cookieRequestValue);
             connection.setRequestProperty(COOKIE_REQUEST_HEADER, cookieRequestValue);
         }
         connection.setRequestProperty(ACCEPT_CHARSET, UTF_8);
@@ -163,19 +165,37 @@ public final class HttpsSession {
             writer.close();
         }
         connection.connect();
-        //debugConnection(connection);
+        debugConnection(connection);
         this.cookieMap.putAll(getCookies(connection.getHeaderFields()));
         LOGGER.info("Aantal cookies: " + this.cookieMap.size());
         if (connection.getResponseCode() >= HttpURLConnection.HTTP_MULT_CHOICE && connection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
             // This is a 3xx redirect
             String relocatedTo = connection.getHeaderField(REDIRECT_LOCATION_HEADER);
-            if (relocatedTo != null && relocatedTo.startsWith(PROTOCOL + host)) {
-                URL relocateUrl = new URL(relocatedTo);
-                this.requestUrl = relocateUrl;
-                LOGGER.info("Relocated!");
-                HttpsURLConnection relocatedConnection = getConnection(stripUrlToPathAndQuery(relocateUrl));
-                //debugConnection(relocatedConnection);
-                return relocatedConnection;
+            if (relocatedTo != null) {
+                if (relocatedTo.startsWith(PROTOCOL + host)) {
+                    LOGGER.info("Absolute redirection");
+                    URL relocateUrl = new URL(relocatedTo);
+                    this.requestUrl = relocateUrl;
+                    LOGGER.info("Relocated!");
+                    HttpsURLConnection relocatedConnection = getConnection(stripUrlToPathAndQuery(relocateUrl));
+                    debugConnection(relocatedConnection);
+                    return relocatedConnection;
+                } else {
+                    LOGGER.info("Relative redirection");
+                    try {
+                        URI previousRequestUri = this.requestUrl.toURI();
+                        URI resolvedRedirectUri = previousRequestUri.resolve(relocatedTo);
+                        URL relocateUrl = resolvedRedirectUri.toURL();
+                        LOGGER.info("Redirect resolved to: " + relocateUrl);
+                        this.requestUrl = relocateUrl;
+                        LOGGER.info("Relocated!");
+                        HttpsURLConnection relocatedConnection = getConnection(stripUrlToPathAndQuery(relocateUrl));
+                        debugConnection(relocatedConnection);
+                        return relocatedConnection;
+                    } catch (URISyntaxException e) {
+                        LOGGER.warn("Could not resolve relative redirect URL.");
+                    }
+                }
             }
             LOGGER.warn("RELOCATION UNCLEAR");
             return null;
@@ -185,20 +205,21 @@ public final class HttpsSession {
     }
 
     private void debugConnection(HttpsURLConnection connection) throws IOException {
-        System.out.println("Response code: " + connection.getResponseCode());
-        System.out.println("Response message: " + connection.getResponseMessage());
+        LOGGER.info("DEBUGGING CONNECTION");
+        LOGGER.info("Response code: " + connection.getResponseCode());
+        LOGGER.info("Response message: " + connection.getResponseMessage());
         Map<String, List<String>> headerMap = connection.getHeaderFields();
-        System.out.println("Header fields:");
+        LOGGER.info("Header fields:");
         for (Map.Entry<String, List<String>> header : headerMap.entrySet()) {
-            System.out.println("Header: " + header.getKey());
+            LOGGER.info("Header: " + header.getKey());
             for (String value : header.getValue()) {
-                System.out.println(" - " + value);
+                LOGGER.info(" - " + value);
             }
         }
         Map<String, String> cookies = getCookies(connection.getHeaderFields());
-        System.out.println("Received Cookies:");
+        LOGGER.info("Received Cookies:");
         for (Map.Entry<String, String> cookie : cookies.entrySet()) {
-            System.out.println("Cookie: '"+cookie.getKey()+"' = '"+cookie.getValue()+"'.");
+            LOGGER.info("Cookie: '" + cookie.getKey() + "' = '" + cookie.getValue() + "'.");
         }
     }
 

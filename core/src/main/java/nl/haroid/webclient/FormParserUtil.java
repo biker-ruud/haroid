@@ -73,7 +73,7 @@ final class FormParserUtil {
 
         Map<String, String> postParamMap = new HashMap<String, String>();
         for (Input input : form.inputList) {
-            LOGGER.debug("form param: " + input.getName() + ": " + input.getValue());
+            LOGGER.info("form param: " + input.getName() + ": " + input.getValue());
             postParamMap.put(input.getName(), input.getValue());
         }
         InputStream inputStream = session.post(resolvedFormAction.toURL(), postParamMap);

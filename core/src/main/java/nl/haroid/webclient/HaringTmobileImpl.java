@@ -57,26 +57,26 @@ public final class HaringTmobileImpl {
     }
 
     private String haalVerbruikGegevensOp(HttpsSession session) throws IOException {
-        String tegoedIndicator = "minuten";
+        String tegoedIndicator = "Min/SMS";
         InputStream inputStream = session.get(new URL(HttpsSession.PROTOCOL + HOST + RELATIVE_URL_VERBRUIK));
         String body = Utils.toString(inputStream);
         LOGGER.info("Response body size: " + body.length() + " bytes.");
-        LOGGER.info("Response body: " + body);
+//        LOGGER.info("Response body: " + body);
         inputStream.close();
 
-        String tegoedBedrag = Utils.substringBetween(body, "<span class=\"usage\"><span class=\"amount\">", "</span>");
-        String[] strongList = Utils.substringsBetween(body, "<strong>", "</strong>");
+//        String tegoedBedrag = Utils.substringBetween(body, "<span class=\"usage\"><span class=\"amount\">", "</span>");
+        String[] tdList = Utils.substringsBetween(body, "<td ", "</td>");
         String tegoed = null;
-        if (strongList != null) {
-            for (String strongItem : strongList) {
-                if (Utils.contains(strongItem, tegoedIndicator)) {
-                    LOGGER.debug("Gevonden strongItem: " + strongItem);
-                    String filterItem = Utils.deleteWhitespace(strongItem);
-                    tegoed = Utils.substringBefore(filterItem, tegoedIndicator);
+        if (tdList != null) {
+            for (String tdItem : tdList) {
+                if (Utils.contains(tdItem, tegoedIndicator)) {
+                    LOGGER.info("Gevonden tdItem: " + tdItem);
+                    String unfilteredTdItem = Utils.substringBetween(tdItem, ">", tegoedIndicator);
+                    tegoed = Utils.deleteWhitespace(unfilteredTdItem);
                 }
             }
         }
-        LOGGER.info("Gevonden tegoed bedrag: " + tegoedBedrag);
+//        LOGGER.info("Gevonden tegoed bedrag: " + tegoedBedrag);
         LOGGER.info("Gevonden tegoed: " + tegoed);
         return tegoed;
 
@@ -84,6 +84,7 @@ public final class HaringTmobileImpl {
 
     private boolean login(HttpsSession session, InputStream inputStream) throws IOException, URISyntaxException {
         String body = Utils.toString(inputStream);
+        LOGGER.info("Body: " + body);
         inputStream.close();
         FormParserUtil.Form form = FormParserUtil.parseForm(body);
 
