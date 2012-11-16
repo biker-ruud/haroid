@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import nl.haroid.common.Provider;
 import nl.haroid.common.Utils;
 
 import java.text.SimpleDateFormat;
@@ -179,13 +180,14 @@ public final class Haroid extends Activity implements TegoedConsumer {
     private void startHaring() {
         String emailAdres = HaroidApp.getEmailAdres();
         String wachtwoord = HaroidApp.getPassword();
+        Provider provider = Provider.valueOf(HaroidApp.getProvider());
 
         if (emailAdres != null && emailAdres.length() > 0 && wachtwoord != null && wachtwoord.length() > 0) {
             TextView tegoedView = (TextView) findViewById(R.id.TextTegoed);
             tegoedView.setText(getString(R.string.periodeTegoed) + " wordt opgehaald.");
-            HaringTask haringTask = new HaringTask();
-            haringTask.setTegoedConsumer(this);
-            haringTask.execute(emailAdres, wachtwoord);
+            HaroidTask haroidTask = new HaroidTask(provider);
+            haroidTask.setTegoedConsumer(this);
+            haroidTask.execute(emailAdres, wachtwoord);
         }
     }
 

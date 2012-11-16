@@ -12,7 +12,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
- * @author Dave Sarpong
+ * @author R de Jong
  */
 public final class HaringTmobileImpl {
     private static final Logger LOGGER = LoggerFactory.getLogger(HaringTmobileImpl.class);

@@ -3,6 +3,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/settings">
     <PreferenceCategory
             android:title="@string/accountPrefCategory">
+        <ListPreference
+                android:title="@string/kies_provider"
+                android:key="pref_provider"/>
         <EditTextPreference
                 android:title="@string/emailadres"
                 android:key="pref_username"/>

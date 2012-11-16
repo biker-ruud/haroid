@@ -8,6 +8,8 @@
     <string name="about">Over</string>
     <!-- Account Settings -->
     <string name="accountPrefCategory">Account instellingen</string>
+    <string name="kies_provider">Kies gewenste provider</string>
+    <string name="kies_provider_setting_pretext">Gekozen provider is:</string>
 
     <string name="emailadres">Login email adres</string>
     <string name="emailadres_setting_pretext">Emailadres is: </string>
@@ -22,6 +24,7 @@
 
     <string name="tegoed_per_maand">Tegoed</string>
     <string name="startdag_tegoed">Startdag</string>
+
 
     <!-- Background settings -->
     <string name="backgroundPrefCategory">Achtergrond instellingen</string>
