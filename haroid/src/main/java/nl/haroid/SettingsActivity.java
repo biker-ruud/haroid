@@ -8,8 +8,11 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.util.Log;
+import nl.haroid.common.Provider;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,12 +29,27 @@ public final class SettingsActivity extends PreferenceActivity implements OnShar
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
+        addProviderListPreferanceDynamicly();
+    }
+
+    private void addProviderListPreferanceDynamicly() {
+        ListPreference listPreference = (ListPreference)findPreference(HaroidApp.PREF_KEY_PROVIDER);
+        List<String> providers = new ArrayList<String>();
+        for (Provider provider : Provider.values()){
+            // TODO (Xilv3r): use cleaner string variable instead of enum name
+            providers.add(provider.name());
+        }
+        CharSequence[] providerlist = providers.toArray(new CharSequence[providers.toArray().length]);
+        listPreference.setEntries(providerlist);
+        listPreference.setEntryValues(providerlist);
+        listPreference.setDefaultValue(Provider.HOLLANDS_NIEUWE.name());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         //Load map
+        pretextMap.put(HaroidApp.PREF_KEY_PROVIDER, getString(R.string.kies_provider_setting_pretext));
         pretextMap.put(HaroidApp.PREF_KEY_USERNAME, getString(R.string.emailadres_setting_pretext));
         pretextMap.put(HaroidApp.PREF_KEY_MAX_TEGOED, getString(R.string.tegoed_setting_pretext));
         pretextMap.put(HaroidApp.PREF_KEY_START_TEGOED, getString(R.string.startdag_setting_pretext));

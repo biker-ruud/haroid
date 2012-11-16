@@ -3,12 +3,11 @@ package nl.haroid;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
+import nl.haroid.common.Provider;
 
-import java.text.DecimalFormat;
 import java.util.Date;
 
 /**
@@ -82,9 +81,10 @@ public final class UpdateReceiver extends BroadcastReceiver implements TegoedCon
             Log.i(LOG_TAG, "Time to update");
             String emailAdres = HaroidApp.getEmailAdres();
             String wachtwoord = HaroidApp.getPassword();
-            HaringTask haringTask = new HaringTask();
-            haringTask.setTegoedConsumer(this);
-            haringTask.execute(emailAdres, wachtwoord);
+            Provider provider = Provider.valueOf(HaroidApp.getProvider());
+            HaroidTask haroidTask = new HaroidTask(provider);
+            haroidTask.setTegoedConsumer(this);
+            haroidTask.execute(emailAdres, wachtwoord);
         }
     }
 }

@@ -3,6 +3,7 @@ package nl.haroid;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.util.Log;
+import nl.haroid.common.Provider;
 import nl.haroid.common.Utils;
 
 import java.util.Calendar;
@@ -14,6 +15,7 @@ import java.util.List;
  */
 public final class HaroidApp extends Application {
 
+    public static final String PREF_KEY_PROVIDER = "pref_provider";
     public static final String PREF_KEY_MAX_TEGOED = "pref_max_tegoed";
     public static final String PREF_KEY_START_TEGOED = "pref_start_tegoed";
     public static final String PREF_KEY_USERNAME = "pref_username";
@@ -53,6 +55,10 @@ public final class HaroidApp extends Application {
 
     public static HaroidApp getInstance() {
         return INSTANCE;
+    }
+    
+    public static String getProvider() {
+        return sharedPreferences.getString(PREF_KEY_PROVIDER, Provider.HOLLANDS_NIEUWE.name());
     }
 
     public static String getEmailAdres() {
