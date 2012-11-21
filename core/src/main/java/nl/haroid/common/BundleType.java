@@ -1,4 +1,4 @@
-package nl.haroid;
+package nl.haroid.common;
 
 /**
  * @author Ruud de Jong
