@@ -3,7 +3,10 @@ package nl.haroid;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import nl.haroid.access.BalanceRepository;
+import nl.haroid.common.BundleType;
 import nl.haroid.common.Utils;
+import nl.haroid.storage.StorageOpenHelperAndroidImpl;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -17,13 +20,11 @@ public final class HistoryMonitor {
     private static final String PERIODE_NUMMER = "pref_periode_nummer";
     private static final String VERBRUIK_DAG = "pref_verbruik_dag";
     private final SharedPreferences monitorPrefs;
-    private final Context context;
-    private final DBAdapter dbAdapter;
+    private final BalanceRepository balanceRepository;
 
     public HistoryMonitor(SharedPreferences monitorPrefs, Context context) {
         this.monitorPrefs = monitorPrefs;
-        this.context = context;
-        this.dbAdapter = new DBAdapter(context);
+        this.balanceRepository = new BalanceRepository(new StorageOpenHelperAndroidImpl(context, BalanceRepository.DATABASE_NAME, BalanceRepository.DATABASE_VERSION));
     }
 
     public void convertToDatabase(int startBalance) {
@@ -38,7 +39,7 @@ public final class HistoryMonitor {
                 cal.setTime(lastDayOfPreviousPeriod);
                 cal.add(Calendar.DATE, i);
                 Log.i(LOG_TAG, "convertToDatabase: daynr " + i + ", amount: " + amountThisDay + ", date: " + cal);
-                dbAdapter.saveOrUpdate(cal.getTime(), amountThisDay, BundleType.MAIN);
+                balanceRepository.saveOrUpdate(cal.getTime(), amountThisDay, BundleType.MAIN);
                 SharedPreferences.Editor prefEditor = this.monitorPrefs.edit();
                 prefEditor.remove(verbruikKey);
                 prefEditor.commit();
@@ -56,52 +57,26 @@ public final class HistoryMonitor {
     public void setTegoed(int dagInPeriode, int tegoed, Date datum) {
         if (dagInPeriode > 0 && dagInPeriode <= 31 && tegoed >= 0) {
             Log.i(LOG_TAG, "setTegoed " + tegoed + " voor dag " + dagInPeriode);
-//            DecimalFormat decimalFormat = new DecimalFormat("00");
-//            String verbruikKey = VERBRUIK_DAG + decimalFormat.format(dagInPeriode);
-//            SharedPreferences.Editor prefEditor = this.monitorPrefs.edit();
-//            prefEditor.putInt(verbruikKey, tegoed);
-//            prefEditor.commit();
-            dbAdapter.saveOrUpdate(datum, tegoed, BundleType.MAIN);
+            balanceRepository.saveOrUpdate(datum, tegoed, BundleType.MAIN);
         }
     }
 
     public int getBalance(int dagInPeriode, Date datum) {
         if (dagInPeriode > 0 && dagInPeriode <= 31) {
-//            DecimalFormat decimalFormat = new DecimalFormat("00");
-//            String verbruikKey = VERBRUIK_DAG + decimalFormat.format(dagInPeriode);
-            return dbAdapter.getBalance(datum, BundleType.MAIN);
-//            return this.monitorPrefs.getInt(verbruikKey, -1);
+            return balanceRepository.getBalance(datum, BundleType.MAIN);
         }
         return -1;
     }
 
     public int getTegoedGisteren(int maxTegoed, int startBalance) {
         Date lastDayOfPreviousPeriod = Utils.getLastDayOfPreviousPeriod(startBalance);
-        return dbAdapter.getMostRecentBalance(lastDayOfPreviousPeriod, new Date(), BundleType.MAIN);
-//        boolean vandaagGevonden = false;
-//        for (int i=31; i>0; i--) {
-//            // First day of period.
-//            if (i==1) {
-//                return maxTegoed;
-//            }
-//            DecimalFormat decimalFormat = new DecimalFormat("00");
-//            String verbruikKey = VERBRUIK_DAG + decimalFormat.format(i);
-//            int saldo = this.monitorPrefs.getInt(verbruikKey, -1);
-//            if (!vandaagGevonden) {
-//                if (saldo > -1) {
-//                    vandaagGevonden = true;
-//                }
-//            } else {
-//                return saldo;
-//            }
-//        }
-//        return -1;
+        return balanceRepository.getMostRecentBalance(lastDayOfPreviousPeriod, new Date(), BundleType.MAIN);
     }
 
     public List<UsagePoint> getUsageList(int startBalance) {
         Log.i(LOG_TAG, "getUsageList()");
         Date lastDayOfPreviousPeriod = Utils.getLastDayOfPreviousPeriod(startBalance);
-        Map<Integer, Integer> balanceList = dbAdapter.getBalanceList(lastDayOfPreviousPeriod, BundleType.MAIN);
+        Map<Integer, Integer> balanceList = balanceRepository.getBalanceList(lastDayOfPreviousPeriod, BundleType.MAIN);
         Log.i(LOG_TAG, "Balance List");
         for (Map.Entry<Integer, Integer> balanceListEntry : balanceList.entrySet()) {
             Log.i(LOG_TAG, balanceListEntry.getKey() + ": " + balanceListEntry.getValue());
@@ -115,8 +90,6 @@ public final class HistoryMonitor {
         cal.add(Calendar.DATE, 1); // cal is now first day of period
         DecimalFormat decimalFormat = new DecimalFormat("00");
         for (int i=1; i<32; i++) {
-//            String verbruikKey = VERBRUIK_DAG + decimalFormat.format(i);
-//            int amountThisDay = this.monitorPrefs.getInt(verbruikKey, -1);
             int amountThisDay = -1;
             int dateCode = Utils.bepaalDatumCode(cal.getTime());
             Log.i(LOG_TAG, "Searching Balance List for: " + dateCode);
@@ -159,14 +132,7 @@ public final class HistoryMonitor {
 
     public void resetHistory() {
         Log.i(LOG_TAG, "resetHistory().");
-        dbAdapter.reset();
-//        SharedPreferences.Editor prefEditor = this.monitorPrefs.edit();
-//        DecimalFormat decimalFormat = new DecimalFormat("00");
-//        for (int i=1; i<32; i++) {
-//            String verbruikKey = VERBRUIK_DAG + decimalFormat.format(i);
-//            prefEditor.putInt(verbruikKey, -1);
-//        }
-//        prefEditor.commit();
+        balanceRepository.reset();
     }
 
     private void resetGeschiedenis(int periodeNummer) {
