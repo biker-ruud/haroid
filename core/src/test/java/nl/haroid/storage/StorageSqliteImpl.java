@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,8 +41,26 @@ public final class StorageSqliteImpl implements Storage {
 
     @Override
     public List<String[]> query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy) {
-        LOGGER.error("query() not implemented.");
-        throw new IllegalArgumentException("query() Not implemented");
+        List<String[]> resultList = new ArrayList<String[]>();
+        try {
+            String query = buildSelectQueryString(table, columns, selection, groupBy, having, orderBy);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            bindArgs(preparedStatement, selectionArgs);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            int numberOfColumns = resultSet.getMetaData().getColumnCount();
+            while (resultSet.next()) {
+                String[] rowResult = new String[numberOfColumns];
+                for (int i=0; i<numberOfColumns; i++) {
+                    rowResult[i] = resultSet.getString(i+1);
+                }
+                resultList.add(rowResult);
+            }
+            resultSet.close();
+            return resultList;
+        } catch (SQLException e) {
+            LOGGER.error("sql exception while performing query().", e);
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

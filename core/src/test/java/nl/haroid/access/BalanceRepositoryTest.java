@@ -81,6 +81,10 @@ public class BalanceRepositoryTest {
         Assert.assertNotNull(resultMap);
         Assert.assertEquals(1, resultMap.size());
         Assert.assertEquals(new Integer(balanceToday), resultMap.values().iterator().next());
+
+        resultMap = fixture.getBalanceList(today, bundleType);
+        Assert.assertNotNull(resultMap);
+        Assert.assertEquals(0, resultMap.size());
     }
 
     @Test
