@@ -63,6 +63,6 @@ public final class StorageOpenHelperAndroidImpl extends SQLiteOpenHelper impleme
 
     @Override
     public void close() {
-        this.close();
+        super.close();
     }
 }
