@@ -1,7 +1,6 @@
 Android versies
 
 Haroid heeft minimaal API level 8 nodig (Android 2.2).
-Dit is ivm het gebruik van de geoptimaliseerde AndroidHTTPClient ipv de standaard Apache HTTPClient.
 
-De ontwikkeling van Haroid target API level 10 (Android 2.3.2 en hoger).
+De ontwikkeling van Haroid target API level 11 (Android 3.0 en hoger) wegens Action Menu ondersteuning.
 De meeste normale telefoons draaien vooralsnog op een Gingerbread smaakje van Android.
