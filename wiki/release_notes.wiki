@@ -19,3 +19,20 @@ X-as en Y-as labels in de grafieken
 
 Auto update functionaliteit
 
+= 1.7 =    
+
+Issue #7 opgelost: First-Use scherm neemt je mee naar de instellingen pagina bij de eerste keer opstarten. Zonder instellingen doet Haroid niets.
+Issue #8 opgelost: About scherm opgenomen onder de menu items. Nu is altijd het logo en versienummer van Haroid te achterhalen.
+Issue #9 opgelost: Abonnementen 75 en 175 werkten niet goed, omdat deze geen internet hebben. Dit is nu verholpen. (nog niet helemaal)
+
+= 1.8 =    
+Issue #13 opgelost: Een leeg tegoed geeft geen crash meer.
+
+App is nu voorzien van:
+ - database support (ipv preferences, als voorbereiding voor multi-bundle)
+ - T-Mobile support
+ - slf4j voor logging
+ - Action Menu support (target SDK is hierdoor op 11 komen te liggen: Android 3.0)
+
+
+
