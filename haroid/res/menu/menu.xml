@@ -4,10 +4,12 @@
     <item
             android:id="@+id/menuSettings"
             android:title="@string/settings"
+            android:showAsAction="withText"
             />
     <item
             android:id="@+id/menuAbout"
             android:title="@string/about"
+            android:showAsAction="withText"
             />
 
 </menu>

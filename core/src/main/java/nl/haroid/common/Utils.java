@@ -212,6 +212,30 @@ public final class Utils {
         return str == null || str.length() == 0;
     }
 
+    public static boolean isNumeric(String str) {
+        if (str == null) {
+            return false;
+        }
+        int sz = str.length();
+        if (sz == 0) {
+            return false;
+        }
+        for (int i = 0; i < sz; i++) {
+            if (!Character.isDigit(str.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static int parseInt(String value, int defValue) {
+        if (isNumeric(value)) {
+            return Integer.parseInt(value);
+        } else {
+            return defValue;
+        }
+    }
+
     public static String substringBefore(String str, String separator) {
         if (isEmpty(str) || separator == null) {
             return str;

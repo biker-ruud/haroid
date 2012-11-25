@@ -165,7 +165,7 @@ public final class HttpsSession {
             writer.close();
         }
         connection.connect();
-        debugConnection(connection);
+//        debugConnection(connection);
         this.cookieMap.putAll(getCookies(connection.getHeaderFields()));
         LOGGER.info("Aantal cookies: " + this.cookieMap.size());
         if (connection.getResponseCode() >= HttpURLConnection.HTTP_MULT_CHOICE && connection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
@@ -178,7 +178,7 @@ public final class HttpsSession {
                     this.requestUrl = relocateUrl;
                     LOGGER.info("Relocated!");
                     HttpsURLConnection relocatedConnection = getConnection(stripUrlToPathAndQuery(relocateUrl));
-                    debugConnection(relocatedConnection);
+//                    debugConnection(relocatedConnection);
                     return relocatedConnection;
                 } else {
                     LOGGER.info("Relative redirection");
@@ -190,7 +190,7 @@ public final class HttpsSession {
                         this.requestUrl = relocateUrl;
                         LOGGER.info("Relocated!");
                         HttpsURLConnection relocatedConnection = getConnection(stripUrlToPathAndQuery(relocateUrl));
-                        debugConnection(relocatedConnection);
+//                        debugConnection(relocatedConnection);
                         return relocatedConnection;
                     } catch (URISyntaxException e) {
                         LOGGER.warn("Could not resolve relative redirect URL.");

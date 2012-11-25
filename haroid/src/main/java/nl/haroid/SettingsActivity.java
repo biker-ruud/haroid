@@ -9,6 +9,7 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.util.Log;
 import nl.haroid.common.Provider;
+import nl.haroid.common.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,7 +43,9 @@ public final class SettingsActivity extends PreferenceActivity implements OnShar
         CharSequence[] providerlist = providers.toArray(new CharSequence[providers.toArray().length]);
         listPreference.setEntries(providerlist);
         listPreference.setEntryValues(providerlist);
-        listPreference.setDefaultValue(Provider.HOLLANDS_NIEUWE.name());
+        if (listPreference.getValue() == null) {
+            listPreference.setValue(Provider.HOLLANDS_NIEUWE.name());
+        }
     }
 
     @Override
@@ -101,7 +104,11 @@ public final class SettingsActivity extends PreferenceActivity implements OnShar
         if (preText != null) {
             if (preference instanceof ListPreference) {
                 ListPreference listPreference = (ListPreference) preference;
-                preference.setSummary(pretextMap.get(s) + " " + listPreference.getEntry());
+                if (listPreference.getEntry() == null) {
+                    preference.setSummary(pretextMap.get(s));
+                } else {
+                    preference.setSummary(pretextMap.get(s) + " " + listPreference.getEntry());
+                }
             } else {
                 preference.setSummary(pretextMap.get(s) + " " + sharedPreferences.getString(s, ""));
             }

@@ -128,7 +128,7 @@ public final class BalanceRepository {
                 resultMap.put(dateCode, amount);
             }
         } catch (RuntimeException e) {
-            LOGGER.warn("getBalanceList(): Runtime exception while selecting database.");
+            LOGGER.warn("getBalanceList(): Runtime exception while selecting database.", e);
         } finally {
             storageOpenHelper.close();
         }

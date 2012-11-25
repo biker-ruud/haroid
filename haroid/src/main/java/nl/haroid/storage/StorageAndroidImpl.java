@@ -34,7 +34,7 @@ public final class StorageAndroidImpl implements Storage {
         List<String[]> resultList = new ArrayList<String[]>();
         while (cursor.moveToNext()) {
             String[] result = new String[cursor.getColumnCount()];
-            for (int i=0; i>cursor.getColumnCount(); i++) {
+            for (int i=0; i<cursor.getColumnCount(); i++) {
                 result[i] = cursor.getString(i);
             }
             resultList.add(result);

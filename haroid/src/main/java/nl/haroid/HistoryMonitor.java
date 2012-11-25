@@ -73,7 +73,7 @@ public final class HistoryMonitor {
         return balanceRepository.getMostRecentBalance(lastDayOfPreviousPeriod, new Date(), BundleType.MAIN);
     }
 
-    public List<UsagePoint> getUsageList(int startBalance) {
+    public List<UsagePoint> getUsageList(int startBalance, int maxBalance) {
         Log.i(LOG_TAG, "getUsageList()");
         Date lastDayOfPreviousPeriod = Utils.getLastDayOfPreviousPeriod(startBalance);
         Map<Integer, Integer> balanceList = balanceRepository.getBalanceList(lastDayOfPreviousPeriod, BundleType.MAIN);
@@ -81,7 +81,7 @@ public final class HistoryMonitor {
         for (Map.Entry<Integer, Integer> balanceListEntry : balanceList.entrySet()) {
             Log.i(LOG_TAG, balanceListEntry.getKey() + ": " + balanceListEntry.getValue());
         }
-        int amount = Integer.parseInt(this.monitorPrefs.getString("pref_max_tegoed", "0"));
+        int amount = maxBalance;
         Log.i(LOG_TAG, "max balance: " + amount);
         int currentDay = 0;
         List<UsagePoint> verbruikspuntList = new ArrayList<UsagePoint>();
