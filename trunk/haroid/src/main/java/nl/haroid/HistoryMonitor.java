@@ -82,16 +82,19 @@ public final class HistoryMonitor {
             Log.i(LOG_TAG, balanceListEntry.getKey() + ": " + balanceListEntry.getValue());
         }
         int amount = maxBalance;
-        Log.i(LOG_TAG, "max balance: " + amount);
-        int currentDay = 0;
-        List<UsagePoint> verbruikspuntList = new ArrayList<UsagePoint>();
         Calendar cal = Calendar.getInstance();
         cal.setTime(lastDayOfPreviousPeriod);
+        int dateCode = Utils.bepaalDatumCode(cal.getTime());
+        if (balanceList.get(dateCode) != null) {
+            amount = balanceList.get(dateCode);
+        }
+        Log.i(LOG_TAG, "max balance of last period: " + amount);
+        int currentDay = 0;
+        List<UsagePoint> verbruikspuntList = new ArrayList<UsagePoint>();
         cal.add(Calendar.DATE, 1); // cal is now first day of period
-        DecimalFormat decimalFormat = new DecimalFormat("00");
         for (int i=1; i<32; i++) {
             int amountThisDay = -1;
-            int dateCode = Utils.bepaalDatumCode(cal.getTime());
+            dateCode = Utils.bepaalDatumCode(cal.getTime());
             Log.i(LOG_TAG, "Searching Balance List for: " + dateCode);
             if (balanceList.get(dateCode) != null) {
                 amountThisDay = balanceList.get(dateCode);

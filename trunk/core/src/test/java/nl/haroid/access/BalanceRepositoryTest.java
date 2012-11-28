@@ -66,23 +66,48 @@ public class BalanceRepositoryTest {
     }
 
     @Test
+    public void testMostRecentBalanceOrdering() {
+        Calendar cal = Calendar.getInstance();
+        Date today = new Date();
+        cal.add(Calendar.DAY_OF_MONTH, -1);
+        Date yesterday = cal.getTime();
+        cal.add(Calendar.DAY_OF_MONTH, -1);
+        Date dayBeforeYesterday = cal.getTime();
+        cal.add(Calendar.DAY_OF_MONTH, -1);
+        Date evenEarlier = cal.getTime();
+        int balanceToday = 200;
+        int balanceYesterday = 250;
+        int balanceDayBeforeYesterday = 270;
+        BundleType bundleType = BundleType.MAIN;
+
+        BalanceRepository fixture = new BalanceRepository(new StorageOpenHelperSqliteImpl(BalanceRepository.DATABASE_VERSION));
+
+        fixture.saveOrUpdate(today, balanceToday, bundleType);
+        fixture.saveOrUpdate(yesterday, balanceYesterday, bundleType);
+        fixture.saveOrUpdate(dayBeforeYesterday, balanceDayBeforeYesterday, bundleType);
+
+        int balanceFound = fixture.getMostRecentBalance(evenEarlier, today, bundleType);
+        Assert.assertEquals(balanceYesterday, balanceFound);
+    }
+
+    @Test
     public void testBalanceList() {
         Date today = new Date();
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_MONTH, -1);
-        Date yesterday = cal.getTime();
+        cal.add(Calendar.DAY_OF_MONTH, 1);
+        Date tomorrow = cal.getTime();
         int balanceToday = 275;
         BundleType bundleType = BundleType.MAIN;
 
         BalanceRepository fixture = new BalanceRepository(new StorageOpenHelperSqliteImpl(BalanceRepository.DATABASE_VERSION));
         fixture.saveOrUpdate(today, balanceToday, bundleType);
-        Map<Integer, Integer> resultMap = fixture.getBalanceList(yesterday, bundleType);
+        Map<Integer, Integer> resultMap = fixture.getBalanceList(today, bundleType);
 
         Assert.assertNotNull(resultMap);
         Assert.assertEquals(1, resultMap.size());
         Assert.assertEquals(new Integer(balanceToday), resultMap.values().iterator().next());
 
-        resultMap = fixture.getBalanceList(today, bundleType);
+        resultMap = fixture.getBalanceList(tomorrow, bundleType);
         Assert.assertNotNull(resultMap);
         Assert.assertEquals(0, resultMap.size());
     }

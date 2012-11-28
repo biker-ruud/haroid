@@ -28,6 +28,7 @@ public final class BalanceRepository {
     private static final String KEY_DATE_CODE = "DATE_CODE";
     private static final String KEY_AMOUNT = "AMOUNT";
     private static final String KEY_BUNDLE = "BUNDLE";
+    private static final String ORDER_BY_DESCENDING = " DESC";
     private static final String TABLE_NAME = "balance";
     private static final String CONSTRAINT_NAME = "DATE_BUNDLE";
     private static final String DATABASE_CREATE = "create table " + TABLE_NAME + " (" + KEY_ID + " integer primary key autoincrement, " +
@@ -104,7 +105,7 @@ public final class BalanceRepository {
         int beforeDatumCode = Utils.bepaalDatumCode(beforeDate);
         Storage database = storageOpenHelper.getReadableStorage();
         try {
-            String result = database.queryUniqueResult(TABLE_NAME, new String[]{KEY_AMOUNT}, KEY_DATE_CODE + ">? AND " + KEY_DATE_CODE + "<? AND " + KEY_BUNDLE + "=?", new String[]{String.valueOf(afterDatumCode), String.valueOf(beforeDatumCode), bundleType.name()}, null, null, null);
+            String result = database.queryUniqueResult(TABLE_NAME, new String[]{KEY_AMOUNT}, KEY_DATE_CODE + ">? AND " + KEY_DATE_CODE + "<? AND " + KEY_BUNDLE + "=?", new String[]{String.valueOf(afterDatumCode), String.valueOf(beforeDatumCode), bundleType.name()}, null, null, KEY_DATE_CODE + ORDER_BY_DESCENDING);
             if (result != null) {
                 balance = Integer.parseInt(result);
             }
@@ -121,7 +122,7 @@ public final class BalanceRepository {
         Map<Integer, Integer> resultMap = new HashMap<Integer, Integer>();
         Storage database = storageOpenHelper.getReadableStorage();
         try {
-            List<String[]> rawResultList = database.query(TABLE_NAME, new String[]{KEY_DATE_CODE, KEY_AMOUNT}, KEY_DATE_CODE+ ">? AND " + KEY_BUNDLE + "=?", new String[]{String.valueOf(afterDatumCode), bundleType.name()}, null, null, null);
+            List<String[]> rawResultList = database.query(TABLE_NAME, new String[]{KEY_DATE_CODE, KEY_AMOUNT}, KEY_DATE_CODE+ ">=? AND " + KEY_BUNDLE + "=?", new String[]{String.valueOf(afterDatumCode), bundleType.name()}, null, null, null);
             for (String[] resultRow : rawResultList) {
                 int dateCode = Integer.parseInt(resultRow[0]);
                 int amount = Integer.parseInt(resultRow[1]);
