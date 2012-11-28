@@ -244,7 +244,6 @@ public final class Haroid extends Activity implements TegoedConsumer {
     @Override
     public void setTegoed(int tegoed) {
         this.app.setCurrentBalance(tegoed);
-//        this.currentTegoed = tegoed;
         int maxTegoed = HaroidApp.getMaxTegoed();
         if (tegoed >= 0 && maxTegoed > 0) {
             updateLatestUpdate();
@@ -309,7 +308,6 @@ public final class Haroid extends Activity implements TegoedConsumer {
 
     private void removeHistory() {
         this.app.resetHistory();
-//        this.currentTegoed = 0;
         int maxTegoed = HaroidApp.getMaxTegoed();
         TextView tegoedView = (TextView) findViewById(R.id.TextTegoed);
         tegoedView.setText(getString(R.string.periodeTegoed));
