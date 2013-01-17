@@ -34,5 +34,13 @@ App is nu voorzien van:
  - slf4j voor logging
  - Action Menu support (target SDK is hierdoor op 11 komen te liggen: Android 3.0)
 
+= 1.9 =
+Kleine bug uit 1.8 opgelost.
+
+= 1.10 =
+Aantal verbeteringen:
+ - 'Wis geschiedenis'-knop naar menu verplaatst
+ - T-Mobile gebruikers zien nu 'gebruikersnaam' staan ipv 'email adres'.
+ - Probleem met wissen geschiedenis tijdens jaarwisseling mogelijk opgelost.
 
 
