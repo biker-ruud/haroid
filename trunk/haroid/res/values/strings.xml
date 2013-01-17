@@ -5,6 +5,7 @@
 
     <!-- Menu screen -->
     <string name="settings">Instellingen</string>
+    <string name="removeHistory">Wis geschiedenis</string>
     <string name="about">Over</string>
     <!-- Account Settings -->
     <string name="accountPrefCategory">Account instellingen</string>
@@ -13,6 +14,9 @@
 
     <string name="emailadres">Login email adres</string>
     <string name="emailadres_setting_pretext">Emailadres is: </string>
+
+    <string name="gebruikersnaam">Login gebruikersnaam</string>
+    <string name="gebruikersnaam_setting_pretext">Gebruikersnaam is: </string>
 
     <string name="wachtwoord">Wachtwoord</string>
     <string name="change_wachtwoord_sum">Wijzig login wachtwoord</string>
@@ -39,7 +43,6 @@
     <!-- Main screen -->
     <!-- Main screen buttons -->
     <string name="bekijktegoed">Bekijk tegoed</string>
-    <string name="removeHistory">Wis geschiedenis</string>
     <!-- Main screen textviews -->
     <string name="latestUpdate">Bijgewerkt op:</string>
     <string name="dagVerbruik">Verbruikt vandaag:</string>

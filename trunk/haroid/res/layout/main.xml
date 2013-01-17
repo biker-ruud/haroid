@@ -63,11 +63,6 @@
                 android:id="@+id/MonthlyGraphVerbruik"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"/>
-        <Button
-                android:text="@string/removeHistory"
-                android:id="@+id/ButtonRemoveHistory"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
 
     </LinearLayout>
 </ScrollView>

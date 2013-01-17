@@ -7,6 +7,11 @@
             android:showAsAction="withText"
             />
     <item
+            android:id="@+id/menuDeleteHistory"
+            android:title="@string/removeHistory"
+            android:showAsAction="withText"
+            />
+    <item
             android:id="@+id/menuAbout"
             android:title="@string/about"
             android:showAsAction="withText"
