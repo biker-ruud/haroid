@@ -3,7 +3,7 @@ package nl.haroid;
 import android.content.Context;
 import android.graphics.*;
 import android.util.AttributeSet;
-import android.util.Log;
+import nl.haroid.service.HistoryMonitor;
 
 import java.util.List;
 

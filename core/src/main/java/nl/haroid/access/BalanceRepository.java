@@ -155,8 +155,10 @@ public final class BalanceRepository {
 
     private void upgrade(Storage storage, int oldVersion, int newVersion) {
         LOGGER.info("onUpgrade() "  + oldVersion + " -> " + newVersion);
-        storage.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-        create(storage);
+        if (newVersion > oldVersion) {
+            storage.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+            create(storage);
+        }
     }
 
     private void reset(Storage storage) {

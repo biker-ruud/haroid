@@ -3,12 +3,18 @@ package nl.haroid;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.util.Log;
+import nl.haroid.access.BalanceRepository;
 import nl.haroid.common.Provider;
 import nl.haroid.common.Utils;
+import nl.haroid.service.HistoryMonitor;
+import nl.haroid.storage.StorageOpenHelperAndroidImpl;
 
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Ruud de Jong
@@ -32,6 +38,8 @@ public final class HaroidApp extends Application {
     private static final String SHARED_PREFERENCE_NAME = "nl.haroid_preferences";
     private static final int SHARED_PREFERENCE_MODE = MODE_PRIVATE;
 
+    private static final String VERBRUIK_DAG = "pref_verbruik_dag";
+
     private static SharedPreferences sharedPreferences;
     private static HaroidApp INSTANCE;
 
@@ -45,10 +53,25 @@ public final class HaroidApp extends Application {
         if (sharedPreferences == null) {
             sharedPreferences = this.getSharedPreferences(SHARED_PREFERENCE_NAME, SHARED_PREFERENCE_MODE);
         }
-        this.historyMonitor = new HistoryMonitor(sharedPreferences, this);
+        BalanceRepository balanceRepository = new BalanceRepository(new StorageOpenHelperAndroidImpl(this, BalanceRepository.DATABASE_NAME, BalanceRepository.DATABASE_VERSION));
+        this.historyMonitor = new HistoryMonitor(balanceRepository);
         int startBalance = getStartTegoed();
         if (startBalance > 0) {
-            this.historyMonitor.convertToDatabase(startBalance);
+            Map<Integer, Integer> prefVerbruikMap = new HashMap<Integer, Integer>();
+            DecimalFormat decimalFormat = new DecimalFormat("00");
+            for (int i=1; i<32; i++) {
+                String verbruikKey = VERBRUIK_DAG + decimalFormat.format(i);
+                int amountThisDay = sharedPreferences.getInt(verbruikKey, -1);
+                if (amountThisDay != -1) {
+                    prefVerbruikMap.put(i, amountThisDay);
+                    SharedPreferences.Editor prefEditor = sharedPreferences.edit();
+                    prefEditor.remove(verbruikKey);
+                    prefEditor.commit();
+                }
+            }
+            if (prefVerbruikMap.size() > 0) {
+                this.historyMonitor.convertToDatabase(prefVerbruikMap, startBalance);
+            }
         }
         INSTANCE = this;
     }
@@ -107,7 +130,6 @@ public final class HaroidApp extends Application {
         Stats stats = new Stats();
         stats.maxBalance = getMaxTegoed();
         stats.startBalance = getStartTegoed();
-        bepaalGeschiedenis(stats.startBalance);
         berekenDuurTegoed(stats);
         return stats;
     }
@@ -137,9 +159,8 @@ public final class HaroidApp extends Application {
     }
 
     public int getBalanceYesterday() {
-        int maxTegoed = getMaxTegoed();
         int startBalance = getStartTegoed();
-        return this.historyMonitor.getTegoedGisteren(maxTegoed, startBalance);
+        return this.historyMonitor.getTegoedGisteren(startBalance);
     }
 
     public void resetHistory() {
@@ -187,16 +208,6 @@ public final class HaroidApp extends Application {
             Log.i(LOG_TAG, "Tegoed begonnen in deze maand");
             return Utils.numberOfDaysThisMonth();
         }
-    }
-
-    private void bepaalGeschiedenis(int startTegoed) {
-        if (startTegoed == 0) {
-            // Niet ingesteld
-            return;
-        }
-        int periodeNummer = Utils.bepaalPeriodeNummer(startTegoed);
-        Log.i(LOG_TAG, "periodeNummer: " + periodeNummer);
-        this.historyMonitor.setPeriodeNummer(periodeNummer);
     }
 
     class Stats {

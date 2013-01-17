@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import nl.haroid.common.Provider;
 import nl.haroid.common.Utils;
+import nl.haroid.service.HistoryMonitor;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -95,6 +96,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.i(LOG_TAG, "onCreateOptionsMenu");
         menu.add(Menu.NONE, R.id.menuSettings, 0, getString(R.string.settings));
+        menu.add(Menu.NONE, R.id.menuDeleteHistory, 0, getString(R.string.removeHistory));
         menu.add(Menu.NONE, R.id.menuAbout, 0, getString(R.string.about));
         return super.onCreateOptionsMenu(menu);
     }
@@ -111,6 +113,9 @@ public final class Haroid extends Activity implements TegoedConsumer {
         switch (item.getItemId()) {
             case R.id.menuSettings:
                 startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+            case R.id.menuDeleteHistory:
+                confirmRemoveHistory();
                 return true;
             case R.id.menuAbout:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -160,19 +165,11 @@ public final class Haroid extends Activity implements TegoedConsumer {
 
     private void initControls() {
         Button tegoedButton = (Button) findViewById(R.id.ButtonTegoed);
-        Button removeHistoryButton = (Button) findViewById(R.id.ButtonRemoveHistory);
 
         tegoedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startHaring();
-            }
-        });
-
-        removeHistoryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                confirmRemoveHistory();
             }
         });
     }
