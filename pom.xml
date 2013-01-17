@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>haroid</groupId>
     <artifactId>haroid-parent</artifactId>
-    <version>1.10-SNAPSHOT</version>
+    <version>1.10</version>
     <packaging>pom</packaging>
     <name>haroid - Parent</name>
 
@@ -78,7 +78,7 @@
                 <plugin>
                     <groupId>com.jayway.maven.plugins.android.generation2</groupId>
                     <artifactId>android-maven-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.5.0</version>
                     <configuration>
                         <androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
                         <assetsDirectory>${project.basedir}/assets</assetsDirectory>
