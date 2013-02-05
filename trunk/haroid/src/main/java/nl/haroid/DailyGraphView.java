@@ -106,7 +106,9 @@ public final class DailyGraphView extends GraphView{
     private void drawDailyUsageBars(Canvas canvas) {
         if (this.usagePointList != null) {
             for (HistoryMonitor.UsagePoint usagePoint : this.usagePointList) {
-                drawDailyUsageBar(canvas, usagePoint);
+                if (usagePoint.getDagInPeriode() > 0) {
+                    drawDailyUsageBar(canvas, usagePoint);
+                }
             }
         }
     }

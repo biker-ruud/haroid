@@ -73,6 +73,7 @@ public final class HistoryMonitor {
         if (balanceList.get(dateCode) != null) {
             amount = balanceList.get(dateCode);
         }
+        int maxBalanceLastPeriod = amount;
         LOGGER.info("max balance of last period: " + amount);
         int currentDay = 0;
         List<UsagePoint> verbruikspuntList = new ArrayList<UsagePoint>();
@@ -91,31 +92,38 @@ public final class HistoryMonitor {
                     int numberOfDays = i - currentDay;
                     int usageTheseDays = amount - amountThisDay;
                     int averageUsage = usageTheseDays / numberOfDays;
-                    for (int j=(currentDay+1); j<=i; j++) {
-                        int balance = -1;
-                        if (j == i) {
-                            balance = amountThisDay;
-                        }
-                        verbruikspuntList.add(new UsagePoint(j, balance, averageUsage));
-                    }
+                    verbruikspuntList.addAll(genereerVerbruikspuntenLijst(currentDay, i, amountThisDay, averageUsage));
                     currentDay = i;
                     amount = amountThisDay;
                 } else if (amountThisDay > amount) {
                     // First day of new period with amount of previous period.
-                    for (int j=(currentDay+1); j<=i; j++) {
-                        int balance = -1;
-                        if (j == i) {
-                            balance = amountThisDay;
-                        }
-                        verbruikspuntList.add(new UsagePoint(j, balance, 0));
-                    }
+                    verbruikspuntList.addAll(genereerVerbruikspuntenLijst(currentDay, i, amountThisDay, 0));
                     currentDay = i;
                     amount = amountThisDay;
                 }
             }
             cal.add(Calendar.DATE, 1); // goto next day
         }
+        // Insert last day of previous period at start of list.
+        if (verbruikspuntList.size() > 0) {
+            UsagePoint firstPoint = verbruikspuntList.get(0);
+            if (firstPoint.getDagInPeriode() == 1 && firstPoint.getBalance() > maxBalanceLastPeriod) {
+                verbruikspuntList.add(0, new UsagePoint(0, maxBalanceLastPeriod, 0));
+            }
+        }
         return Collections.unmodifiableList(verbruikspuntList);
+    }
+
+    private List<UsagePoint> genereerVerbruikspuntenLijst(int currentDay, int i, int amountThisDay, int averageUsage) {
+        List<UsagePoint> verbruikspuntList = new ArrayList<UsagePoint>();
+        for (int j=(currentDay+1); j<=i; j++) {
+            int balance = -1;
+            if (j == i) {
+                balance = amountThisDay;
+            }
+            verbruikspuntList.add(new UsagePoint(j, balance, averageUsage));
+        }
+        return verbruikspuntList;
     }
 
     public void resetHistory() {
