@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.util.Log;
 import nl.haroid.access.BalanceRepository;
+import nl.haroid.access.BalanceRepositoryImpl;
 import nl.haroid.common.Provider;
 import nl.haroid.common.Utils;
 import nl.haroid.service.HistoryMonitor;
@@ -53,7 +54,7 @@ public final class HaroidApp extends Application {
         if (sharedPreferences == null) {
             sharedPreferences = this.getSharedPreferences(SHARED_PREFERENCE_NAME, SHARED_PREFERENCE_MODE);
         }
-        BalanceRepository balanceRepository = new BalanceRepository(new StorageOpenHelperAndroidImpl(this, BalanceRepository.DATABASE_NAME, BalanceRepository.DATABASE_VERSION));
+        BalanceRepository balanceRepository = new BalanceRepositoryImpl(new StorageOpenHelperAndroidImpl(this, BalanceRepositoryImpl.DATABASE_NAME, BalanceRepositoryImpl.DATABASE_VERSION));
         this.historyMonitor = new HistoryMonitor(balanceRepository);
         int startBalance = getStartTegoed();
         if (startBalance > 0) {

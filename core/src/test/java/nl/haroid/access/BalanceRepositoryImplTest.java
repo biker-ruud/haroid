@@ -12,11 +12,11 @@ import java.util.Map;
 /**
  * @author Ruud de Jong
  */
-public class BalanceRepositoryTest {
+public class BalanceRepositoryImplTest {
 
     @Test
     public void basicTest() {
-        StorageOpenHelperSqliteImpl fixture = new StorageOpenHelperSqliteImpl(BalanceRepository.DATABASE_VERSION);
+        StorageOpenHelperSqliteImpl fixture = new StorageOpenHelperSqliteImpl(BalanceRepositoryImpl.DATABASE_VERSION);
         fixture.getWritableStorage();
         fixture.getWritableStorage();
         fixture.getWritableStorage();
@@ -28,7 +28,7 @@ public class BalanceRepositoryTest {
         int balanceToday = 275;
         BundleType bundleType = BundleType.MAIN;
 
-        BalanceRepository fixture = new BalanceRepository(new StorageOpenHelperSqliteImpl(BalanceRepository.DATABASE_VERSION));
+        BalanceRepositoryImpl fixture = new BalanceRepositoryImpl(new StorageOpenHelperSqliteImpl(BalanceRepositoryImpl.DATABASE_VERSION));
         fixture.saveOrUpdate(today, balanceToday, bundleType);
 
         int storedBalance = fixture.getBalance(today, bundleType);
@@ -39,7 +39,7 @@ public class BalanceRepositoryTest {
 
     @Test
     public void testGetBalance() {
-        BalanceRepository fixture = new BalanceRepository(new StorageOpenHelperSqliteImpl(BalanceRepository.DATABASE_VERSION));
+        BalanceRepositoryImpl fixture = new BalanceRepositoryImpl(new StorageOpenHelperSqliteImpl(BalanceRepositoryImpl.DATABASE_VERSION));
         int balance = fixture.getBalance(new Date(), BundleType.MAIN);
         Assert.assertEquals(-1, balance);
     }
@@ -55,7 +55,7 @@ public class BalanceRepositoryTest {
         int balanceToday = 275;
         BundleType bundleType = BundleType.MAIN;
 
-        BalanceRepository fixture = new BalanceRepository(new StorageOpenHelperSqliteImpl(BalanceRepository.DATABASE_VERSION));
+        BalanceRepositoryImpl fixture = new BalanceRepositoryImpl(new StorageOpenHelperSqliteImpl(BalanceRepositoryImpl.DATABASE_VERSION));
         Assert.assertEquals(-1, fixture.getMostRecentBalance(yesterday, tomorrow, bundleType));
 
         fixture.saveOrUpdate(today, balanceToday, bundleType);
@@ -80,7 +80,7 @@ public class BalanceRepositoryTest {
         int balanceDayBeforeYesterday = 270;
         BundleType bundleType = BundleType.MAIN;
 
-        BalanceRepository fixture = new BalanceRepository(new StorageOpenHelperSqliteImpl(BalanceRepository.DATABASE_VERSION));
+        BalanceRepositoryImpl fixture = new BalanceRepositoryImpl(new StorageOpenHelperSqliteImpl(BalanceRepositoryImpl.DATABASE_VERSION));
 
         fixture.saveOrUpdate(today, balanceToday, bundleType);
         fixture.saveOrUpdate(yesterday, balanceYesterday, bundleType);
@@ -99,7 +99,7 @@ public class BalanceRepositoryTest {
         int balanceToday = 275;
         BundleType bundleType = BundleType.MAIN;
 
-        BalanceRepository fixture = new BalanceRepository(new StorageOpenHelperSqliteImpl(BalanceRepository.DATABASE_VERSION));
+        BalanceRepositoryImpl fixture = new BalanceRepositoryImpl(new StorageOpenHelperSqliteImpl(BalanceRepositoryImpl.DATABASE_VERSION));
         fixture.saveOrUpdate(today, balanceToday, bundleType);
         Map<Integer, Integer> resultMap = fixture.getBalanceList(today, bundleType);
 
@@ -114,7 +114,7 @@ public class BalanceRepositoryTest {
 
     @Test
     public void testReset() {
-        BalanceRepository fixture = new BalanceRepository(new StorageOpenHelperSqliteImpl(BalanceRepository.DATABASE_VERSION));
+        BalanceRepositoryImpl fixture = new BalanceRepositoryImpl(new StorageOpenHelperSqliteImpl(BalanceRepositoryImpl.DATABASE_VERSION));
         fixture.reset();
     }
 }

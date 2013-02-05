@@ -131,7 +131,10 @@ public final class MonthlyGraphView extends GraphView {
             int fromPeriod = 0;
             int fromUnit = this.maxUnits;
             for (HistoryMonitor.UsagePoint usagePoint : this.usagePointList) {
-                if (usagePoint.getBalance() != -1) {
+                if (usagePoint.getBalance() != -1 && usagePoint.getDagInPeriode() == 0) {
+                    fromUnit = usagePoint.getBalance();
+                }
+                if (usagePoint.getBalance() != -1 && usagePoint.getDagInPeriode() > 0) {
                     int toPeriod = usagePoint.getDagInPeriode();
                     int toUnit = usagePoint.getBalance();
                     drawCurrentUsageLine(canvas, paint, fromPeriod, fromUnit, toPeriod, toUnit);
