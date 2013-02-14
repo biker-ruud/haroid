@@ -4,6 +4,9 @@ import junit.framework.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -28,6 +31,13 @@ public class UtilsTest {
     public void testNumberOfDaysPreviousMonth() {
         int numberOfDays = Utils.numberOfDaysPreviousMonth();
         Assert.assertTrue(numberOfDays == 30);
+    }
+
+    @Test
+    public void testParseGetal() throws ParseException {
+        String getal = "1.234";
+        int integer = Utils.parseGetal(getal);
+        Assert.assertEquals(1234, integer);
     }
 
     @Test

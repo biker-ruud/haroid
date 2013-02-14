@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,6 +28,16 @@ public final class Utils {
 
     private Utils() {
         // Utility class
+    }
+
+    public static int parseGetal(String getal) throws ParseException {
+        DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+        dfs.setGroupingSeparator('.');
+        dfs.setDecimalSeparator(',');
+        DecimalFormat decimalFormat = new DecimalFormat();
+        decimalFormat.setDecimalFormatSymbols(dfs);
+        Number number = decimalFormat.parse(getal);
+        return number.intValue();
     }
 
     public static int numberOfDaysPreviousMonth() {
