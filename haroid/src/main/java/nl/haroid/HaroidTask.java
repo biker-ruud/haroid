@@ -2,8 +2,11 @@ package nl.haroid;
 
 import android.os.AsyncTask;
 import nl.haroid.common.Provider;
+import nl.haroid.common.Utils;
 import nl.haroid.webclient.HaringHnImpl;
 import nl.haroid.webclient.HaringTmobileImpl;
+
+import java.text.ParseException;
 
 /**
  * @author Ruud de Jong
@@ -37,9 +40,9 @@ public final class HaroidTask extends AsyncTask<String, Void, String> {
     @Override
     protected void onPostExecute(String tegoedString) {
         try {
-            int tegoed = Integer.parseInt(tegoedString);
+            int tegoed = Utils.parseGetal(tegoedString);
             this.tegoedConsumer.setTegoed(tegoed);
-        } catch (NumberFormatException e) {
+        } catch (ParseException e) {
             // Geen getal
             this.tegoedConsumer.setProblem(tegoedString);
         }
