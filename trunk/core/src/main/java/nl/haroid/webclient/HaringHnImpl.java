@@ -56,10 +56,14 @@ public final class HaringHnImpl {
     }
 
     private String haalVerbruikGegevensOp(HttpsSession session) throws IOException {
+        LOGGER.info("***************************************");
+        LOGGER.info("**        VERBRUIK OPHALEN           **");
+        LOGGER.info("***************************************");
         String tegoedIndicator = "minuten";
         InputStream inputStream = session.get(new URL(HttpsSession.PROTOCOL + HOST + RELATIVE_URL_VERBRUIK));
         String body = Utils.toString(inputStream);
         LOGGER.info("Response body size: " + body.length() + " bytes.");
+        LOGGER.debug("Body: " + body);
         inputStream.close();
 
         String tegoedBedrag = Utils.substringBetween(body, "<span class=\"usage\"><span class=\"amount\">", "</span>");
@@ -81,7 +85,12 @@ public final class HaringHnImpl {
     }
 
     private boolean login(HttpsSession session, InputStream inputStream) throws IOException, URISyntaxException {
+        LOGGER.info("***************************************");
+        LOGGER.info("**        INLOGGEN                   **");
+        LOGGER.info("***************************************");
         String body = Utils.toString(inputStream);
+        LOGGER.debug("Response body size: " + body.length() + " bytes.");
+        LOGGER.debug("Body: " + body);
         inputStream.close();
         FormParserUtil.Form form = FormParserUtil.parseForm(body);
 

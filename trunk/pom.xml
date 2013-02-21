@@ -10,6 +10,7 @@
 
     <modules>
         <module>core</module>
+        <module>website-tester</module>
         <module>haroid</module>
         <module>haroid-it</module>
     </modules>
@@ -52,8 +53,18 @@
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>1.6.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-android</artifactId>
                 <version>1.6.1-RC1</version>
+            </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>1.2.16</version>
             </dependency>
 
             <!-- Androlog is a logging and reporting library for Android -->
