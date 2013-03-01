@@ -1,8 +1,11 @@
 package nl.haroid;
 
 import android.os.AsyncTask;
+import android.util.Log;
 import nl.haroid.common.Provider;
 import nl.haroid.common.Utils;
+import nl.haroid.webclient.Haring;
+import nl.haroid.webclient.HaringFactory;
 import nl.haroid.webclient.HaringHnImpl;
 import nl.haroid.webclient.HaringTmobileImpl;
 
@@ -27,14 +30,8 @@ public final class HaroidTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... strings) {
-            switch (provider){
-                case T_MOBILE:
-                    HaringTmobileImpl tmobile = new HaringTmobileImpl();
-                    return tmobile.start(strings[0], strings[1]);
-                default:
-                    HaringHnImpl haring = new HaringHnImpl();
-                    return haring.start(strings[0], strings[1]);
-            }
+        Haring haring = HaringFactory.getInstance().getHaring(provider);
+        return haring.start(strings[0], strings[1]);
     }
 
     @Override

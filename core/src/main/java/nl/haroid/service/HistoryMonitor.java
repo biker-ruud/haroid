@@ -39,9 +39,9 @@ public final class HistoryMonitor {
         }
     }
 
-    public void setTegoed(int dagInPeriode, int tegoed, Date datum) {
-        if (dagInPeriode > 0 && dagInPeriode <= 31 && tegoed >= 0) {
-            LOGGER.info("setTegoed " + tegoed + " voor dag " + dagInPeriode);
+    public void setTegoed(int tegoed, Date datum) {
+        if (tegoed >= 0) {
+            LOGGER.info("setTegoed " + tegoed + " voor dag " + datum);
             balanceRepository.saveOrUpdate(datum, tegoed, BundleType.MAIN);
         }
     }
