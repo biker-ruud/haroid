@@ -207,14 +207,15 @@ public final class Haroid extends Activity implements TegoedConsumer {
     private void setProgressBars(HaroidApp.Stats stats) {
         Log.i(LOG_TAG, "berekenDuurTegoed");
         ProgressBar duurTegoedProgress = (ProgressBar) findViewById(R.id.PbarTijd);
+        TextView tijdView = (TextView) findViewById(R.id.TextTijd);
         if (stats.startBalance == 0) {
             // Niet ingesteld.
             duurTegoedProgress.setProgress(0);
+            tijdView.setText(getString(R.string.duurPeriode) + " (stel startdag in)");
             return;
         }
         duurTegoedProgress.setMax(stats.maxPeriod);
         duurTegoedProgress.setProgress(stats.daysToGoInPeriod);
-        TextView tijdView = (TextView) findViewById(R.id.TextTijd);
         if (stats.daysToGoInPeriod == 1) {
             tijdView.setText(getString(R.string.duurPeriode) + " nog " + stats.daysToGoInPeriod + " dag te gaan.");
         } else if (stats.daysToGoInPeriod < 1) {
@@ -242,16 +243,18 @@ public final class Haroid extends Activity implements TegoedConsumer {
     public void setTegoed(int tegoed) {
         this.app.setCurrentBalance(tegoed);
         int maxTegoed = HaroidApp.getMaxTegoed();
-        if (tegoed >= 0 && maxTegoed > 0) {
+        if (tegoed >= 0) {
             updateLatestUpdate();
             setTegoedProgress(tegoed);
-            List<HistoryMonitor.UsagePoint> usageList = this.app.getUsageList();
-            MonthlyGraphView verbruikGraph = (MonthlyGraphView) findViewById(R.id.MonthlyGraphVerbruik);
-            verbruikGraph.setUsage(usageList);
-            verbruikGraph.invalidate();
-            DailyGraphView dagelijksVerbruikGraph = (DailyGraphView) findViewById(R.id.DailyGraphVerbruik);
-            dagelijksVerbruikGraph.setUsage(usageList);
-            dagelijksVerbruikGraph.invalidate();
+            if (maxTegoed > 0) {
+                List<HistoryMonitor.UsagePoint> usageList = this.app.getUsageList();
+                MonthlyGraphView verbruikGraph = (MonthlyGraphView) findViewById(R.id.MonthlyGraphVerbruik);
+                verbruikGraph.setUsage(usageList);
+                verbruikGraph.invalidate();
+                DailyGraphView dagelijksVerbruikGraph = (DailyGraphView) findViewById(R.id.DailyGraphVerbruik);
+                dagelijksVerbruikGraph.setUsage(usageList);
+                dagelijksVerbruikGraph.invalidate();
+            }
         }
     }
 
@@ -263,18 +266,22 @@ public final class Haroid extends Activity implements TegoedConsumer {
 
     private void setTegoedProgress(int tegoed) {
         Log.i(LOG_TAG, "setTegoedProgress: " + tegoed);
-        int startTegoed = HaroidApp.getStartTegoed();
         int maxTegoed = HaroidApp.getMaxTegoed();
-        if (tegoed >= 0 && maxTegoed > 0) {
+        if (tegoed >= 0) {
             TextView tegoedView = (TextView) findViewById(R.id.TextTegoed);
-            tegoedView.setText(getString(R.string.periodeTegoed) + " " + tegoed + " eenheden.");
-            ProgressBar tegoedProgress = (ProgressBar) findViewById(R.id.PbarTegoed);
-            tegoedProgress.setMax(Math.max(tegoed, maxTegoed));
-            tegoedProgress.setProgress(tegoed);
+            if (maxTegoed > 0) {
+                tegoedView.setText(getString(R.string.periodeTegoed) + " " + tegoed + " eenheden.");
+                ProgressBar tegoedProgress = (ProgressBar) findViewById(R.id.PbarTegoed);
+                tegoedProgress.setMax(Math.max(tegoed, maxTegoed));
+                tegoedProgress.setProgress(tegoed);
+            } else {
+                tegoedView.setText(getString(R.string.periodeTegoed) + " " + tegoed + " eenheden. (stel tegoed in)");
+            }
         }
         int tegoedGisteren = this.app.getBalanceYesterday();
         int verbruikVandaag = tegoedGisteren - tegoed;
         if (tegoedGisteren > -1 && verbruikVandaag >= 0) {
+            int startTegoed = HaroidApp.getStartTegoed();
             int maxPeriod = berekenMaxPeriod(startTegoed);
             int procentueelVerbruik = (100 * verbruikVandaag * maxPeriod) / maxTegoed;
             TextView dagVerbruikView = (TextView) findViewById(R.id.TextDagVerbruik);

@@ -136,12 +136,8 @@ public final class HaroidApp extends Application {
     }
 
     public void setCurrentBalance(int balance) {
-        int maxBalance = getMaxTegoed();
-        int startBalance = getStartTegoed();
-        if (balance >= 0 && maxBalance > 0) {
-            int dagInPeriode = Utils.bepaaldDagInPeriode(startBalance);
-            Log.i(LOG_TAG, "dagInPeriode: " + dagInPeriode);
-            this.historyMonitor.setTegoed(dagInPeriode, balance, new Date());
+        if (balance >= 0) {
+            this.historyMonitor.setTegoed(balance, new Date());
             Date updateDate = new Date();
             SharedPreferences.Editor prefEditor = sharedPreferences.edit();
             prefEditor.putLong(PREF_KEY_LASTEST_UPDATE, updateDate.getTime());
