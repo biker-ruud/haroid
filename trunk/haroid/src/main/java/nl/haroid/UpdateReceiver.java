@@ -32,23 +32,27 @@ public final class UpdateReceiver extends BroadcastReceiver implements TegoedCon
         if (autoUpdateEnabled) {
             ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-            if (networkInfo.isConnected()) {
-                if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
-                    Log.i(LOG_TAG, "WIFI connected.");
-                    updateIfNecessary(HaroidApp.getWifiUpdateInterval());
-                } else if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
-                    Log.i(LOG_TAG, "Mobile connected.");
-                    String updateChannel = HaroidApp.getUpdateChannel();
-                    if (updateChannel.contains("mobile")) {
-                        updateIfNecessary(HaroidApp.getMobileUpdateInterval());
+            if (networkInfo != null) {
+                if (networkInfo.isConnected()) {
+                    if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                        Log.i(LOG_TAG, "WIFI connected.");
+                        updateIfNecessary(HaroidApp.getWifiUpdateInterval());
+                    } else if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
+                        Log.i(LOG_TAG, "Mobile connected.");
+                        String updateChannel = HaroidApp.getUpdateChannel();
+                        if (updateChannel.contains("mobile")) {
+                            updateIfNecessary(HaroidApp.getMobileUpdateInterval());
+                        } else {
+                            Log.i(LOG_TAG, "User does not which to update through mobile.");
+                        }
                     } else {
-                        Log.i(LOG_TAG, "User does not which to update through mobile.");
+                        Log.i(LOG_TAG, "Unsupported network type connected.");
                     }
                 } else {
-                    Log.i(LOG_TAG, "Unsupported network type connected.");
+                    Log.i(LOG_TAG, "Too bad, no network available.");
                 }
             } else {
-                Log.i(LOG_TAG, "Too bad, no network available.");
+                Log.i(LOG_TAG, "No active network available.");
             }
         } else {
             Log.i(LOG_TAG, "Ignoring this intent");
