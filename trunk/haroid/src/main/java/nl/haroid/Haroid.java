@@ -280,8 +280,8 @@ public final class Haroid extends Activity implements TegoedConsumer {
         }
         int tegoedGisteren = this.app.getBalanceYesterday();
         int verbruikVandaag = tegoedGisteren - tegoed;
-        if (tegoedGisteren > -1 && verbruikVandaag >= 0) {
-            int startTegoed = HaroidApp.getStartTegoed();
+        int startTegoed = HaroidApp.getStartTegoed();
+        if (tegoedGisteren > -1 && verbruikVandaag >= 0 && startTegoed > 0 && maxTegoed > 0) {
             int maxPeriod = berekenMaxPeriod(startTegoed);
             int procentueelVerbruik = (100 * verbruikVandaag * maxPeriod) / maxTegoed;
             TextView dagVerbruikView = (TextView) findViewById(R.id.TextDagVerbruik);
