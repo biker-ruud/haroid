@@ -43,4 +43,11 @@ Aantal verbeteringen:
  - T-Mobile gebruikers zien nu 'gebruikersnaam' staan ipv 'email adres'.
  - Probleem met wissen geschiedenis tijdens jaarwisseling mogelijk opgelost.
 
+= 1.11 =
+Nieuwe features:
+ - ondersteuning voor Hollands Nieuwe zakelijk (aparte provider)  Issue #14
+Bugs:
+ - Saldo boven de 999 is nu geen probleem meer.  Issue 15
+ - Nullpointer getackeld bij wisselende netwerk omstandigheden tijdens het updaten.
+ - Indien gebruiker geen tegoed / startdag invult, meer info richting gebruiker.
 
