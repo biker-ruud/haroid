@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>haroid</groupId>
     <artifactId>haroid-parent</artifactId>
-    <version>1.11-SNAPSHOT</version>
+    <version>1.11</version>
     <packaging>pom</packaging>
     <name>haroid - Parent</name>
 
