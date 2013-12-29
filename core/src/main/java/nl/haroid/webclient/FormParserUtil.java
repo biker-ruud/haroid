@@ -65,7 +65,7 @@ final class FormParserUtil {
         return inputs;
     }
 
-    static void postForm(HttpsSession session, Form form) throws IOException, URISyntaxException {
+    static boolean postForm(HttpsSession session, Form form) throws IOException, URISyntaxException {
         LOGGER.info("Raw form action: " + form.action);
         URI previousRequestUri = session.getRequestUrl().toURI();
         URI resolvedFormAction = previousRequestUri.resolve(form.action);
@@ -77,7 +77,20 @@ final class FormParserUtil {
             postParamMap.put(input.getName(), input.getValue());
         }
         InputStream inputStream = session.post(resolvedFormAction.toURL(), postParamMap);
+        String body = Utils.toString(inputStream);
         inputStream.close();
+        FormParserUtil.Form possibleNewLoginForm = FormParserUtil.parseForm(body);
+        if (possibleNewLoginForm != null) {
+            FormParserUtil.Input loginInput = FormParserUtil.getLoginInput(possibleNewLoginForm);
+            FormParserUtil.Input passwordInput = FormParserUtil.getPasswordInput(possibleNewLoginForm);
+            if (loginInput != null && passwordInput != null) {
+                LOGGER.info("********************");
+                LOGGER.info("* INLOGGEN GEFAALD *");
+                LOGGER.info("********************");
+                return false;
+            }
+        }
+        return true;
     }
 
     static Input getLoginInput(Form form) {

@@ -36,12 +36,16 @@ public final class HaroidTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String tegoedString) {
-        try {
-            int tegoed = Utils.parseGetal(tegoedString);
-            this.tegoedConsumer.setTegoed(tegoed);
-        } catch (ParseException e) {
-            // Geen getal
-            this.tegoedConsumer.setProblem(tegoedString);
+        if (tegoedString == null) {
+            this.tegoedConsumer.setProblem(null);
+        } else {
+            try {
+                int tegoed = Utils.parseGetal(tegoedString);
+                this.tegoedConsumer.setTegoed(tegoed);
+            } catch (ParseException e) {
+                // Geen getal
+                this.tegoedConsumer.setProblem(tegoedString);
+            }
         }
     }
 }

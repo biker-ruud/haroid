@@ -64,4 +64,7 @@
     <string name="okButtonText">OK</string>
     <string name="aboutHaroid">Over Haroid</string>
 
+    <!-- Errors -->
+    <string name="geenTegoedError">Geen tegoed gevonden</string>
+
 </resources>

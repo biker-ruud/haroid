@@ -28,6 +28,12 @@ public class HaringHnImplTest {
         HaringHnImpl haring = new HaringHnImpl();
         String response = haring.start(username, password);
         Assert.assertNotNull(response);
+    }
 
+    @Test
+    public void ongeldigeLogin() throws IOException {
+        HaringHnImpl haring = new HaringHnImpl();
+        String response = haring.start("dummy", "dummy");
+        Assert.assertNull(response);
     }
 }
