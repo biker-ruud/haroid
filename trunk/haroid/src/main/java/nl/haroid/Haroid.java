@@ -261,7 +261,11 @@ public final class Haroid extends Activity implements TegoedConsumer {
     @Override
     public void setProblem(String problem) {
         TextView tegoedView = (TextView) findViewById(R.id.TextTegoed);
-        tegoedView.setText(problem);
+        if (problem == null) {
+            tegoedView.setText(getString(R.string.geenTegoedError));
+        } else {
+            tegoedView.setText(problem);
+        }
     }
 
     private void setTegoedProgress(int tegoed) {

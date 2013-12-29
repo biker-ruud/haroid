@@ -30,7 +30,10 @@ public abstract class AbstractHaring implements Haring {
             session = new HttpsSession(new URL(HttpsSession.PROTOCOL + getHost()));
             InputStream inputStream = session.connect(new URL(HttpsSession.PROTOCOL + getHost() + getRelativeStartUrl()));
             if (inputStream != null) {
-                login(session, inputStream);
+                if (!login(session, inputStream)) {
+                    // Login gefaald.
+                    return null;
+                }
                 String tegoed = haalVerbruikGegevensOp(session);
                 LOGGER.debug("Tegoed: " + tegoed);
                 return tegoed;
@@ -84,8 +87,7 @@ public abstract class AbstractHaring implements Haring {
         if (loginInput != null && passwordInput != null) {
             loginInput.value = username;
             passwordInput.value = password;
-            FormParserUtil.postForm(session, form);
-            return true;
+            return FormParserUtil.postForm(session, form);
         } else {
             LOGGER.info("Kan login en password velden NIET vinden op het login scherm.");
             return false;
