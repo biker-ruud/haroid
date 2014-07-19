@@ -46,12 +46,16 @@ public final class SettingsActivity extends PreferenceActivity implements OnShar
     private void addProviderListPreferanceDynamicly() {
         ListPreference listPreference = (ListPreference) findPreference(HaroidApp.PREF_KEY_PROVIDER);
         List<String> providers = new ArrayList<String>();
+        List<String> providerDisplayNames = new ArrayList<String>();
         for (Provider provider : Provider.values()){
-            // TODO (Xilv3r): use cleaner string variable instead of enum name
             providers.add(provider.name());
+            providerDisplayNames.add(provider.getDisplayName());
         }
         CharSequence[] providerlist = providers.toArray(new CharSequence[providers.toArray().length]);
-        listPreference.setEntries(providerlist);
+        CharSequence[] providerDisplayList = providerDisplayNames.toArray(new CharSequence[providerDisplayNames.toArray().length]);
+        //The human-readable array to present as a list.
+        listPreference.setEntries(providerDisplayList);
+        //The array to find the value to save for a preference when an entry from entries is selected.
         listPreference.setEntryValues(providerlist);
         if (listPreference.getValue() == null) {
             listPreference.setValue(Provider.HOLLANDS_NIEUWE.name());
