@@ -16,7 +16,7 @@
     </modules>
 
     <properties>
-        <platform.version>2.2.1</platform.version>
+        <platform.version>4.0.1.2</platform.version>
         <!--<android.sdk.path>/home/ruud/android-sdk-linux</android.sdk.path>-->
         <android.sdk.path>${android_home}</android.sdk.path>
         <android.device>avd_2.2</android.device>
@@ -105,7 +105,7 @@
                         <resourceDirectory>${project.basedir}/res</resourceDirectory>
                         <nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
                         <sdk>
-                            <platform>11</platform>
+                            <platform>16</platform>
                         </sdk>
                         <undeployBeforeDeploy>true</undeployBeforeDeploy>
                         <manifest>

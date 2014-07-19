@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="11" android:versionName="1.11" package="nl.haroid">
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="11"/>
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="16"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
@@ -12,7 +12,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SettingsActivity"/>
+        <!-- API level 16 uses 'parentActivityName' -->
+        <!-- API level below 16 uses 'meta-data' -->
+        <activity android:name=".SettingsActivity" android:parentActivityName=".Haroid">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                       android:value="nl.haroid.Haroid"/>
+        </activity>
 
         <receiver android:name=".UpdateReceiver" android:process=":remote">
             <intent-filter>
