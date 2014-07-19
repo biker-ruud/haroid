@@ -23,10 +23,10 @@
     <!-- Contract Settings -->
     <string name="abonnementPrefCategory">Abonnement instellingen</string>
 
-    <string name="tegoed_setting_pretext">Max tegoed is: </string>
-    <string name="startdag_setting_pretext">Start dag van tegoed is: </string>
+    <string name="tegoed_setting_pretext">Bundel: </string>
+    <string name="startdag_setting_pretext">Start dag van bundel is: </string>
 
-    <string name="tegoed_per_maand">Tegoed</string>
+    <string name="tegoed_per_maand">Bundel</string>
     <string name="startdag_tegoed">Startdag</string>
 
 
