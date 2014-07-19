@@ -21,42 +21,44 @@ Auto update functionaliteit
 
 = 1.7 =    
 
-Issue #7 opgelost: First-Use scherm neemt je mee naar de instellingen pagina bij de eerste keer opstarten. Zonder instellingen doet Haroid niets.
-Issue #8 opgelost: About scherm opgenomen onder de menu items. Nu is altijd het logo en versienummer van Haroid te achterhalen.
-Issue #9 opgelost: Abonnementen 75 en 175 werkten niet goed, omdat deze geen internet hebben. Dit is nu verholpen. (nog niet helemaal)
+ * Issue #7 opgelost: First-Use scherm neemt je mee naar de instellingen pagina bij de eerste keer opstarten. Zonder instellingen doet Haroid niets.
+ * Issue #8 opgelost: About scherm opgenomen onder de menu items. Nu is altijd het logo en versienummer van Haroid te achterhalen.
+ * Issue #9 opgelost: Abonnementen 75 en 175 werkten niet goed, omdat deze geen internet hebben. Dit is nu verholpen. (nog niet helemaal)
 
 = 1.8 =    
-Issue #13 opgelost: Een leeg tegoed geeft geen crash meer.
+ * Issue #13 opgelost: Een leeg tegoed geeft geen crash meer.
 
 App is nu voorzien van:
- - database support (ipv preferences, als voorbereiding voor multi-bundle)
- - T-Mobile support
- - slf4j voor logging
- - Action Menu support (target SDK is hierdoor op 11 komen te liggen: Android 3.0)
+ * database support (ipv preferences, als voorbereiding voor multi-bundle)
+ * T-Mobile support
+ * slf4j voor logging
+ * Action Menu support (target SDK is hierdoor op 11 komen te liggen: Android 3.0)
 
 = 1.9 =
 Kleine bug uit 1.8 opgelost.
 
 = 1.10 =
 Aantal verbeteringen:
- - 'Wis geschiedenis'-knop naar menu verplaatst
- - T-Mobile gebruikers zien nu 'gebruikersnaam' staan ipv 'email adres'.
- - Probleem met wissen geschiedenis tijdens jaarwisseling mogelijk opgelost.
+ * 'Wis geschiedenis'-knop naar menu verplaatst
+ * T-Mobile gebruikers zien nu 'gebruikersnaam' staan ipv 'email adres'.
+ * Probleem met wissen geschiedenis tijdens jaarwisseling mogelijk opgelost.
 
 = 1.11 =
 Nieuwe features:
- - ondersteuning voor Hollands Nieuwe zakelijk (aparte provider)  Issue #14
+ * ondersteuning voor Hollands Nieuwe zakelijk (aparte provider)  Issue #14
 Bugs:
- - Saldo boven de 999 is nu geen probleem meer.  Issue 15
- - Nullpointer getackeld bij wisselende netwerk omstandigheden tijdens het updaten.
- - Indien gebruiker geen tegoed / startdag invult, meer info richting gebruiker.
+ * Saldo boven de 999 is nu geen probleem meer.  Issue 15
+ * Nullpointer getackeld bij wisselende netwerk omstandigheden tijdens het updaten.
+ * Indien gebruiker geen tegoed / startdag invult, meer info richting gebruiker.
 
 = 1.12 =
 Download: https://drive.google.com/folderview?id=0B6rV0U6zi0xcUS1uekQyQkdCcG8&usp=sharing
 Google heeft de Downloads gesloten. De nieuwe versie is nu te vinden via mijn Google Drive.
 Nieuwe features:
- - light thema voor Android 3 en hoger
- - "bekijk tegoed" knop verplaatst naar ActionBar
- - Up navigation geintroduceerd
- - Betere teksten bij kiezen van provider
- - TargetSDK naar 16 (Android 4.1)
+ * light thema voor Android 3 en hoger
+ * "bekijk tegoed" knop verplaatst naar ActionBar
+ * Up navigation geintroduceerd
+ * Betere teksten bij kiezen van provider
+ * TargetSDK naar 16 (Android 4.1)
+Bugs:
+ * Saldo boven de 999 viel buiten het scherm van de grafiek.
