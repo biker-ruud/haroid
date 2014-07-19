@@ -1,9 +1,8 @@
 package nl.haroid.webclient;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.impl.SimpleLogger;
 
 import java.io.IOException;
 import java.util.Properties;
