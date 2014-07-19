@@ -1,7 +1,9 @@
 package nl.haroid;
 
+import android.app.ActionBar;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -33,6 +35,12 @@ public final class SettingsActivity extends PreferenceActivity implements OnShar
         addPreferencesFromResource(R.xml.preferences);
         addProviderListPreferanceDynamicly();
         createPretextMap();
+
+        // Make sure we're running on Honeycomb or higher to use ActionBar APIs
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            ActionBar actionBar = getActionBar();
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     private void addProviderListPreferanceDynamicly() {
