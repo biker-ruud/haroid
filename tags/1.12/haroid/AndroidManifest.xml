@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="12" android:versionName="1.12" package="nl.haroid">
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="16"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <application android:icon="@drawable/icon" android:label="@string/app_name" android:name="nl.haroid.HaroidApp" android:theme="@style/LightThemeSelector">
+        <activity android:label="@string/app_name" android:name=".Haroid">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- API level 16 uses 'parentActivityName' -->
+        <!-- API level below 16 uses 'meta-data' -->
+        <activity android:name=".SettingsActivity" android:parentActivityName=".Haroid">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                       android:value="nl.haroid.Haroid"/>
+        </activity>
+
+        <receiver android:name=".UpdateReceiver" android:process=":remote">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>
