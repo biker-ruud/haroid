@@ -55,8 +55,7 @@ public final class MonthlyGraphView extends GraphView {
 
     @Override
     void drawInternal(Canvas canvas) {
-        Paint paint = new Paint();
-        paint.setColor(Color.WHITE);
+        Paint paint = getSolidLinePaint();
         drawGraphXaxis(canvas, paint);
         drawGraphYaxis(canvas, paint);
         drawAverageUsageLine(canvas);
@@ -95,8 +94,7 @@ public final class MonthlyGraphView extends GraphView {
         float yCoordinate = ((getMaxY() - getMinY()) * usage) + getMinY();
         float markerXcoordinateStart = getMinX();
         float markerXcoordinateEnd = markerXcoordinateStart - getHorizontalMarkerSize();
-        Paint paint = new Paint();
-        paint.setColor(Color.WHITE);
+        Paint paint = getSolidLinePaint();
         canvas.drawLine(markerXcoordinateStart, yCoordinate, markerXcoordinateEnd, yCoordinate, paint);
         paint.setTextSize(getTextSize());
         paint.setTextAlign(Paint.Align.RIGHT);
