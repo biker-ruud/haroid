@@ -51,3 +51,12 @@ Bugs:
  - Nullpointer getackeld bij wisselende netwerk omstandigheden tijdens het updaten.
  - Indien gebruiker geen tegoed / startdag invult, meer info richting gebruiker.
 
+= 1.12 =
+Download: https://drive.google.com/folderview?id=0B6rV0U6zi0xcUS1uekQyQkdCcG8&usp=sharing
+Google heeft de Downloads gesloten. De nieuwe versie is nu te vinden via mijn Google Drive.
+Nieuwe features:
+ - light thema voor Android 3 en hoger
+ - "bekijk tegoed" knop verplaatst naar ActionBar
+ - Up navigation geintroduceerd
+ - Betere teksten bij kiezen van provider
+ - TargetSDK naar 16 (Android 4.1)
