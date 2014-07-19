@@ -11,4 +11,6 @@ http://haroid.googlecode.com/svn/wiki/images/haroid_main_screen.png
 
 = Instellingen scherm =
 
+ * Hier moet nog een nieuwe screenshot komen met het nieuwe Light thema.
+
 http://haroid.googlecode.com/svn/wiki/images/haroid_settings_screen.png
