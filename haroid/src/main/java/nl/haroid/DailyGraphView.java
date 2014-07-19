@@ -2,6 +2,7 @@ package nl.haroid;
 
 import android.content.Context;
 import android.graphics.*;
+import android.os.Build;
 import android.util.AttributeSet;
 import nl.haroid.service.HistoryMonitor;
 
@@ -62,12 +63,6 @@ public final class DailyGraphView extends GraphView{
         }
     }
 
-    private Paint getWhitePaint() {
-        Paint paint = new Paint();
-        paint.setColor(Color.WHITE);
-        return paint;
-    }
-
     private void calculateDailyAverage() {
         if (this.maxPeriod > 0 && this.maxUnits > 0) {
             this.dailyAverage = ((float)maxUnits) / ((float)maxPeriod);
@@ -75,12 +70,12 @@ public final class DailyGraphView extends GraphView{
     }
 
     private void drawGraphXaxis(Canvas canvas) {
-        canvas.drawLine(getMinX(), getMinY(), getMaxX(), getMinY(), getWhitePaint());
+        canvas.drawLine(getMinX(), getMinY(), getMaxX(), getMinY(), getSolidLinePaint());
         drawHorizontalMarkers(canvas);
     }
 
     private void drawGraphYaxis(Canvas canvas) {
-        canvas.drawLine(getMinX(), getMinY(), getMinX(), getMaxY(), getWhitePaint());
+        canvas.drawLine(getMinX(), getMinY(), getMinX(), getMaxY(), getSolidLinePaint());
         if (this.maxGraph > 0) {
             int markerSize = this.maxGraph / 4;
             drawVerticalMarker(markerSize, canvas);
@@ -128,7 +123,7 @@ public final class DailyGraphView extends GraphView{
         int averagedBalance = this.maxUnits - ((usagePoint.getDagInPeriode() * this.maxUnits) / this.maxPeriod);
         boolean currentBalanceLowerThanAverage = usagePoint.getBalance() < averagedBalance;
 
-        Paint paint = getWhitePaint();
+        Paint paint = getSolidLinePaint();
         paint.setStrokeWidth(0f);
         if (currentBalanceLowerThanAverage && usagePoint.getBalance() != -1) {
             paint.setColor(Color.RED);
@@ -138,10 +133,6 @@ public final class DailyGraphView extends GraphView{
             paint.setColor(Color.rgb(255, 165, 0));
         }
         canvas.drawRect(leftXCoordinate, yCoordinate, rightXCoordinate, getMinY(), paint);
-//        if (usagePoint.getDagInPeriode() % 5 == 0) {
-//            float markerXCoordinate = (leftXCoordinate + rightXCoordinate) / 2.0f;
-//            drawHorizontalMarkerLine(usagePoint.getDagInPeriode(), markerXCoordinate, canvas);
-//        }
     }
 
     private void drawHorizontalMarkers(Canvas canvas) {
@@ -164,7 +155,7 @@ public final class DailyGraphView extends GraphView{
     private void drawHorizontalMarkerLine(int markerPos, float markerXCoordinate, Canvas canvas) {
         float markerYcoordinateStart = getMinY();
         float markerYcoordinateEnd = markerYcoordinateStart + getVerticalMarkerSize();
-        Paint paint = getWhitePaint();
+        Paint paint = getSolidLinePaint();
         canvas.drawLine(markerXCoordinate, markerYcoordinateStart, markerXCoordinate, markerYcoordinateEnd, paint);
         paint.setTextSize(getTextSize());
         paint.setTextAlign(Paint.Align.CENTER);
@@ -176,7 +167,7 @@ public final class DailyGraphView extends GraphView{
         float yCoordinate = ((getMaxY() - getMinY()) * usage) + getMinY();
         float markerXcoordinateStart = getMinX();
         float markerXcoordinateEnd = markerXcoordinateStart - getHorizontalMarkerSize();
-        Paint paint = getWhitePaint();
+        Paint paint = getSolidLinePaint();
         canvas.drawLine(markerXcoordinateStart, yCoordinate, markerXcoordinateEnd, yCoordinate, paint);
         paint.setTextSize(getTextSize());
         paint.setTextAlign(Paint.Align.RIGHT);

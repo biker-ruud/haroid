@@ -2,6 +2,7 @@ package nl.haroid;
 
 import android.content.Context;
 import android.graphics.*;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -13,7 +14,7 @@ import java.util.List;
  */
 abstract class GraphView extends View {
     private static final String LOG_TAG = "GraphView";
-    private static final float MARGIN_LEFT_PERCENTAGE = 6.0f;
+    private static final float MARGIN_LEFT_PERCENTAGE = 8.0f;
     private static final float MARGIN_RIGHT_PERCENTAGE = 2.0f;
     private static final float MARGIN_TOP_PERCENTAGE = 2.0f;
     private static final float MARGIN_BOTTOM_PERCENTAGE = 6.0f;
@@ -45,7 +46,6 @@ abstract class GraphView extends View {
     protected final void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
-        int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
         this.measuredWidth = parentWidth;
         this.measuredHeight = (parentWidth * 3) / 4;
         Log.i(LOG_TAG, "setMeasuredDimension: " + this.measuredWidth + ", " + this.measuredHeight);
@@ -102,6 +102,18 @@ abstract class GraphView extends View {
         double base = Math.pow(10.0d, magnitude-1.0d);
         double graphHeight = Math.ceil(maxUnitDouble / base) * base;
         return (int) graphHeight;
+    }
+
+    protected Paint getSolidLinePaint() {
+        Paint paint = new Paint();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            // Newer Android uses Light theme, so black lines
+            paint.setColor(Color.BLACK);
+        } else {
+            // Old Android uses Black theme, so white lines
+            paint.setColor(Color.WHITE);
+        }
+        return paint;
     }
 
 }

@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -47,7 +48,6 @@ public final class Haroid extends Activity implements TegoedConsumer {
         this.app = HaroidApp.getInstance();
 
         setContentView(R.layout.main);
-        initControls();
     }
 
     @Override
@@ -95,9 +95,9 @@ public final class Haroid extends Activity implements TegoedConsumer {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.i(LOG_TAG, "onCreateOptionsMenu");
-        menu.add(Menu.NONE, R.id.menuSettings, 0, getString(R.string.settings));
-        menu.add(Menu.NONE, R.id.menuDeleteHistory, 0, getString(R.string.removeHistory));
-        menu.add(Menu.NONE, R.id.menuAbout, 0, getString(R.string.about));
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -111,6 +111,9 @@ public final class Haroid extends Activity implements TegoedConsumer {
             versionName = "";
         }
         switch (item.getItemId()) {
+            case R.id.menuRefresh:
+                startHaring();
+                return true;
             case R.id.menuSettings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
@@ -161,17 +164,6 @@ public final class Haroid extends Activity implements TegoedConsumer {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             latestUpdateText.setText(latestUpdatePretext + " " + sdf.format(latestUpdateDate));
         }
-    }
-
-    private void initControls() {
-        Button tegoedButton = (Button) findViewById(R.id.ButtonTegoed);
-
-        tegoedButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startHaring();
-            }
-        });
     }
 
     private void startHaring() {
