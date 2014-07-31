@@ -5,12 +5,15 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -32,6 +35,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
 
     private boolean firstTime = true;
     private HaroidApp app;
+    private MenuItem refreshItem;
 
     /**
      * Called when the activity is first created.
@@ -98,6 +102,24 @@ public final class Haroid extends Activity implements TegoedConsumer {
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
+        refreshItem = menu.findItem(R.id.menuRefresh);
+        // Make sure we're running on Honeycomb or higher to use ActionBar APIs
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            refreshItem.getActionView().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startHaring();
+                }
+            });
+        } else {
+            refreshItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener(){
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    startHaring();
+                    return true;
+                }
+            });
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -112,7 +134,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
         }
         switch (item.getItemId()) {
             case R.id.menuRefresh:
-                startHaring();
+                // Menu refresh has it's own onclick handler
                 return true;
             case R.id.menuSettings:
                 startActivity(new Intent(this, SettingsActivity.class));
@@ -167,6 +189,13 @@ public final class Haroid extends Activity implements TegoedConsumer {
     }
 
     private void startHaring() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            /* Attach a rotating ImageView to the refresh item as an ActionView */
+            Animation rotation = AnimationUtils.loadAnimation(this, R.anim.clockwise_refresh);
+            rotation.setRepeatCount(Animation.INFINITE);
+            refreshItem.getActionView().startAnimation(rotation);
+        }
+
         String emailAdres = HaroidApp.getEmailAdres();
         String wachtwoord = HaroidApp.getPassword();
         Provider provider = Provider.valueOf(HaroidApp.getProvider());
@@ -233,6 +262,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
 
     @Override
     public void setTegoed(int tegoed) {
+        stopRefreshAnimation();
         this.app.setCurrentBalance(tegoed);
         int maxTegoed = HaroidApp.getMaxTegoed();
         if (tegoed >= 0) {
@@ -250,8 +280,17 @@ public final class Haroid extends Activity implements TegoedConsumer {
         }
     }
 
+    private void stopRefreshAnimation() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if (refreshItem != null && refreshItem.getActionView() != null) {
+                refreshItem.getActionView().clearAnimation();
+            }
+        }
+    }
+
     @Override
     public void setProblem(String problem) {
+        stopRefreshAnimation();
         TextView tegoedView = (TextView) findViewById(R.id.TextTegoed);
         if (problem == null) {
             tegoedView.setText(getString(R.string.geenTegoedError));

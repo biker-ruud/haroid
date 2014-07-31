@@ -4,7 +4,7 @@
     <item
             android:id="@+id/menuRefresh"
             android:title="@string/bekijktegoed"
-            android:icon="@drawable/ic_refresh"
+            android:actionLayout="@layout/refresh_action_view"
             android:showAsAction="always"/>
     <item
             android:id="@+id/menuSettings"
