@@ -1,11 +1,14 @@
 package nl.haroid;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.util.Log;
 import nl.haroid.access.BalanceRepository;
 import nl.haroid.access.BalanceRepositoryImpl;
 import nl.haroid.common.Provider;
+import nl.haroid.common.Theme;
 import nl.haroid.common.Utils;
 import nl.haroid.service.HistoryMonitor;
 import nl.haroid.storage.StorageOpenHelperAndroidImpl;
@@ -32,6 +35,7 @@ public final class HaroidApp extends Application {
     public static final String PREF_KEY_WIFI_UPDATE_INTERVAL = "pref_wifi_update_interval";
     public static final String PREF_KEY_MOBILE_UPDATE_INTERVAL = "pref_mobile_update_interval";
     public static final String PREF_KEY_LASTEST_UPDATE = "pref_latest_update";
+    public static final String PREF_KEY_THEME = "pref_theme";
 
     public static final String ALARM_MANAGER_SET = "alarm manager set";
 
@@ -54,6 +58,7 @@ public final class HaroidApp extends Application {
         if (sharedPreferences == null) {
             sharedPreferences = this.getSharedPreferences(SHARED_PREFERENCE_NAME, SHARED_PREFERENCE_MODE);
         }
+        setCustomTheme();
         BalanceRepository balanceRepository = new BalanceRepositoryImpl(new StorageOpenHelperAndroidImpl(this, BalanceRepositoryImpl.DATABASE_NAME, BalanceRepositoryImpl.DATABASE_VERSION));
         this.historyMonitor = new HistoryMonitor(balanceRepository);
         int startBalance = getStartTegoed();
@@ -75,6 +80,32 @@ public final class HaroidApp extends Application {
             }
         }
         INSTANCE = this;
+    }
+
+    private void setCustomTheme() {
+        setTheme(getCustomTheme());
+    }
+
+    private int getCustomTheme() {
+        Theme defaultTheme = Theme.DARK;
+        int darkTheme = android.R.style.Theme_Black;
+        int lightTheme = android.R.style.Theme_Light;
+        // Make sure we're running on Honeycomb or higher to use ActionBar APIs
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            defaultTheme = Theme.LIGHT;
+            darkTheme = android.R.style.Theme_Holo;
+            lightTheme = android.R.style.Theme_Holo_Light;
+        }
+        Theme chosenTheme = Theme.valueOf(sharedPreferences.getString(PREF_KEY_THEME, defaultTheme.name()));
+        if (chosenTheme == Theme.LIGHT) {
+            return lightTheme;
+        } else {
+            return darkTheme;
+        }
+    }
+
+    public void setCustomTheme(Activity activity) {
+        activity.setTheme(getCustomTheme());
     }
 
     public static HaroidApp getInstance() {

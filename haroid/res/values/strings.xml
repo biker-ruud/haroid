@@ -39,6 +39,8 @@
     <string name="wifi_update_interval">Wifi update interval</string>
     <string name="mobile_update_interval">Mobiel update interval</string>
     <string name="update_interval_pretext">Interval: </string>
+    <string name="theme">Thema</string>
+    <string name="theme_pretext">Thema: </string>
 
     <!-- Main screen -->
     <!-- Main screen buttons -->
@@ -63,6 +65,12 @@
     <!-- About alert dialog -->
     <string name="okButtonText">OK</string>
     <string name="aboutHaroid">Over Haroid</string>
+
+    <!-- Theme change warning dialog -->
+    <string name="restartRequired">Herstart vereist</string>
+    <string name="themeChangeRequiresRestart">Wijziging van thema vereist herstart van Haroid. Weet u het zeker?</string>
+    <string name="restart">Herstart</string>
+    <string name="undoChange">Terug</string>
 
     <!-- Errors -->
     <string name="geenTegoedError">Geen tegoed gevonden</string>

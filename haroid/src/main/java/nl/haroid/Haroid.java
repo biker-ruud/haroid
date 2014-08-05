@@ -46,12 +46,16 @@ public final class Haroid extends Activity implements TegoedConsumer {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         Log.i(LOG_TAG, "onCreate");
         this.app = HaroidApp.getInstance();
-
+        this.app.setCustomTheme(this);
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        if (getIntent().getBooleanExtra("EXIT", false)) {
+            Log.i(LOG_TAG, "onCreate, finishing main activity.");
+            closeApplication();
+        }
     }
 
     @Override

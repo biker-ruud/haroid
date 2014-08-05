@@ -30,6 +30,9 @@
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/backgroundPrefCategory">
+        <ListPreference
+                android:title="@string/theme"
+                android:key="pref_theme"/>
         <CheckBoxPreference
                 android:title="@string/auto_update"
                 android:key="pref_enable_auto_update"/>
