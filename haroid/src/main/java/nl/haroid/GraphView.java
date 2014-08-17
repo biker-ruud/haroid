@@ -6,6 +6,8 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import nl.haroid.common.Theme;
+import nl.haroid.util.ThemeSwitcherUtil;
 
 import java.util.List;
 
@@ -106,7 +108,7 @@ abstract class GraphView extends View {
 
     protected Paint getSolidLinePaint() {
         Paint paint = new Paint();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        if (ThemeSwitcherUtil.getChosenTheme() == Theme.LIGHT) {
             // Newer Android uses Light theme, so black lines
             paint.setColor(Color.BLACK);
         } else {

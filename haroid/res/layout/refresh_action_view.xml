@@ -4,6 +4,6 @@
            android:id="@+id/imageRefresh"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
-           android:src="@drawable/ic_refresh"
+           android:src="@drawable/holo_light_ic_action_refresh"
            android:contentDescription="@string/bekijktegoed">
 </ImageView>

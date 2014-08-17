@@ -16,6 +16,7 @@ import android.preference.PreferenceActivity;
 import android.util.Log;
 import nl.haroid.common.Provider;
 import nl.haroid.common.Theme;
+import nl.haroid.util.ThemeSwitcherUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ public final class SettingsActivity extends PreferenceActivity implements OnShar
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        HaroidApp.getInstance().setCustomTheme(this);
+        ThemeSwitcherUtil.setCustomTheme(this);
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
         addProviderListPreferanceDynamically();
@@ -69,60 +70,7 @@ public final class SettingsActivity extends PreferenceActivity implements OnShar
     }
 
     private void addThemeListPreferanceDynamically() {
-        ListPreference listPreference = (ListPreference) findPreference(HaroidApp.PREF_KEY_THEME);
-        List<String> themes = new ArrayList<String>();
-        List<String> themeDisplayNames = new ArrayList<String>();
-        for (Theme theme : Theme.values()){
-            themes.add(theme.name());
-            themeDisplayNames.add(theme.getDisplayName());
-        }
-        CharSequence[] themeList = themes.toArray(new CharSequence[themes.toArray().length]);
-        CharSequence[] themeDisplayList = themeDisplayNames.toArray(new CharSequence[themeDisplayNames.toArray().length]);
-        //The human-readable array to present as a list.
-        listPreference.setEntries(themeDisplayList);
-        //The array to find the value to save for a preference when an entry from entries is selected.
-        listPreference.setEntryValues(themeList);
-        if (listPreference.getValue() == null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                listPreference.setValue(Theme.LIGHT.name());
-            } else {
-                listPreference.setValue(Theme.DARK.name());
-            }
-        }
-
-        listPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
-                final ListPreference listPreference = (ListPreference) preference;
-                final String selectedTheme = (String) newValue;
-                Log.i(LOG_TAG, "new value: " + newValue);
-                Log.i(LOG_TAG, "new value class: " + newValue.getClass());
-                AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
-                builder.setIcon(R.drawable.icon);
-                builder.setTitle(getString(R.string.restartRequired));
-                builder.setMessage(getString(R.string.themeChangeRequiresRestart))
-                        .setCancelable(true)
-                        .setPositiveButton(getString(R.string.restart), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Log.i(LOG_TAG, "User clicked restart button.");
-                                listPreference.setValue(selectedTheme);
-                                Log.i(LOG_TAG, "User is sure to restart app.");
-                                Intent intent = new Intent(getApplicationContext(), Haroid.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                intent.putExtra("EXIT", true);
-                                startActivity(intent);
-                            }
-                        })
-                        .setNegativeButton(getString(R.string.undoChange), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Log.i(LOG_TAG, "User clicked undo button.");
-                            }
-                        });
-                AlertDialog alert = builder.create();
-                alert.show();
-                return false;
-            }
-        });
+        ThemeSwitcherUtil.setupThemeListPreference(this);
     }
 
     @Override

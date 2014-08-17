@@ -1,9 +1,7 @@
 package nl.haroid;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.util.Log;
 import nl.haroid.access.BalanceRepository;
 import nl.haroid.access.BalanceRepositoryImpl;
@@ -12,6 +10,7 @@ import nl.haroid.common.Theme;
 import nl.haroid.common.Utils;
 import nl.haroid.service.HistoryMonitor;
 import nl.haroid.storage.StorageOpenHelperAndroidImpl;
+import nl.haroid.util.ThemeSwitcherUtil;
 
 import java.text.DecimalFormat;
 import java.util.Calendar;
@@ -83,35 +82,17 @@ public final class HaroidApp extends Application {
     }
 
     private void setCustomTheme() {
-        setTheme(getCustomTheme());
-    }
-
-    private int getCustomTheme() {
-        Theme defaultTheme = Theme.DARK;
-        int darkTheme = android.R.style.Theme_Black;
-        int lightTheme = android.R.style.Theme_Light;
-        // Make sure we're running on Honeycomb or higher to use ActionBar APIs
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            defaultTheme = Theme.LIGHT;
-            darkTheme = android.R.style.Theme_Holo;
-            lightTheme = android.R.style.Theme_Holo_Light;
-        }
-        Theme chosenTheme = Theme.valueOf(sharedPreferences.getString(PREF_KEY_THEME, defaultTheme.name()));
-        if (chosenTheme == Theme.LIGHT) {
-            return lightTheme;
-        } else {
-            return darkTheme;
-        }
-    }
-
-    public void setCustomTheme(Activity activity) {
-        activity.setTheme(getCustomTheme());
+        setTheme(ThemeSwitcherUtil.getCustomThemeStyle());
     }
 
     public static HaroidApp getInstance() {
         return INSTANCE;
     }
-    
+
+    public static String getTheme(Theme defaultTheme) {
+        return sharedPreferences.getString(HaroidApp.PREF_KEY_THEME, defaultTheme.name());
+    }
+
     public static String getProvider() {
         return sharedPreferences.getString(PREF_KEY_PROVIDER, Provider.HOLLANDS_NIEUWE.name());
     }

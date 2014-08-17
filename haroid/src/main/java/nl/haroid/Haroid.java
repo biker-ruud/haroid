@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,11 +16,13 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import nl.haroid.common.Provider;
 import nl.haroid.common.Utils;
 import nl.haroid.service.HistoryMonitor;
+import nl.haroid.util.ThemeSwitcherUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -46,9 +49,10 @@ public final class Haroid extends Activity implements TegoedConsumer {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        ThemeSwitcherUtil.setCustomTheme(this);
+
         Log.i(LOG_TAG, "onCreate");
         this.app = HaroidApp.getInstance();
-        this.app.setCustomTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
@@ -104,8 +108,8 @@ public final class Haroid extends Activity implements TegoedConsumer {
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.i(LOG_TAG, "onCreateOptionsMenu");
         // Inflate the menu items for use in the action bar
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu, menu);
         refreshItem = menu.findItem(R.id.menuRefresh);
         // Make sure we're running on Honeycomb or higher to use ActionBar APIs
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -115,6 +119,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
                     startHaring();
                 }
             });
+            ThemeSwitcherUtil.setThemedRefreshIcon(refreshItem.getActionView());
         } else {
             refreshItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener(){
                 @Override
@@ -124,6 +129,7 @@ public final class Haroid extends Activity implements TegoedConsumer {
                 }
             });
         }
+
         return super.onCreateOptionsMenu(menu);
     }
 
