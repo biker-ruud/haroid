@@ -36,7 +36,10 @@ public final class ThemeSwitcherUtil {
         int darkTheme = android.R.style.Theme_Black;
         int lightTheme = android.R.style.Theme_Light;
         // Make sure we're running on Honeycomb or higher to use ActionBar APIs
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            darkTheme = android.R.style.Theme_Material;
+            lightTheme = android.R.style.Theme_Material_Light;
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             darkTheme = android.R.style.Theme_Holo;
             lightTheme = android.R.style.Theme_Holo_Light;
         }

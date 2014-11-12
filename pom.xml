@@ -16,7 +16,8 @@
     </modules>
 
     <properties>
-        <platform.version>4.0.1.2</platform.version>
+        <!--<platform.version>4.0.1.2</platform.version>-->
+        <platform.version>5.0.0.0</platform.version>
         <!--<android.sdk.path>/home/ruud/android-sdk-linux</android.sdk.path>-->
         <android.sdk.path>${android_home}</android.sdk.path>
         <android.device>avd_2.2</android.device>
@@ -33,12 +34,12 @@
                 <version>${platform.version}</version>
                 <scope>provided</scope>
             </dependency>
-            <dependency>
-                <groupId>com.google.android</groupId>
-                <artifactId>android-test</artifactId>
-                <version>${platform.version}</version>
-                <scope>provided</scope>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>com.google.android</groupId>-->
+                <!--<artifactId>android-test</artifactId>-->
+                <!--<version>${platform.version}</version>-->
+                <!--<scope>provided</scope>-->
+            <!--</dependency>-->
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
@@ -105,7 +106,10 @@
                         <resourceDirectory>${project.basedir}/res</resourceDirectory>
                         <nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
                         <sdk>
-                            <platform>16</platform>
+                            <!-- min platform = 8 -->
+                            <!-- target platform = 16 -->
+                            <!-- Material Theme = 21-->
+                            <platform>21</platform>
                         </sdk>
                         <undeployBeforeDeploy>true</undeployBeforeDeploy>
                         <manifest>
