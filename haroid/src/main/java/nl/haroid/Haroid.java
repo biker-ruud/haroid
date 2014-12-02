@@ -232,6 +232,11 @@ public final class Haroid extends Activity implements TegoedConsumer {
             dagelijksVerbruikGraph.setMaxUnits(maxTegoed);
             dagelijksVerbruikGraph.setUsage(usageList);
             dagelijksVerbruikGraph.invalidate();
+            GaugeView odoMeter = (GaugeView) findViewById(R.id.OdoMeter);
+            odoMeter.setMaxPeriod(maxPeriod);
+            odoMeter.setMaxUnits(maxTegoed);
+            odoMeter.setUsage(usageList);
+            odoMeter.invalidate();
         }
     }
 

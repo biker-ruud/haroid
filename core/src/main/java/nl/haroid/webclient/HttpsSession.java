@@ -224,6 +224,9 @@ public final class HttpsSession {
     }
 
     private Map<String, String> getCookies(Map<String, List<String>> headerMap) {
+        if (headerMap == null) {
+            return Collections.emptyMap();
+        }
         Set<String> headerKeySet = headerMap.keySet();
         if (headerKeySet == null) {
             return Collections.emptyMap();

@@ -9,7 +9,10 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import nl.haroid.common.Theme;
+import nl.haroid.service.HistoryMonitor;
 import nl.haroid.util.ThemeSwitcherUtil;
+
+import java.util.List;
 
 /**
  * @author Ruud de Jong
@@ -24,10 +27,16 @@ public final class GaugeView extends View {
     private Paint mediumTickPaint;
     private Paint largeTickPaint;
     private Paint needlePaint;
-    private Paint whitePaint;
     private Paint redPaint;
     private Paint orangePaint;
     private Paint greenPaint;
+    private int maxUnits;
+    private int maxPeriod;
+    private int maxGraph;
+    private int currentBalance;
+    private float redNumber;
+    private float orangeNumber;
+    private boolean dataValid = false;
 
     public GaugeView(Context context) {
         super(context);
@@ -45,20 +54,58 @@ public final class GaugeView extends View {
     }
 
     private void init() {
-        whitePaint = new Paint();
-        whitePaint.setColor(Color.WHITE);
         redPaint = new Paint();
         redPaint.setColor(Color.RED);
         orangePaint = new Paint();
         orangePaint.setARGB(255, 255, 127, 0);
         greenPaint = new Paint();
         greenPaint.setColor(Color.GREEN);
-        smallTickPaint = new Paint();
-        smallTickPaint.setColor(Color.BLACK);
+        smallTickPaint = new Paint(getTextColorPaint());
         mediumTickPaint = new Paint();
         mediumTickPaint.setColor(Color.BLUE);
         largeTickPaint = new Paint(greenPaint);
         needlePaint = new Paint(redPaint);
+    }
+
+    public void setMaxUnits(int maxUnits) {
+        this.maxUnits = maxUnits;
+        Log.i(LOG_TAG, "max units: " + maxUnits);
+    }
+
+    public void setMaxPeriod(int maxPeriod) {
+        this.maxPeriod = maxPeriod;
+        Log.i(LOG_TAG, "max period: " + maxPeriod);
+    }
+
+    public void setUsage(List<HistoryMonitor.UsagePoint> usagePointList) {
+        Log.i(LOG_TAG, "setUsage");
+        int peakUnits = 0;
+        for (HistoryMonitor.UsagePoint usagePoint : usagePointList) {
+            if (usagePoint.getBalance() > peakUnits) {
+                peakUnits = usagePoint.getBalance();
+            }
+        }
+        if (!usagePointList.isEmpty()) {
+            HistoryMonitor.UsagePoint latestDay = usagePointList.get(usagePointList.size() - 1);
+            currentBalance = latestDay.getBalance();
+            int dayInPeriod = latestDay.getDagInPeriode();
+            if (maxUnits > peakUnits) {
+                peakUnits = maxUnits;
+            }
+            this.maxGraph = calculateMaxGraph(peakUnits);
+            float percentagePeriodToGo = ((float)(maxPeriod - dayInPeriod)) / ((float)maxPeriod);
+            redNumber = percentagePeriodToGo * ((float)maxUnits);
+            orangeNumber = percentagePeriodToGo * ((float)peakUnits);
+            Log.i(LOG_TAG, "max units: " + maxUnits);
+            Log.i(LOG_TAG, "max period: " + maxPeriod);
+            Log.i(LOG_TAG, "peak units: " + peakUnits);
+            Log.i(LOG_TAG, "max graph: " + maxGraph);
+            Log.i(LOG_TAG, "current balance: " + currentBalance);
+            Log.i(LOG_TAG, "dayInPeriod: " + dayInPeriod);
+            Log.i(LOG_TAG, "redNumber: " + redNumber);
+            Log.i(LOG_TAG, "orangeNumber: " + orangeNumber);
+            dataValid = true;
+        }
     }
 
     @Override
@@ -72,16 +119,19 @@ public final class GaugeView extends View {
         smallTickPaint.setStrokeWidth(strokeWidth / 3.0f);
         needlePaint.setStrokeWidth(strokeWidth / 3.0f);
         float center = measuredWidth / 2.0f;
-        Log.i(LOG_TAG, "start Y: " + startY);
-        Log.i(LOG_TAG, "stop Y: " + stopY);
         drawLines(canvas, center, startY, stopY);
-        drawScale(canvas, center);
+        if (dataValid) {
+            drawScale(canvas, center);
+        }
         drawNeedle(canvas, center, measuredWidth * 0.01f);
     }
 
     private void drawLines(Canvas canvas, float center, float startY, float stopY) {
         canvas.save();
-        int maxGraph = calculateMaxGraph(673);
+        int maxGraph = 200;
+        if (dataValid) {
+            maxGraph = this.maxGraph;
+        }
         int smallTick = 10;
         int mediumTick = 50;
         int largeTick = 100;
@@ -109,26 +159,24 @@ public final class GaugeView extends View {
     }
 
     private void drawNeedle(Canvas canvas, float center, float radius) {
-        canvas.save();
-        int currentPos = 650;
-        int maxGraph = calculateMaxGraph(673);
-        float needlePercentage = ((float)currentPos) / ((float)maxGraph);
-        float angle = -135.0f + (needlePercentage * 270.0f);
-        canvas.rotate(angle, center, center);
-        canvas.drawLine(center, center, center, 5.0f * radius, needlePaint);
+        if (dataValid) {
+            canvas.save();
+            int currentPos = this.currentBalance;
+            float needlePercentage = ((float)currentPos) / ((float)maxGraph);
+            float angle = -135.0f + (needlePercentage * 270.0f);
+            canvas.rotate(angle, center, center);
+            canvas.drawLine(center, center, center, 5.0f * radius, needlePaint);
+            canvas.restore();
+        }
         canvas.drawCircle(center, center, 2.0f * radius, smallTickPaint);
-        canvas.restore();
     }
 
     private void drawScale(Canvas canvas, float center) {
         float startGraph = -225.0f;
         float endGraph = 45.0f;
         float graphRange = endGraph - startGraph;
-        int maxGraph = calculateMaxGraph(673);
-        int red = 125;
-        int orange = 250;
-        float redPercentage = ((float)red) / ((float)maxGraph);
-        float orangePercentage = ((float)orange) / ((float)maxGraph);
+        float redPercentage = (redNumber) / ((float)maxGraph);
+        float orangePercentage = (orangeNumber) / ((float)maxGraph);
         float redOrangeBound = startGraph + (redPercentage * graphRange);
         float redSweep = redOrangeBound - startGraph;
         float orangeGreenBound = startGraph + (orangePercentage * graphRange);
@@ -140,7 +188,7 @@ public final class GaugeView extends View {
         canvas.drawArc(outerRect, startGraph, redSweep, true, redPaint);
         canvas.drawArc(outerRect, redOrangeBound, orangeSweep, true, orangePaint);
         canvas.drawArc(outerRect, orangeGreenBound, greenSweep, true, greenPaint);
-        canvas.drawCircle(center, center, measuredWidth * 0.30f, whitePaint);
+        canvas.drawCircle(center, center, measuredWidth * 0.30f, getBackgroundColorPaint());
     }
 
     private float calculateAngle(int maxGraph) {
@@ -161,7 +209,7 @@ public final class GaugeView extends View {
         this.setMeasuredDimension(this.measuredWidth, this.measuredHeight);
     }
 
-    private Paint getSolidLinePaint() {
+    private Paint getTextColorPaint() {
         Paint paint = new Paint();
         if (ThemeSwitcherUtil.getChosenTheme() == Theme.LIGHT) {
             // Newer Android uses Light theme, so black lines
@@ -169,6 +217,18 @@ public final class GaugeView extends View {
         } else {
             // Old Android uses Black theme, so white lines
             paint.setColor(Color.WHITE);
+        }
+        return paint;
+    }
+
+    private Paint getBackgroundColorPaint() {
+        Paint paint = new Paint();
+        if (ThemeSwitcherUtil.getChosenTheme() == Theme.LIGHT) {
+            // Newer Android uses Light theme, so white background
+            paint.setColor(Color.WHITE);
+        } else {
+            // Old Android uses Black theme, so black background
+            paint.setColor(Color.BLACK);
         }
         return paint;
     }
