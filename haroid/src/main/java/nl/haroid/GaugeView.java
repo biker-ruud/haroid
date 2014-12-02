@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +24,10 @@ public final class GaugeView extends View {
     private Paint mediumTickPaint;
     private Paint largeTickPaint;
     private Paint needlePaint;
+    private Paint whitePaint;
+    private Paint redPaint;
+    private Paint orangePaint;
+    private Paint greenPaint;
 
     public GaugeView(Context context) {
         super(context);
@@ -40,14 +45,20 @@ public final class GaugeView extends View {
     }
 
     private void init() {
+        whitePaint = new Paint();
+        whitePaint.setColor(Color.WHITE);
+        redPaint = new Paint();
+        redPaint.setColor(Color.RED);
+        orangePaint = new Paint();
+        orangePaint.setARGB(255, 255, 127, 0);
+        greenPaint = new Paint();
+        greenPaint.setColor(Color.GREEN);
         smallTickPaint = new Paint();
         smallTickPaint.setColor(Color.BLACK);
         mediumTickPaint = new Paint();
         mediumTickPaint.setColor(Color.BLUE);
-        largeTickPaint = new Paint();
-        largeTickPaint.setColor(Color.GREEN);
-        needlePaint = new Paint();
-        needlePaint.setColor(Color.RED);
+        largeTickPaint = new Paint(greenPaint);
+        needlePaint = new Paint(redPaint);
     }
 
     @Override
@@ -64,6 +75,7 @@ public final class GaugeView extends View {
         Log.i(LOG_TAG, "start Y: " + startY);
         Log.i(LOG_TAG, "stop Y: " + stopY);
         drawLines(canvas, center, startY, stopY);
+        drawScale(canvas, center);
         drawNeedle(canvas, center, measuredWidth * 0.01f);
     }
 
@@ -97,6 +109,7 @@ public final class GaugeView extends View {
     }
 
     private void drawNeedle(Canvas canvas, float center, float radius) {
+        canvas.save();
         int currentPos = 650;
         int maxGraph = calculateMaxGraph(673);
         float needlePercentage = ((float)currentPos) / ((float)maxGraph);
@@ -104,6 +117,30 @@ public final class GaugeView extends View {
         canvas.rotate(angle, center, center);
         canvas.drawLine(center, center, center, 5.0f * radius, needlePaint);
         canvas.drawCircle(center, center, 2.0f * radius, smallTickPaint);
+        canvas.restore();
+    }
+
+    private void drawScale(Canvas canvas, float center) {
+        float startGraph = -225.0f;
+        float endGraph = 45.0f;
+        float graphRange = endGraph - startGraph;
+        int maxGraph = calculateMaxGraph(673);
+        int red = 125;
+        int orange = 250;
+        float redPercentage = ((float)red) / ((float)maxGraph);
+        float orangePercentage = ((float)orange) / ((float)maxGraph);
+        float redOrangeBound = startGraph + (redPercentage * graphRange);
+        float redSweep = redOrangeBound - startGraph;
+        float orangeGreenBound = startGraph + (orangePercentage * graphRange);
+        float orangeSweep = orangeGreenBound - redOrangeBound;
+        float greenSweep = endGraph - orangeGreenBound;
+        float horizontalSpacer = measuredWidth * 0.105f;
+        float verticalSpacer = measuredHeight * 0.105f;
+        RectF outerRect = new RectF(horizontalSpacer, verticalSpacer, measuredWidth - horizontalSpacer, measuredHeight - verticalSpacer);
+        canvas.drawArc(outerRect, startGraph, redSweep, true, redPaint);
+        canvas.drawArc(outerRect, redOrangeBound, orangeSweep, true, orangePaint);
+        canvas.drawArc(outerRect, orangeGreenBound, greenSweep, true, greenPaint);
+        canvas.drawCircle(center, center, measuredWidth * 0.30f, whitePaint);
     }
 
     private float calculateAngle(int maxGraph) {

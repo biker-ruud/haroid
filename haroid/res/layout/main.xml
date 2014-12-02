@@ -48,11 +48,11 @@
                 style="@android:style/Widget.ProgressBar.Horizontal"
                 android:layout_marginRight="5dp"
                 android:layout_marginLeft="5dp"/>
-        <!--view
+        <view
                 class="nl.haroid.GaugeView"
                 android:id="@+id/OdoMeter"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"/-->
+                android:layout_height="wrap_content"/>
         <view
                 class="nl.haroid.DailyGraphView"
                 android:id="@+id/DailyGraphVerbruik"
