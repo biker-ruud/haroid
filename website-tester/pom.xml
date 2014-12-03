@@ -6,12 +6,12 @@
     <parent>
         <groupId>haroid</groupId>
         <artifactId>haroid-parent</artifactId>
-        <version>1.14-SNAPSHOT</version>
+        <version>1.14</version>
     </parent>
 
     <groupId>haroid</groupId>
     <artifactId>website-tester</artifactId>
-    <version>1.14-SNAPSHOT</version>
+    <version>1.14</version>
     <packaging>jar</packaging>
     <name>haroid - Core - Website tester</name>
 
@@ -19,7 +19,7 @@
         <dependency>
             <groupId>haroid</groupId>
             <artifactId>core</artifactId>
-            <version>1.14-SNAPSHOT</version>
+            <version>1.14</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
