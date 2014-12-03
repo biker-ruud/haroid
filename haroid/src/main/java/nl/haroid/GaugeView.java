@@ -1,12 +1,17 @@
 package nl.haroid;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import nl.haroid.common.Theme;
 import nl.haroid.service.HistoryMonitor;
@@ -24,7 +29,8 @@ public final class GaugeView extends View {
     private int measuredHeight;
 
     private Paint smallTickPaint;
-    private Paint mediumTickPaint;
+    private Paint mediumTickDarkPaint;
+    private Paint mediumTickLightPaint;
     private Paint largeTickPaint;
     private Paint needlePaint;
     private Paint redPaint;
@@ -37,23 +43,24 @@ public final class GaugeView extends View {
     private float redNumber;
     private float orangeNumber;
     private boolean dataValid = false;
+    private Paint defaultBackgroundPaint;
 
     public GaugeView(Context context) {
         super(context);
-        init();
+        init(context);
     }
 
     public GaugeView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
+        init(context);
     }
 
     public GaugeView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init();
+        init(context);
     }
 
-    private void init() {
+    private void init(Context context) {
         redPaint = new Paint();
         redPaint.setColor(Color.RED);
         orangePaint = new Paint();
@@ -61,10 +68,18 @@ public final class GaugeView extends View {
         greenPaint = new Paint();
         greenPaint.setColor(Color.GREEN);
         smallTickPaint = new Paint(getTextColorPaint());
-        mediumTickPaint = new Paint();
-        mediumTickPaint.setColor(Color.BLUE);
+        mediumTickDarkPaint = new Paint();
+        mediumTickDarkPaint.setColor(Color.YELLOW);
+        mediumTickLightPaint = new Paint();
+        mediumTickLightPaint.setColor(Color.BLUE);
         largeTickPaint = new Paint(greenPaint);
         needlePaint = new Paint(redPaint);
+        // Determine theme's default window background color.
+        TypedArray array = context.getTheme().obtainStyledAttributes(new int[]{android.R.attr.colorBackground});
+        int backgroundColor = array.getColor(0, 0xFF00FF);
+        defaultBackgroundPaint = new Paint();
+        defaultBackgroundPaint.setColor(backgroundColor);
+        array.recycle();
     }
 
     public void setMaxUnits(int maxUnits) {
@@ -115,7 +130,8 @@ public final class GaugeView extends View {
         float startY = measuredWidth * 0.1f;
         float stopY = measuredWidth * 0.05f;
         largeTickPaint.setStrokeWidth(strokeWidth);
-        mediumTickPaint.setStrokeWidth(strokeWidth / 2.0f);
+        mediumTickDarkPaint.setStrokeWidth(strokeWidth / 2.0f);
+        mediumTickLightPaint.setStrokeWidth(strokeWidth / 2.0f);
         smallTickPaint.setStrokeWidth(strokeWidth / 3.0f);
         needlePaint.setStrokeWidth(strokeWidth / 3.0f);
         float center = measuredWidth / 2.0f;
@@ -146,7 +162,7 @@ public final class GaugeView extends View {
                 // medium tick
                 float distance = Math.abs(startY - stopY);
                 float mediumDistance = 2.0f * distance / 3.0f;
-                canvas.drawLine(center, startY, center, startY - mediumDistance, mediumTickPaint);
+                canvas.drawLine(center, startY, center, startY - mediumDistance, getMediumTickPaint());
             } else {
                 // small tick
                 float distance = Math.abs(startY - stopY);
@@ -188,7 +204,7 @@ public final class GaugeView extends View {
         canvas.drawArc(outerRect, startGraph, redSweep, true, redPaint);
         canvas.drawArc(outerRect, redOrangeBound, orangeSweep, true, orangePaint);
         canvas.drawArc(outerRect, orangeGreenBound, greenSweep, true, greenPaint);
-        canvas.drawCircle(center, center, measuredWidth * 0.30f, getBackgroundColorPaint());
+        canvas.drawCircle(center, center, measuredWidth * 0.30f, defaultBackgroundPaint);
     }
 
     private float calculateAngle(int maxGraph) {
@@ -221,16 +237,14 @@ public final class GaugeView extends View {
         return paint;
     }
 
-    private Paint getBackgroundColorPaint() {
-        Paint paint = new Paint();
+    private Paint getMediumTickPaint() {
         if (ThemeSwitcherUtil.getChosenTheme() == Theme.LIGHT) {
-            // Newer Android uses Light theme, so white background
-            paint.setColor(Color.WHITE);
+            // Newer Android uses Light theme, so blue ticks
+            return mediumTickLightPaint;
         } else {
-            // Old Android uses Black theme, so black background
-            paint.setColor(Color.BLACK);
+            // Old Android uses Black theme, so yellow ticks
+            return mediumTickDarkPaint;
         }
-        return paint;
     }
 
     private int calculateMaxGraph(int maxUnits) {
