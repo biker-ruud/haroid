@@ -14,5 +14,6 @@ hs_err_pid*
 # Custom
 .idea
 *.iml
+*Test.properties
 target
 

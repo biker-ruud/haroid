@@ -1,5 +1,9 @@
 package nl.haroid.webclient;
 
+import nl.haroid.common.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,10 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import nl.haroid.common.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Ruud de Jong
@@ -48,6 +48,11 @@ public final class HttpsSession {
     private String host;
     private Map<String, String> cookieMap;
     private URL requestUrl;
+
+    public enum HttpMethod {
+        GET,
+        POST
+    }
 
     private enum SessionState {
         DISCONNECTED,
@@ -78,12 +83,16 @@ public final class HttpsSession {
         return inputStream;
     }
 
+    public InputStream post(URL url) throws IOException {
+        return post(url, Collections.EMPTY_MAP);
+    }
+
     public InputStream post(URL url, Map<String, String> postParamMap) throws IOException {
         if (state != SessionState.CONNECTED) {
             LOGGER.info("NOT CONNECTED!");
             return null;
         }
-        HttpsURLConnection connection = getConnection(url.getPath(), postParamMap);
+        HttpsURLConnection connection = getConnection(url.getPath(), HttpMethod.POST, postParamMap);
         if (connection == null) {
             return null;
         }
@@ -132,11 +141,15 @@ public final class HttpsSession {
         }
     }
 
-    private HttpsURLConnection getConnection(String path) throws IOException {
-        return getConnection(path, null);
+    public boolean containsCookie(String cookieName) {
+        return (cookieMap.get(cookieName) != null);
     }
 
-    private HttpsURLConnection getConnection(String path, Map<String, String> postParamMap) throws IOException {
+    private HttpsURLConnection getConnection(String path) throws IOException {
+        return getConnection(path, HttpMethod.GET, null);
+    }
+
+    private HttpsURLConnection getConnection(String path, HttpMethod httpMethod, Map<String, String> postParamMap) throws IOException {
         URL url = new URL(PROTOCOL + host + path);
         this.requestUrl = url;
         LOGGER.info("Connecting to: " + url);
@@ -151,14 +164,17 @@ public final class HttpsSession {
             connection.setRequestProperty(COOKIE_REQUEST_HEADER, cookieRequestValue);
         }
         connection.setRequestProperty(ACCEPT_CHARSET, UTF_8);
-        if (postParamMap != null && postParamMap.size()>0) {
+        if (httpMethod == HttpMethod.POST) {
             LOGGER.debug("This is a POST.");
             // This is a POST
             connection.setRequestMethod(HTTP_METHOD_POST);
             connection.setRequestProperty(CONTENT_TYPE, POST_CONTENT_TYPE);
-            List<String> postParamList = postParamMap2List(postParamMap);
-            String postParamRequestValue = Utils.join(postParamList.toArray(new String[postParamList.size()]), POST_PARAM_VALUE_SEPARATOR);
-            LOGGER.debug("Post Param Request Value: " + postParamRequestValue);
+            String postParamRequestValue = "";
+            if (postParamMap != null && postParamMap.size()>0) {
+                List<String> postParamList = postParamMap2List(postParamMap);
+                postParamRequestValue = Utils.join(postParamList.toArray(new String[postParamList.size()]), POST_PARAM_VALUE_SEPARATOR);
+                LOGGER.debug("Post Param Request Value: " + postParamRequestValue);
+            }
             connection.setDoOutput(true);
             Writer writer = new OutputStreamWriter(connection.getOutputStream());
             writer.write(postParamRequestValue);

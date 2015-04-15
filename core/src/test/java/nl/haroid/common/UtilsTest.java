@@ -108,4 +108,13 @@ public class UtilsTest {
         Assert.assertNotNull(result);
         Assert.assertEquals("a--bb--ccc", result);
     }
+
+    @Test
+    public void testSubstringBefore() {
+        String inputString = "529MB,minutenofSMSjes";
+        String separator = "MB,minuten";
+        String result = Utils.substringBefore(inputString, separator);
+        Assert.assertNotNull(result);
+        Assert.assertEquals("529", result);
+    }
 }

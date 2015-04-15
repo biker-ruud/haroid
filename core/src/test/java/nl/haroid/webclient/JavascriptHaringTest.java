@@ -2,7 +2,6 @@ package nl.haroid.webclient;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -11,8 +10,7 @@ import java.util.Properties;
 /**
  * @author Ruud de Jong
  */
-@Ignore
-public class HaringHnImplTest {
+public class JavascriptHaringTest {
 
     @Before
     public void setLogging() {
@@ -20,21 +18,14 @@ public class HaringHnImplTest {
     }
 
     @Test
-    public void connectTest() throws IOException {
+    public void test() throws IOException {
         Properties authenticationProps = new Properties();
-        authenticationProps.load(this.getClass().getResourceAsStream("/HaringHnImplTest.properties"));
+        authenticationProps.load(this.getClass().getResourceAsStream("/JavascriptHaringTest.properties"));
         String username = authenticationProps.getProperty("username");
         String password = authenticationProps.getProperty("password");
 
-        HaringHnImpl haring = new HaringHnImpl();
+        JavaScriptHaring haring = new JavaScriptHaring();
         String response = haring.start(username, password);
         Assert.assertNotNull(response);
-    }
-
-    @Test
-    public void ongeldigeLogin() throws IOException {
-        HaringHnImpl haring = new HaringHnImpl();
-        String response = haring.start("dummy", "dummy");
-        Assert.assertNull(response);
     }
 }

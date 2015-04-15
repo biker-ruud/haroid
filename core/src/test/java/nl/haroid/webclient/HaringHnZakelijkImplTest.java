@@ -1,6 +1,7 @@
 package nl.haroid.webclient;
 
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.util.Properties;
 /**
  * @author Ruud de Jong
  */
+@Ignore
 public class HaringHnZakelijkImplTest {
 
     @Test

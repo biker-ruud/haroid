@@ -24,7 +24,7 @@ public class HaringFactory {
             case HOLLANDS_NIEUWE_ZAKELIJK:
                 return new HaringHnZakelijkImpl();
             default:
-                return new HaringHnImpl();
+                return new JavaScriptHaring();
         }
 
     }
