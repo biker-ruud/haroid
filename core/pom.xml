@@ -6,12 +6,12 @@
     <parent>
         <groupId>haroid</groupId>
         <artifactId>haroid-parent</artifactId>
-        <version>1.16</version>
+        <version>1.17-SNAPSHOT</version>
     </parent>
 
     <groupId>haroid</groupId>
     <artifactId>core</artifactId>
-    <version>1.16</version>
+    <version>1.17-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>haroid - Core</name>
 
