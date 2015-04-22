@@ -64,7 +64,8 @@ public class JavaScriptHaring implements Haring {
         LOGGER.debug("Response body size: " + body.length() + " bytes.");
         LOGGER.trace("Body: " + body);
         inputStream.close();
-        session.post(new URL(HttpsSession.PROTOCOL + HOST + "/rest/auth/login/CONSUMER/" + username + "/" + password));
+        String jsonString = "{\"emailAddress\":\"" + username + "\",\"password\":\"" + password + "\",\"brandType\":\"CONSUMER\"}";
+        session.post(new URL(HttpsSession.PROTOCOL + HOST + "/rest/auth/login"), jsonString);
         return (session.containsCookie("X-Auth-Token"));
     }
 

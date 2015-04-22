@@ -39,7 +39,8 @@ public final class HttpsSession {
     private static final String ACCEPT_CHARSET = "Accept-Charset";
     private static final String UTF_8 = "utf-8";
     private static final String CONTENT_TYPE = "Content-Type";
-    private static final String POST_CONTENT_TYPE = "application/x-www-form-urlencoded";
+    private static final String FORM_POST_CONTENT_TYPE = "application/x-www-form-urlencoded";
+    private static final String JSON_POST_CONTENT_TYPE = "application/json;charset=utf-8";
     private static final String POST_PARAM_VALUE_SEPARATOR = "&";
     private static final String HTTP_METHOD_POST = "POST";
     private static final String URL_QUERY_SEPARATOR = "?";
@@ -83,16 +84,24 @@ public final class HttpsSession {
         return inputStream;
     }
 
-    public InputStream post(URL url) throws IOException {
-        return post(url, Collections.EMPTY_MAP);
+    public InputStream post(URL url, String postBody) throws IOException {
+        Map<String, String> httpPostHeaders = new HashMap<String, String>();
+        httpPostHeaders.put(CONTENT_TYPE, JSON_POST_CONTENT_TYPE);
+        return post(url, postBody, httpPostHeaders);
     }
 
     public InputStream post(URL url, Map<String, String> postParamMap) throws IOException {
+        Map<String, String> httpPostHeaders = new HashMap<String, String>();
+        httpPostHeaders.put(CONTENT_TYPE, FORM_POST_CONTENT_TYPE);
+        return post(url, createPostParamMap(postParamMap), httpPostHeaders);
+    }
+
+    private InputStream post(URL url, String postBody, Map<String, String> httpPostHeaders) throws IOException {
         if (state != SessionState.CONNECTED) {
             LOGGER.info("NOT CONNECTED!");
             return null;
         }
-        HttpsURLConnection connection = getConnection(url.getPath(), HttpMethod.POST, postParamMap);
+        HttpsURLConnection connection = getConnection(url.getPath(), HttpMethod.POST, postBody, httpPostHeaders);
         if (connection == null) {
             return null;
         }
@@ -146,10 +155,10 @@ public final class HttpsSession {
     }
 
     private HttpsURLConnection getConnection(String path) throws IOException {
-        return getConnection(path, HttpMethod.GET, null);
+        return getConnection(path, HttpMethod.GET, null, Collections.EMPTY_MAP);
     }
 
-    private HttpsURLConnection getConnection(String path, HttpMethod httpMethod, Map<String, String> postParamMap) throws IOException {
+    private HttpsURLConnection getConnection(String path, HttpMethod httpMethod, String postBody, Map<String, String> httpPostHeaders) throws IOException {
         URL url = new URL(PROTOCOL + host + path);
         this.requestUrl = url;
         LOGGER.info("Connecting to: " + url);
@@ -168,16 +177,15 @@ public final class HttpsSession {
             LOGGER.debug("This is a POST.");
             // This is a POST
             connection.setRequestMethod(HTTP_METHOD_POST);
-            connection.setRequestProperty(CONTENT_TYPE, POST_CONTENT_TYPE);
-            String postParamRequestValue = "";
-            if (postParamMap != null && postParamMap.size()>0) {
-                List<String> postParamList = postParamMap2List(postParamMap);
-                postParamRequestValue = Utils.join(postParamList.toArray(new String[postParamList.size()]), POST_PARAM_VALUE_SEPARATOR);
-                LOGGER.debug("Post Param Request Value: " + postParamRequestValue);
+            if (!httpPostHeaders.isEmpty()) {
+                for (Map.Entry<String, String> httpPostHeader : httpPostHeaders.entrySet()) {
+                    connection.setRequestProperty(httpPostHeader.getKey(), httpPostHeader.getValue());
+                }
             }
             connection.setDoOutput(true);
+            LOGGER.debug("POST body: " + postBody);
             Writer writer = new OutputStreamWriter(connection.getOutputStream());
-            writer.write(postParamRequestValue);
+            writer.write(postBody);
             writer.close();
         }
         connection.connect();
@@ -218,6 +226,16 @@ public final class HttpsSession {
         } else {
             return connection;
         }
+    }
+
+    private String createPostParamMap(Map<String, String> postParamMap) throws UnsupportedEncodingException {
+        String postParamRequestValue = "";
+        if (postParamMap != null && postParamMap.size()>0) {
+            List<String> postParamList = postParamMap2List(postParamMap);
+            postParamRequestValue = Utils.join(postParamList.toArray(new String[postParamList.size()]), POST_PARAM_VALUE_SEPARATOR);
+            LOGGER.debug("Post Param Request Value: " + postParamRequestValue);
+        }
+        return postParamRequestValue;
     }
 
     private void debugConnection(HttpsURLConnection connection) throws IOException {
