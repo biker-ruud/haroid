@@ -15,7 +15,7 @@ import java.net.URL;
  */
 public class JavaScriptHaring implements Haring {
     private static final Logger LOGGER = LoggerFactory.getLogger(JavaScriptHaring.class);
-    private static final String HOST = "hollandsnieuwe.nl";
+    private static final String HOST = "www.hollandsnieuwe.nl";
     private static final String RELATIVE_URL_START = "/login";
     private static final String RELATIVE_URL_VERBRUIK = "/myaccount/subscriptionPurchaseCurrentUsageDataFeed.jsp?index=0&status=ACTIVE&profileId=";
 
