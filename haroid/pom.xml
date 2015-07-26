@@ -6,12 +6,12 @@
     <parent>
         <groupId>haroid</groupId>
         <artifactId>haroid-parent</artifactId>
-        <version>1.17-SNAPSHOT</version>
+        <version>1.17</version>
     </parent>
 
     <groupId>haroid</groupId>
     <artifactId>haroid</artifactId>
-    <version>1.17-SNAPSHOT</version>
+    <version>1.17</version>
     <packaging>apk</packaging>
     <name>haroid - Application</name>
 
