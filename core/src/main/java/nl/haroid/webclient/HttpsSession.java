@@ -44,6 +44,7 @@ public final class HttpsSession {
     private static final String POST_PARAM_VALUE_SEPARATOR = "&";
     private static final String HTTP_METHOD_POST = "POST";
     private static final String URL_QUERY_SEPARATOR = "?";
+    public static final String JWT_COOKIE = "X-Auth-Token";
 
     private SessionState state;
     private String host;
@@ -154,6 +155,10 @@ public final class HttpsSession {
         return (cookieMap.get(cookieName) != null);
     }
 
+    public String getCookie(String cookieName) {
+        return cookieMap.get(cookieName);
+    }
+
     private HttpsURLConnection getConnection(String path) throws IOException {
         return getConnection(path, HttpMethod.GET, null, Collections.EMPTY_MAP);
     }
@@ -189,7 +194,7 @@ public final class HttpsSession {
             writer.close();
         }
         connection.connect();
-//        debugConnection(connection);
+        debugConnection(connection);
         this.cookieMap.putAll(getCookies(connection.getHeaderFields()));
         LOGGER.info("Aantal cookies: " + this.cookieMap.size());
         if (connection.getResponseCode() >= HttpURLConnection.HTTP_MULT_CHOICE && connection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {

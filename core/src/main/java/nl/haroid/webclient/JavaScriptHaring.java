@@ -1,14 +1,18 @@
 package nl.haroid.webclient;
 
+import com.google.gson.Gson;
 import nl.haroid.common.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Ruud de Jong
@@ -17,6 +21,7 @@ public class JavaScriptHaring implements Haring {
     private static final Logger LOGGER = LoggerFactory.getLogger(JavaScriptHaring.class);
     private static final String HOST = "www.hollandsnieuwe.nl";
     private static final String RELATIVE_URL_START = "/login";
+    private static final String RELATIVE_URL_PROFIEL = "/rest/v/1/client/mijn/profile/";
     private static final String RELATIVE_URL_VERBRUIK = "/myaccount/subscriptionPurchaseCurrentUsageDataFeed.jsp?index=0&status=ACTIVE&profileId=";
 
     private String username;
@@ -36,6 +41,8 @@ public class JavaScriptHaring implements Haring {
                     LOGGER.info("Login gefaald.");
                     return null;
                 }
+                String klantid = vindProfielId(session.getCookie(HttpsSession.JWT_COOKIE));
+                String subscription = vindSubscriptionId(session, klantid);
                 String tegoed = haalVerbruikGegevensOp(session);
                 LOGGER.debug("Tegoed: " + tegoed);
                 return tegoed;
@@ -66,7 +73,22 @@ public class JavaScriptHaring implements Haring {
         inputStream.close();
         String jsonString = "{\"emailAddress\":\"" + username + "\",\"password\":\"" + password + "\",\"brandType\":\"CONSUMER\"}";
         session.post(new URL(HttpsSession.PROTOCOL + HOST + "/rest/auth/login"), jsonString);
-        return (session.containsCookie("X-Auth-Token"));
+        return (session.containsCookie(HttpsSession.JWT_COOKIE));
+    }
+
+    private String vindSubscriptionId(HttpsSession session, String klantid) throws IOException {
+        LOGGER.info("***************************************");
+        LOGGER.info("**        PROFIEL DETAILS OPHALEN    **");
+        LOGGER.info("***************************************");
+        InputStream inputStream = session.get(new URL(HttpsSession.PROTOCOL + HOST + RELATIVE_URL_PROFIEL + klantid));
+        String body = Utils.toString(inputStream);
+        LOGGER.info("Response body size: " + body.length() + " bytes.");
+        LOGGER.trace("Body: " + body);
+        inputStream.close();
+
+        String subscriptionId = vindSubscription(body);
+        LOGGER.info("Gevonden subscriptionId: " + subscriptionId);
+        return subscriptionId;
     }
 
     private String haalVerbruikGegevensOp(HttpsSession session) throws IOException {
@@ -82,6 +104,11 @@ public class JavaScriptHaring implements Haring {
         String tegoed = vindTegoed(body);
         LOGGER.info("Gevonden tegoed: " + tegoed);
         return tegoed;
+    }
+
+    private String vindSubscription(String body) {
+        String test = body;
+        return test;
     }
 
     private String vindTegoed(String body) {
@@ -101,6 +128,25 @@ public class JavaScriptHaring implements Haring {
         }
         LOGGER.info("Gevonden tegoed bedrag: " + tegoedBedrag);
         return tegoed;
+    }
+
+    private String vindProfielId(String jsonWebToken) {
+        int payloadStart = jsonWebToken.indexOf('.');
+        if (payloadStart == -1) {
+            return null;
+        }
+        int payloadEnd = jsonWebToken.indexOf('.', payloadStart + 1);
+        if (payloadEnd == -1) {
+            return null;
+        }
+        String encodedPayload = jsonWebToken.substring(payloadStart + 1, payloadEnd);
+        String payload = new String(DatatypeConverter.parseBase64Binary(encodedPayload));
+        if (!payload.endsWith("}")) {
+            payload = payload + "}";
+        }
+        Gson gson = new Gson();
+        JwtPayload jwtPayload = gson.fromJson(payload, JwtPayload.class);
+        return jwtPayload.getProfileId();
     }
 
 }
